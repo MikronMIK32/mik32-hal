@@ -8,10 +8,10 @@ int main()
 	setPinMode(PORT2, 2, MODE1);
 	setPinMode(PORT2, 3, MODE1);
 
-	pinMode(GPIO_2, 0, OUTPUT);
-	pinMode(GPIO_2, 1, OUTPUT);
-	pinMode(GPIO_2, 2, OUTPUT);
-	pinMode(GPIO_2, 3, OUTPUT);
+	pinMode(GPIO_2, 0, GPIO_MODE_OUTPUT);
+	pinMode(GPIO_2, 1, GPIO_MODE_OUTPUT);
+	pinMode(GPIO_2, 2, GPIO_MODE_OUTPUT);
+	pinMode(GPIO_2, 3, GPIO_MODE_OUTPUT);
 
 	while (1) {
 		delay(1000);

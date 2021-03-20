@@ -14,15 +14,15 @@ int main()
 	setPinMode(PORT2, 6, MODE1);
 	setPinMode(PORT2, 7, MODE1);
 
-	pinMode(GPIO_2, 0, OUTPUT);
-	pinMode(GPIO_2, 1, OUTPUT);
-	pinMode(GPIO_2, 2, OUTPUT);
-	pinMode(GPIO_2, 3, OUTPUT);
+	pinMode(GPIO_2, 0, GPIO_MODE_OUTPUT);
+	pinMode(GPIO_2, 1, GPIO_MODE_OUTPUT);
+	pinMode(GPIO_2, 2, GPIO_MODE_OUTPUT);
+	pinMode(GPIO_2, 3, GPIO_MODE_OUTPUT);
 
-	pinMode(GPIO_2, 4, INPUT);
-	pinMode(GPIO_2, 5, INPUT);
-	pinMode(GPIO_2, 6, INPUT);
-	pinMode(GPIO_2, 7, INPUT);
+	pinMode(GPIO_2, 4, GPIO_MODE_INPUT);
+	pinMode(GPIO_2, 5, GPIO_MODE_INPUT);
+	pinMode(GPIO_2, 6, GPIO_MODE_INPUT);
+	pinMode(GPIO_2, 7, GPIO_MODE_INPUT);
 
 	while (1) {
 		delay(100);

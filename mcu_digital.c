@@ -1,14 +1,29 @@
 #include "mcu_digital.h"
 
-void digitalWrite(GPIO_TypeDef *gpio, uint32_t gpioId, DigitalState state) {
-	if (state == HIGH) {
-		gpio->OUTPUT |= 1 << gpioId;
+
+GPIO_DigitalState digitalRead(uint32_t gpioId) {
+	if (gpioId < 16) {
+		if (GPIO_0->SET & (1 << gpioId)) {
+			return HIGH;
+		} else {
+			return LOW;
+		}
+	} else if (gpioId < 32) {
+		if (GPIO_1->SET & (1 << (gpioId & 15))) {
+			return HIGH;
+		} else {
+			return LOW;
+		}
 	} else {
-		gpio->OUTPUT &= ~(1 << gpioId);
+		if (GPIO_2->SET & (1 << (gpioId & 15))) {
+			return HIGH;
+		} else {
+			return LOW;
+		}
 	}
 }
 
-DigitalState digitalRead(GPIO_TypeDef *gpio, uint32_t gpioId) {
+GPIO_DigitalState digitalReadGPIO(GPIO_TypeDef *gpio, uint32_t gpioId) {
 	if (gpio->SET & (1 << gpioId)) {
 		return HIGH;
 	} else {
@@ -17,19 +32,65 @@ DigitalState digitalRead(GPIO_TypeDef *gpio, uint32_t gpioId) {
 }
 
 
-/*Аналог arduino функции pinMode, устанавливает режим ввода или вывода,
- *Внимание! Не поддерживает INPUT_PULLUP!
- */
-void pinMode(GPIO_TypeDef *gpio, uint32_t gpioId, PinMode mode) {
-	if (mode == OUTPUT) {
-		gpio->DIRECTION_OUT |= 1 << gpioId;
+void digitalWrite(uint32_t gpioId, GPIO_DigitalState state) {
+	if (gpioId < 16) {
+		if (state) {
+			GPIO_0->SET = (1 << gpioId);
+		} else {
+			GPIO_0->CLEAR = (1 << gpioId);
+		}
+	} else if (gpioId < 32) {
+		if (state) {
+			GPIO_1->SET = (1 << gpioId & 15);
+		} else {
+			GPIO_1->CLEAR = (1 << gpioId & 15);
+		}
 	} else {
-		gpio->DIRECTION_IN |= 1 << gpioId;
+		if (state) {
+			GPIO_2->SET = (1 << gpioId & 15);
+		} else {
+			GPIO_2->CLEAR = (1 << gpioId & 15);
+		}
+	}
+}
+
+void digitalWriteGPIO(GPIO_TypeDef *gpio, uint32_t gpioId, GPIO_DigitalState state) {
+	if (state) {
+		gpio->SET = 1 << gpioId;
+	} else {
+		gpio->CLEAR = 1 << gpioId;
 	}
 }
 
 
-void attachInterrupt(uint32_t irq_line, void* irq, GPIO_InterruptMode mode) {
-
+void pinMode(uint32_t gpioId, GPIO_PinMode mode) {
+	if (gpioId < 16) {
+		if (mode == OUTPUT) {
+			GPIO_0->DIRECTION_OUT |= 1 << gpioId;
+		} else {
+			GPIO_0->DIRECTION_IN |= 1 << gpioId;
+		}
+	} else if (gpioId < 32) {
+		if (mode == OUTPUT) {
+			GPIO_1->DIRECTION_OUT |= 1 << (1 << gpioId & 15);
+		} else {
+			GPIO_1->DIRECTION_IN |= 1 << (1 << gpioId & 15);
+		}
+	} else {
+		if (mode == OUTPUT) {
+			GPIO_2->DIRECTION_OUT |= 1 << (1 << gpioId & 15);
+		} else {
+			GPIO_2->DIRECTION_IN |= 1 << (1 << gpioId & 15);
+		}
+	}
 }
+
+void pinModeGPIO(GPIO_TypeDef *gpio, uint32_t gpioId, GPIO_PinMode mode) {
+	if (mode == OUTPUT) {
+		gpio->DIRECTION_OUT = 1 << gpioId;
+	} else {
+		gpio->DIRECTION_IN = 1 << gpioId;
+	}
+}
+
 
