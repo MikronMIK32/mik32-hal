@@ -12,7 +12,6 @@
 
 #include <stdbool.h>
 
-
 typedef enum {
 	PORT0 = 0,
 	PORT1 = 1,
@@ -33,14 +32,16 @@ void interrupts();
 void noInterrupts();
 
 typedef enum {
-	LEVEL_LOW = 1,
-	LEVEL_CHANGE = 2,
-	RISING = 4,
-	FALLING = 8,
-	LEVEL_HIGH = 16
+	LOW = 0,
+	CHANGE = 2,
+	RISING = 3,
+	FALLING = 4,
+	HIGH = 1
 } GPIO_InterruptMode;
 
-void attachInterrupt(uint32_t irq_line, uint32_t mux, void *irq,
+uint32_t digitalPinToInterrupt(uint32_t gpioId);
+
+void attachInterrupt(uint32_t irq_line, void *irq,
 		GPIO_InterruptMode mode);
 
 
@@ -56,6 +57,10 @@ void Port2_As_Func2 ();
 void Port0_As_Func3 ();
 void Port1_As_Func3 ();
 void Port2_As_Func3 ();
+
+
+int32_t rand();
+void srand(uint32_t seed);
 
 
 #endif /* FPGA_MCU_CORE_H_INCLUDED */

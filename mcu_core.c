@@ -47,15 +47,53 @@ void noInterrupts() {
 	clear_csr(mie, MIE_MEIE);
 }
 
-void attachInterrupt(uint32_t irq_line, uint32_t mux, void *irq,
+uint32_t digitalPinToInterrupt(uint32_t gpioId) {
+	switch (gpioId) {
+	case 32:
+		return 4;
+	case 33:
+		return 5;
+	case 34:
+		return 6;
+	case 35:
+		return 7;
+	case 36:
+		return 0;
+	case 37:
+		return 1;
+	case 38:
+		return 2;
+	case 39:
+		return 3;
+	default:
+		return 9;
+	}
+}
+
+void attachInterrupt(uint32_t irq_line, void (*irq)(uint32_t, uint32_t),
 		GPIO_InterruptMode mode) {
+	if (irq_line > 8) {
+		return;
+	}
 	GPIO_IRQ_TRAP_HANDLER = irq;
-	GPIO_IRQ->CFG = (mux << (irq_line << 2));
-	if (mode & LEVEL_LOW) {
+	GPIO_IRQ->CFG |= 9 << (irq_line << 2);
+	if (mode == LOW) {
 		GPIO_IRQ->EDGE &= ~(1 << irq_line);
 		GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
 		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
-	} else if (mode & LEVEL_CHANGE) {
+	} else if (mode == CHANGE) {
+		GPIO_IRQ->EDGE |= (1 << irq_line);
+		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
+		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
+	} else if (mode == RISING) {
+		GPIO_IRQ->EDGE |= (1 << irq_line);
+		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
+		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
+	} else if (mode == FALLING) {
+		GPIO_IRQ->EDGE |= (1 << irq_line);
+		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
+		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
+	} else if (mode == HIGH) {
 		GPIO_IRQ->EDGE |= (1 << irq_line);
 		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
 		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
@@ -117,14 +155,21 @@ void Port2_As_Func3 ()
 }
 
 
-void SystemInit()
-{
-    Port0_As_Gpio();
-    Port1_As_Gpio();
-    Port2_As_Gpio();
+static uint32_t miState;
+int32_t rand() {
+	miState ^= (miState << 13);
+	miState ^= (miState >> 17);
+	miState ^= (miState << 15);
 
-    GPIO_0->DIRECTION_IN = 0xFFFFFFFF;
-    GPIO_1->DIRECTION_IN = 0xFFFFFFFF;
-    GPIO_2->DIRECTION_IN = 0xFFFFFFFF;
+	return (miState * 1332534557) & 0x7FFFFFFF;
+}
+
+void srand(uint32_t seed) {
+// a zero seed will not work!
+	if (seed == 0) {
+		seed = 0x55aaff00;
+	}
+
+	miState = seed;
 }
 
