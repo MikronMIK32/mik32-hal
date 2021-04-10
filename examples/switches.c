@@ -1,4 +1,6 @@
-#include "../mcuduino.h"
+#include "../mcu32-hal/mcu_core.h"
+#include "../mcu32-hal/mcu_digital.h"
+#include "../mcu32-hal/mcu_timer.h"
 
 int main()
 {
@@ -14,21 +16,21 @@ int main()
 	setPinMode(PORT2, 6, MODE1);
 	setPinMode(PORT2, 7, MODE1);
 
-	pinMode(GPIO_2, 0, GPIO_MODE_OUTPUT);
-	pinMode(GPIO_2, 1, GPIO_MODE_OUTPUT);
-	pinMode(GPIO_2, 2, GPIO_MODE_OUTPUT);
-	pinMode(GPIO_2, 3, GPIO_MODE_OUTPUT);
+	pinModeGPIO(GPIO_2, 0, OUTPUT);
+	pinModeGPIO(GPIO_2, 1, OUTPUT);
+	pinModeGPIO(GPIO_2, 2, OUTPUT);
+	pinModeGPIO(GPIO_2, 3, OUTPUT);
 
-	pinMode(GPIO_2, 4, GPIO_MODE_INPUT);
-	pinMode(GPIO_2, 5, GPIO_MODE_INPUT);
-	pinMode(GPIO_2, 6, GPIO_MODE_INPUT);
-	pinMode(GPIO_2, 7, GPIO_MODE_INPUT);
+	pinModeGPIO(GPIO_2, 4, INPUT);
+	pinModeGPIO(GPIO_2, 5, INPUT);
+	pinModeGPIO(GPIO_2, 6, INPUT);
+	pinModeGPIO(GPIO_2, 7, INPUT);
 
 	while (1) {
 		delay(100);
-		digitalWrite(GPIO_2, 0, digitalRead(GPIO_2, 4));
-		digitalWrite(GPIO_2, 1, digitalRead(GPIO_2, 5));
-		digitalWrite(GPIO_2, 2, digitalRead(GPIO_2, 6));
-		digitalWrite(GPIO_2, 3, digitalRead(GPIO_2, 7));
+		digitalWriteGPIO(GPIO_2, 0, digitalReadGPIO(GPIO_2, 4));
+		digitalWriteGPIO(GPIO_2, 1, digitalReadGPIO(GPIO_2, 5));
+		digitalWriteGPIO(GPIO_2, 2, digitalReadGPIO(GPIO_2, 6));
+		digitalWriteGPIO(GPIO_2, 3, digitalReadGPIO(GPIO_2, 7));
 	}
 }

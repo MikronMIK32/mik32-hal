@@ -70,30 +70,15 @@ uint32_t digitalPinToInterrupt(uint32_t gpioId) {
 	}
 }
 
-void attachInterrupt(uint32_t irq_line, void (*irq)(uint32_t, uint32_t),
+void attachInterrupt(uint32_t irq_line, uint32_t mux, void *irq,
 		GPIO_InterruptMode mode) {
-	if (irq_line > 8) {
-		return;
-	}
 	GPIO_IRQ_TRAP_HANDLER = irq;
-	GPIO_IRQ->CFG |= 9 << (irq_line << 2);
-	if (mode == LOW) {
+	GPIO_IRQ->CFG = (mux << (irq_line << 2));
+	if (mode & MODE_LOW) {
 		GPIO_IRQ->EDGE &= ~(1 << irq_line);
 		GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
 		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
-	} else if (mode == CHANGE) {
-		GPIO_IRQ->EDGE |= (1 << irq_line);
-		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
-	} else if (mode == RISING) {
-		GPIO_IRQ->EDGE |= (1 << irq_line);
-		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
-	} else if (mode == FALLING) {
-		GPIO_IRQ->EDGE |= (1 << irq_line);
-		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
-	} else if (mode == HIGH) {
+	} else if (mode & MODE_CHANGE) {
 		GPIO_IRQ->EDGE |= (1 << irq_line);
 		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
 		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);

@@ -32,16 +32,16 @@ void interrupts();
 void noInterrupts();
 
 typedef enum {
-	LOW = 0,
-	CHANGE = 2,
-	RISING = 3,
-	FALLING = 4,
-	HIGH = 1
+	MODE_LOW = 0,
+	MODE_CHANGE = 2,
+	MODE_RISING = 3,
+	MODE_FALLING = 4,
+	MODE_HIGH = 1
 } GPIO_InterruptMode;
 
 uint32_t digitalPinToInterrupt(uint32_t gpioId);
 
-void attachInterrupt(uint32_t irq_line, void *irq,
+void attachInterrupt(uint32_t irq_line, uint32_t mux, void *irq,
 		GPIO_InterruptMode mode);
 
 
