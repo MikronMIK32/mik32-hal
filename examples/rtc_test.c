@@ -13,14 +13,7 @@ int main()
 	RTC_LoadTimeAlarm(RTC, 17, 3, 2, 0, 5);
 	RTC_Enable(RTC);
 
-	while (1) {
-		RTC_TypeDef* rtc = RTC;
-		uint32_t date = RTC->DATE;
-		uint32_t s = RTC->S;
-		uint32_t m = RTC->M;
-		uint32_t alarm = RTC->CTRL & RTC_CTRL_ALRM_M;
-		delay(1000);
-	}
+	while (1) { }
 }
 
 

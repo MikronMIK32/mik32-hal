@@ -6,6 +6,8 @@
 
 #include <stdbool.h>
 
+#include "mcu_core.h"
+
 
 typedef enum {
 	HIGH = 1, LOW = 0
@@ -28,6 +30,9 @@ typedef enum {
 void pinMode(GPIO_TypeDef *gpio, uint32_t gpioId, GPIO_PinMode mode);
 
 void pinModeGPIO(GPIO_TypeDef *gpio, uint32_t gpioId, GPIO_PinMode mode);
+
+void attachInterruptGPIO(uint32_t irq_line, uint32_t mux,
+		GPIO_InterruptMode mode);
 
 
 #endif

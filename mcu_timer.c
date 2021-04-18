@@ -10,3 +10,10 @@ void delay(uint32_t periodMs) {
 	TIMER32_0->Enable = TIMER32_RESET_VALUE_M;
 	TIMER32_0->IntClear = 1;
 }
+
+void initTimer(TIMER32_TypeDef* timer, uint32_t top, void *irq) {
+	TIMER32_0->Top = top;
+	TIMER32_0->IntMask = 1;
+	TIMER32_0->Enable = TIMER32_ENABLE_M;
+
+}

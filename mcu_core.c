@@ -1,10 +1,15 @@
 #include "mcu_core.h"
 
-void (*GPIO_IRQ_TRAP_HANDLER)(uint32_t, uint32_t) = 0;
+__attribute__ ((weak)) void TIMER32_0_TRAP_HANDLER() {}
+__attribute__ ((weak)) void GPIO_IRQ_TRAP_HANDLER() {}
 
 void trap_handler() {
+	if (EPIC->STATUS & (1 << EPIC_TIMER32_0_INDEX)) {
+		TIMER32_0_TRAP_HANDLER();
+		GPIO_IRQ->CLEAR = 0xFF;
+	}
 	if (EPIC->STATUS & (1 << EPIC_GPIO_IRQ_INDEX)) {
-		GPIO_IRQ_TRAP_HANDLER(GPIO_IRQ->INTERRUPTS, GPIO_IRQ->STATE);
+		GPIO_IRQ_TRAP_HANDLER();
 		GPIO_IRQ->CLEAR = 0xFF;
 	}
 	EPIC->CLEAR = 0xFF;
@@ -70,22 +75,7 @@ uint32_t digitalPinToInterrupt(uint32_t gpioId) {
 	}
 }
 
-void attachInterrupt(uint32_t irq_line, uint32_t mux, void *irq,
-		GPIO_InterruptMode mode) {
-	GPIO_IRQ_TRAP_HANDLER = irq;
-	GPIO_IRQ->CFG = (mux << (irq_line << 2));
-	if (mode & MODE_LOW) {
-		GPIO_IRQ->EDGE &= ~(1 << irq_line);
-		GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
-	} else if (mode & MODE_CHANGE) {
-		GPIO_IRQ->EDGE |= (1 << irq_line);
-		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
-	}
-	GPIO_IRQ->ENABLE_SET = (1 << irq_line);
-	EPIC->MASK_SET = 1 << EPIC_GPIO_IRQ_INDEX;
-}
+
 
 
 void Port0_As_Gpio ()
@@ -137,24 +127,5 @@ void Port1_As_Func3 ()
 void Port2_As_Func3 ()
 {
     PAD_CONFIG->PORT_2_CFG = 0xFFFFFFFF;
-}
-
-
-static uint32_t miState;
-int32_t rand() {
-	miState ^= (miState << 13);
-	miState ^= (miState >> 17);
-	miState ^= (miState << 15);
-
-	return (miState * 1332534557) & 0x7FFFFFFF;
-}
-
-void srand(uint32_t seed) {
-// a zero seed will not work!
-	if (seed == 0) {
-		seed = 0x55aaff00;
-	}
-
-	miState = seed;
 }
 

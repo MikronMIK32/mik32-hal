@@ -12,6 +12,9 @@
 
 #include <stdbool.h>
 
+__attribute__ ((weak)) void TIMER32_0_TRAP_HANDLER();
+__attribute__ ((weak)) void GPIO_IRQ_TRAP_HANDLER();
+
 typedef enum {
 	PORT0 = 0,
 	PORT1 = 1,
@@ -40,9 +43,6 @@ typedef enum {
 } GPIO_InterruptMode;
 
 uint32_t digitalPinToInterrupt(uint32_t gpioId);
-
-void attachInterrupt(uint32_t irq_line, uint32_t mux, void *irq,
-		GPIO_InterruptMode mode);
 
 
 void Port0_As_Gpio ();

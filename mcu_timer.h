@@ -6,6 +6,8 @@
 
 #include <stdbool.h>
 
+#include "mcu_core.h"
+
 // HAL
 #define FREQ 10000000
 #define FREQ_BY_MS (FREQ/1000)
