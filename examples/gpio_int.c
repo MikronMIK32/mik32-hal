@@ -6,6 +6,7 @@ void GPIO_IRQ_TRAP_HANDLER() {
 	if (GPIO_IRQ->INTERRUPTS & (1 << 7)) {
 		digitalWriteGPIO(GPIO_2, 0, GPIO_IRQ->STATE & (1 << 7));
 	}
+	GPIO_IRQ->CLEAR = 0xFF;
 }
 
 int main()

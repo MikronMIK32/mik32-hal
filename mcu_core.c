@@ -2,15 +2,17 @@
 
 __attribute__ ((weak)) void TIMER32_0_TRAP_HANDLER() {}
 __attribute__ ((weak)) void GPIO_IRQ_TRAP_HANDLER() {}
+__attribute__ ((weak)) void TIMER32_1_TRAP_HANDLER() {}
 
 void trap_handler() {
 	if (EPIC->STATUS & (1 << EPIC_TIMER32_0_INDEX)) {
 		TIMER32_0_TRAP_HANDLER();
-		GPIO_IRQ->CLEAR = 0xFF;
 	}
 	if (EPIC->STATUS & (1 << EPIC_GPIO_IRQ_INDEX)) {
 		GPIO_IRQ_TRAP_HANDLER();
-		GPIO_IRQ->CLEAR = 0xFF;
+	}
+	if (EPIC->STATUS & (1 << EPIC_TIMER32_1_INDEX)) {
+		TIMER32_1_TRAP_HANDLER();
 	}
 	EPIC->CLEAR = 0xFF;
 }

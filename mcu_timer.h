@@ -9,10 +9,14 @@
 #include "mcu_core.h"
 
 // HAL
-#define FREQ 10000000
 #define FREQ_BY_MS (FREQ/1000)
 
+#define DELAY_TIMER (TIMER32_1)
+
 void delay(uint32_t periodMs);
+void initTimer(TIMER32_TypeDef* timer, uint32_t top);
+void startTimer(TIMER32_TypeDef* timer);
+void startTimerIT(TIMER32_TypeDef* timer);
 
 // END HAL
 

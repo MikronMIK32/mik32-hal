@@ -14,6 +14,9 @@
 
 __attribute__ ((weak)) void TIMER32_0_TRAP_HANDLER();
 __attribute__ ((weak)) void GPIO_IRQ_TRAP_HANDLER();
+__attribute__ ((weak)) void TIMER32_1_TRAP_HANDLER();
+
+#define FREQ 10000000
 
 typedef enum {
 	PORT0 = 0,
