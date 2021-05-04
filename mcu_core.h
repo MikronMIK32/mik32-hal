@@ -12,58 +12,61 @@
 
 #include <stdbool.h>
 
-__attribute__ ((weak)) void TIMER32_0_TRAP_HANDLER();
-__attribute__ ((weak)) void GPIO_IRQ_TRAP_HANDLER();
-__attribute__ ((weak)) void TIMER32_1_TRAP_HANDLER();
 
+#ifndef FREQ
 #define FREQ 10000000
+#endif
+
+
+__attribute__ ((weak)) void TIMER32_0_TRAP_HANDLER();
+__attribute__ ((weak)) void UART_0_TRAP_HANDLER();
+__attribute__ ((weak)) void UART_1_TRAP_HANDLER();
+__attribute__ ((weak)) void SPI_0_TRAP_HANDLER();
+__attribute__ ((weak)) void SPI_1_TRAP_HANDLER();
+__attribute__ ((weak)) void GPIO_IRQ_TRAP_HANDLER();
+__attribute__ ((weak)) void I2C_0_TRAP_HANDLER();
+__attribute__ ((weak)) void I2C_1_TRAP_HANDLER();
+__attribute__ ((weak)) void WDT_TRAP_HANDLER();
+__attribute__ ((weak)) void TIMER16_0_TRAP_HANDLER();
+__attribute__ ((weak)) void TIMER16_1_TRAP_HANDLER();
+__attribute__ ((weak)) void TIMER16_2_TRAP_HANDLER();
+__attribute__ ((weak)) void TIMER32_1_TRAP_HANDLER();
+__attribute__ ((weak)) void TIMER32_2_TRAP_HANDLER();
+__attribute__ ((weak)) void EEPROM_TRAP_HANDLER();
+__attribute__ ((weak)) void SPIFI_TRAP_HANDLER();
+__attribute__ ((weak)) void RTC_TRAP_HANDLER();
+__attribute__ ((weak)) void WDT_DOM3_TRAP_HANDLER();
+__attribute__ ((weak)) void WDT_SPIFI_TRAP_HANDLER();
+__attribute__ ((weak)) void WDT_EEPROM_TRAP_HANDLER();
+__attribute__ ((weak)) void DMA_GLB_ERR_TRAP_HANDLER();
+__attribute__ ((weak)) void DMA_CHANNELS_TRAP_HANDLER();
+__attribute__ ((weak)) void FREQ_MON_TRAP_HANDLER();
+__attribute__ ((weak)) void PVD_AVCC_TRAP_UNDER_HANDLER();
+__attribute__ ((weak)) void PVD_AVCC_TRAP_OVER_HANDLER();
+__attribute__ ((weak)) void PVD_VCC_TRAP_UNDER_HANDLER();
+__attribute__ ((weak)) void PVD_VCC_TRAP_OVER_HANDLER();
+__attribute__ ((weak)) void BATTERY_NON_GOOD_TRAP_HANDLER();
+__attribute__ ((weak)) void BOR_TRAP_HANDLER();
+__attribute__ ((weak)) void TSENS_TRAP_HANDLER();
+__attribute__ ((weak)) void ADC_TRAP_HANDLER();
+__attribute__ ((weak)) void PROG_TRAP_HANDLER();
+
 
 typedef enum {
-	PORT0 = 0,
-	PORT1 = 1,
-	PORT2 = 2
-} PadConfigPort;
+	PIN_FUNCTION_0 = 0,
+	PIN_FUNCTION_1 = 1,
+	PIN_FUNCTION_2 = 2,
+	PIN_FUNCTION_GPIO = 1
+} PadConfigFunction;
 
-typedef enum {
-	MODE0 = 0,
-	MODE1 = 1,
-	MODE2 = 2
-} PadConfigMode;
+bool setPinFunction(GPIO_TypeDef *gpio, uint32_t gpioId, PadConfigFunction func);
 
-bool setPinMode(PadConfigPort port, uint32_t gpioId, PadConfigMode mode);
+bool setPortFunction(GPIO_TypeDef *gpio, PadConfigFunction func);
 
 
-void interrupts();
+void enableInterrupts();
 
-void noInterrupts();
-
-typedef enum {
-	MODE_LOW = 0,
-	MODE_CHANGE = 2,
-	MODE_RISING = 3,
-	MODE_FALLING = 4,
-	MODE_HIGH = 1
-} GPIO_InterruptMode;
-
-uint32_t digitalPinToInterrupt(uint32_t gpioId);
-
-
-void Port0_As_Gpio ();
-void Port1_As_Gpio ();
-void Port2_As_Gpio ();
-void Port0_As_Func1 ();
-void Port1_As_Func1 ();
-void Port2_As_Func1 ();
-void Port0_As_Func2 ();
-void Port1_As_Func2 ();
-void Port2_As_Func2 ();
-void Port0_As_Func3 ();
-void Port1_As_Func3 ();
-void Port2_As_Func3 ();
-
-
-int32_t rand();
-void srand(uint32_t seed);
+void disableInterrupts();
 
 
 #endif /* FPGA_MCU_CORE_H_INCLUDED */

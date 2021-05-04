@@ -1,53 +1,87 @@
 #include "mcu_digital.h"
 
 
-GPIO_DigitalState digitalReadGPIO(GPIO_TypeDef *gpio, uint32_t gpioId) {
-	if (gpio->SET & (1 << gpioId)) {
-		return HIGH;
+GPIO_PinState GPIO_PinRead(GPIO_TypeDef *gpio, uint32_t gpioNum) {
+	return (gpio->SET & (1 << gpioNum));
+	if (gpio->SET & (1 << gpioNum)) {
+		return GPIO_HIGH;
 	} else {
-		return LOW;
+		return GPIO_LOW;
 	}
 }
 
 
-void digitalWriteGPIO(GPIO_TypeDef *gpio, uint32_t gpioId, GPIO_DigitalState state) {
+void GPIO_PinWrite(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinState state) {
 	if (state) {
-		gpio->SET = 1 << gpioId;
+		gpio->SET = 1 << gpioNum;
 	} else {
-		gpio->CLEAR = 1 << gpioId;
+		gpio->CLEAR = 1 << gpioNum;
+	}
+}
+
+void GPIO_PinToggle(GPIO_TypeDef *gpio, uint32_t gpioNum) {
+	gpio->OUTPUT ^= 1 << gpioNum;
+}
+
+
+void GPIO_SetPinDirection(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinDirection dir) {
+	if (dir == GPIO_DIR_OUTPUT) {
+		gpio->DIRECTION_OUT = 1 << gpioNum;
+	}
+	if (dir == GPIO_DIR_INPUT) {
+		gpio->DIRECTION_IN = 1 << gpioNum;
 	}
 }
 
 
-void pinMode(GPIO_TypeDef *gpio, uint32_t gpioId, GPIO_PinMode mode) {
-	if (mode == OUTPUT) {
-		gpio->DIRECTION_OUT = 1 << gpioId;
-	} else if (mode == INPUT) {
-		gpio->DIRECTION_IN = 1 << gpioId;
-	}
-}
-
-void pinModeGPIO(GPIO_TypeDef *gpio, uint32_t gpioId, GPIO_PinMode mode) {
-	if (mode == OUTPUT) {
-		gpio->DIRECTION_OUT = 1 << gpioId;
-	} else {
-		gpio->DIRECTION_IN = 1 << gpioId;
-	}
-}
-
-void attachInterruptGPIO(uint32_t irq_line, uint32_t mux,
+void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
 	GPIO_InterruptMode mode) {
-	GPIO_IRQ->CFG = (mux << (irq_line << 2));
-	if (mode & MODE_LOW) {
+	if (irq_line > 7) return;
+
+	GPIO_IRQ->CFG &= ~(0b1111 << (irq_line << 2));
+	GPIO_IRQ->CFG |= (mux << (irq_line << 2));
+
+	if (mode & GPIO_IT_MODE_LOW) {
 		GPIO_IRQ->EDGE &= ~(1 << irq_line);
 		GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
 		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
-	} else if (mode & MODE_CHANGE) {
+	} else if (mode & GPIO_IT_MODE_CHANGE) {
 		GPIO_IRQ->EDGE |= (1 << irq_line);
 		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
 		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
+	} else if (mode & GPIO_IT_MODE_RISING) {
+		GPIO_IRQ->EDGE |= (1 << irq_line);
+		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
+		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
+	} else if (mode & GPIO_IT_MODE_FALLING) {
+		GPIO_IRQ->EDGE |= (1 << irq_line);
+		GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
+		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
+	} else if (mode & GPIO_IT_MODE_HIGH) {
+		GPIO_IRQ->EDGE &= ~(1 << irq_line);
+		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
+		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
 	}
-	GPIO_IRQ->ENABLE_SET = (1 << irq_line);
-	EPIC->MASK_SET = 1 << EPIC_GPIO_IRQ_INDEX;
+
+	GPIO_IRQ->ENABLE_SET |= (1 << irq_line);
+	EPIC->MASK_SET |= 1 << EPIC_GPIO_IRQ_INDEX;
+}
+
+
+void GPIO_DeInitInterruptLine(GPIO_Line irq_line) {
+	if (irq_line > 7) return;
+
+	GPIO_IRQ->CFG &= ~(0b1111 << (irq_line << 2));
+
+	GPIO_IRQ->EDGE &= ~(1 << irq_line);
+	GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
+	GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
+
+	GPIO_IRQ->ENABLE_SET &= ~(1 << irq_line);
+}
+
+
+void GPIO_ClearInterrupt() {
+	GPIO_IRQ->CLEAR = 0b11111111;
 }
 

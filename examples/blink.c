@@ -2,16 +2,16 @@
 #include "../mcu32-hal/mcu_digital.h"
 #include "../mcu32-hal/mcu_timer.h"
 
-#define ledPin 14
+#define ledPin 0
 
 void main() {
-	setPinMode(PORT0, ledPin, MODE1);
-	pinMode(GPIO_0, ledPin, OUTPUT);
+	setPinFunction(PORT0, ledPin, MODE1);
+	GPIO_SetPinDirection(GPIO_2, ledPin, GPIO_OUTPUT);
 
 	while (1) {
-		digitalWriteGPIO(GPIO_0, ledPin, HIGH);
+		GPIO_PinWrite(GPIO_2, ledPin, GPIO_HIGH);
 		delay(1000);
-		digitalWriteGPIO(GPIO_0, ledPin, LOW);
+		GPIO_PinWrite(GPIO_2, ledPin, GPIO_LOW);
 		delay(1000);
 	}
 }
