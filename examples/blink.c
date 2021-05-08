@@ -5,13 +5,11 @@
 #define ledPin 0
 
 void main() {
-	setPinFunction(PORT0, ledPin, MODE1);
+	setPinFunction(GPIO_2, ledPin, PIN_FUNCTION_GPIO);
 	GPIO_SetPinDirection(GPIO_2, ledPin, GPIO_OUTPUT);
 
 	while (1) {
-		GPIO_PinWrite(GPIO_2, ledPin, GPIO_HIGH);
-		delay(1000);
-		GPIO_PinWrite(GPIO_2, ledPin, GPIO_LOW);
+		GPIO_PinToggle(GPIO_2, ledPin);
 		delay(1000);
 	}
 }

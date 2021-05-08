@@ -50,6 +50,13 @@ void trap_handler() {
  *блоков, 1 для ввода-вывода
  */
 bool setPinFunction(GPIO_TypeDef *gpio, uint32_t gpioId, PadConfigFunction func) {
+	if (func > 2) {
+		return false;
+	}
+
+	if (gpioId > 31) {
+		return false;
+	}
 	if (gpio == GPIO_0) {
 		PAD_CONFIG->PORT_0_CFG &= ~(3 << (gpioId << 1));
 		PAD_CONFIG->PORT_0_CFG |= func << (gpioId << 1);
@@ -62,6 +69,10 @@ bool setPinFunction(GPIO_TypeDef *gpio, uint32_t gpioId, PadConfigFunction func)
 
 		return true;
 	}
+
+	if (gpioId > 15) {
+		return false;
+	}
 	if (gpio == GPIO_2) {
 		PAD_CONFIG->PORT_2_CFG &= ~(3 << (gpioId << 1));
 		PAD_CONFIG->PORT_2_CFG |= func << (gpioId << 1);
@@ -73,6 +84,10 @@ bool setPinFunction(GPIO_TypeDef *gpio, uint32_t gpioId, PadConfigFunction func)
 }
 
 bool setPortFunction(GPIO_TypeDef *gpio, PadConfigFunction func) {
+	if (func > 2) {
+		return false;
+	}
+
 	if (gpio == GPIO_0) {
 		PAD_CONFIG->PORT_0_CFG = 0x55555555 * func;
 

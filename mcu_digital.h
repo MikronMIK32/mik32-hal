@@ -28,6 +28,8 @@ typedef enum {
 
 void GPIO_SetPinDirection(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinDirection dir);
 
+void GPIO_SetPinMaskDirection(GPIO_TypeDef *gpio, uint32_t mask, GPIO_PinDirection dir);
+
 
 typedef enum {
 	GPIO_LINE_0 = 0,
@@ -40,7 +42,8 @@ typedef enum {
 	GPIO_LINE_7 = 7,
 } GPIO_Line;
 
-typedef enum {/*
+typedef enum {
+	/*
 	GPIO_MUX_GPIO_0_0_LINE_0 = 0,
 	GPIO_MUX_GPIO_0_8_LINE_0 = 1,
 	GPIO_MUX_GPIO_1_0_LINE_0 = 2,
@@ -127,7 +130,8 @@ typedef enum {/*
 	GPIO_MUX_GPIO_0_11_LINE_7 = 6,
 	GPIO_MUX_GPIO_1_3_LINE_7 = 7,
 	GPIO_MUX_GPIO_1_11_LINE_7 = 8,
-	GPIO_MUX_GPIO_2_3_LINE_7 = 9,*/
+	GPIO_MUX_GPIO_2_3_LINE_7 = 9,
+	*/
 
 
 	GPIO_MUX_LINE_0_GPIO_0_0 = 0,
@@ -221,12 +225,16 @@ typedef enum {/*
 	GPIO_MUX_LINE0 = 10
 } GPIO_Line_Mux;
 
+#define GPIO_MODE_BIT_LEVEL 1
+#define GPIO_MODE_BIT_EDGE 2
+#define GPIO_MODE_BIT_ANYEDGE 4
+
 typedef enum {
-	GPIO_IT_MODE_LOW = 0,
-	GPIO_IT_MODE_CHANGE = 2,
-	GPIO_IT_MODE_RISING = 3,
-	GPIO_IT_MODE_FALLING = 4,
-	GPIO_IT_MODE_HIGH = 1
+	GPIO_MODE_LOW = 0b000,
+	GPIO_MODE_HIGH = 0b001,
+	GPIO_MODE_FALLING = 0b010,
+	GPIO_MODE_RISING = 0b011,
+	GPIO_MODE_CHANGE = 0b100
 } GPIO_InterruptMode;
 
 void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
@@ -234,7 +242,15 @@ void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
 
 void GPIO_DeInitInterruptLine(GPIO_Line irq_line);
 
+bool GPIO_LineInterruptState(GPIO_Line irq_line);
+
+bool GPIO_LinePinState(GPIO_Line irq_line);
+
 void GPIO_ClearInterrupt();
+
+void GPIO_EnableInterrupts();
+
+void GPIO_DisableInterrupts();
 
 
 #endif

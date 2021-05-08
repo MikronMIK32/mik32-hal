@@ -56,7 +56,9 @@ typedef enum {
 	PIN_FUNCTION_0 = 0,
 	PIN_FUNCTION_1 = 1,
 	PIN_FUNCTION_2 = 2,
-	PIN_FUNCTION_GPIO = 1
+	PIN_FUNCTION_MAIN = 0,
+	PIN_FUNCTION_GPIO = 1,
+	PIN_FUNCTION_ALT = 2
 } PadConfigFunction;
 
 bool setPinFunction(GPIO_TypeDef *gpio, uint32_t gpioId, PadConfigFunction func);

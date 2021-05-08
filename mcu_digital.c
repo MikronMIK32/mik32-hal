@@ -33,6 +33,15 @@ void GPIO_SetPinDirection(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinDirectio
 	}
 }
 
+void GPIO_SetPinMaskDirection(GPIO_TypeDef *gpio, uint32_t mask, GPIO_PinDirection dir) {
+	if (dir == GPIO_DIR_OUTPUT) {
+		gpio->DIRECTION_OUT = mask;
+	}
+	if (dir == GPIO_DIR_INPUT) {
+		gpio->DIRECTION_IN = mask;
+	}
+}
+
 
 void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
 	GPIO_InterruptMode mode) {
@@ -41,30 +50,26 @@ void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
 	GPIO_IRQ->CFG &= ~(0b1111 << (irq_line << 2));
 	GPIO_IRQ->CFG |= (mux << (irq_line << 2));
 
-	if (mode & GPIO_IT_MODE_LOW) {
-		GPIO_IRQ->EDGE &= ~(1 << irq_line);
-		GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
-	} else if (mode & GPIO_IT_MODE_CHANGE) {
-		GPIO_IRQ->EDGE |= (1 << irq_line);
-		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET |= (1 << irq_line);
-	} else if (mode & GPIO_IT_MODE_RISING) {
-		GPIO_IRQ->EDGE |= (1 << irq_line);
-		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
-	} else if (mode & GPIO_IT_MODE_FALLING) {
-		GPIO_IRQ->EDGE |= (1 << irq_line);
-		GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
-	} else if (mode & GPIO_IT_MODE_HIGH) {
-		GPIO_IRQ->EDGE &= ~(1 << irq_line);
-		GPIO_IRQ->LEVEL_SET |= (1 << irq_line);
-		GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
+	if (mode & GPIO_MODE_BIT_LEVEL) {
+		GPIO_IRQ->LEVEL_SET = (1 << irq_line);
+	} else {
+		GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line);
 	}
 
-	GPIO_IRQ->ENABLE_SET |= (1 << irq_line);
-	EPIC->MASK_SET |= 1 << EPIC_GPIO_IRQ_INDEX;
+	if (mode & GPIO_MODE_BIT_EDGE) {
+		GPIO_IRQ->EDGE |= (1 << irq_line);
+	} else {
+		GPIO_IRQ->EDGE &= ~(1 << irq_line);
+	}
+
+	if (mode & GPIO_MODE_BIT_ANYEDGE) {
+		GPIO_IRQ->ANYEDGE_SET = (1 << irq_line);
+	} else {
+		GPIO_IRQ->ANYEDGE_CLEAR = (1 << irq_line);
+	}
+
+	GPIO_IRQ->ENABLE_SET = (1 << irq_line);
+	EPIC->MASK_SET = 1 << EPIC_GPIO_IRQ_INDEX;
 }
 
 
@@ -81,7 +86,23 @@ void GPIO_DeInitInterruptLine(GPIO_Line irq_line) {
 }
 
 
+bool GPIO_LineInterruptState(GPIO_Line irq_line) {
+	return GPIO_IRQ->INTERRUPTS & (1 << irq_line);
+}
+
+bool GPIO_LinePinState(GPIO_Line irq_line) {
+	return GPIO_IRQ->STATE & (1 << irq_line);
+}
+
 void GPIO_ClearInterrupt() {
 	GPIO_IRQ->CLEAR = 0b11111111;
+}
+
+void GPIO_EnableInterrupts() {
+	EPIC->MASK_SET |= 1 << EPIC_GPIO_IRQ_INDEX;
+}
+
+void GPIO_DisableInterrupts() {
+	EPIC->MASK_SET |= 1 << EPIC_GPIO_IRQ_INDEX;
 }
 
