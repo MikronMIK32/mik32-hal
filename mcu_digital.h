@@ -18,6 +18,10 @@ GPIO_PinState GPIO_PinRead(GPIO_TypeDef *gpio, uint32_t gpioNum);
 
 void GPIO_PinWrite(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinState state);
 
+#define GPIO_PIN_MASK_CLEAR(GPIO, MASK)  ((GPIO)->CLEAR = (MASK))
+
+#define GPIO_PIN_MASK_SET(GPIO, MASK)  ((GPIO)->SET = (MASK))
+
 
 void GPIO_PinToggle(GPIO_TypeDef *gpio, uint32_t gpioNum);
 

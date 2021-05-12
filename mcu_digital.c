@@ -19,6 +19,7 @@ void GPIO_PinWrite(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinState state) {
 	}
 }
 
+
 void GPIO_PinToggle(GPIO_TypeDef *gpio, uint32_t gpioNum) {
 	gpio->OUTPUT ^= 1 << gpioNum;
 }
