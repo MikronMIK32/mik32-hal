@@ -46,59 +46,93 @@ void trap_handler() {
 	EPIC->CLEAR = 0xFF;
 }
 
-/*Устанавливает одну из функций пина - 0, 2 для различных периферийных
- *блоков, 1 для ввода-вывода
- */
-bool setPinFunction(GPIO_TypeDef *gpio, uint32_t gpioId, PadConfigFunction func) {
+
+bool setPinFunction(GPIO_TypeDef *port, uint32_t pinId, PadConfigFunction func) {
 	if (func > 2) {
 		return false;
 	}
 
-	if (gpioId > 31) {
+	if (pinId > 31) {
 		return false;
 	}
-	if (gpio == GPIO_0) {
-		PAD_CONFIG->PORT_0_CFG &= ~(3 << (gpioId << 1));
-		PAD_CONFIG->PORT_0_CFG |= func << (gpioId << 1);
+	if (port == GPIO_0) {
+		PAD_CONFIG->PORT_0_CFG &= ~(3 << (pinId << 1));
+		PAD_CONFIG->PORT_0_CFG |= func << (pinId << 1);
 
 		return true;
 	}
-	if (gpio == GPIO_1) {
-		PAD_CONFIG->PORT_1_CFG &= ~(3 << (gpioId << 1));
-		PAD_CONFIG->PORT_1_CFG |= func << (gpioId << 1);
+	if (port == GPIO_1) {
+		PAD_CONFIG->PORT_1_CFG &= ~(3 << (pinId << 1));
+		PAD_CONFIG->PORT_1_CFG |= func << (pinId << 1);
 
 		return true;
 	}
 
-	if (gpioId > 15) {
+	if (pinId > 15) {
 		return false;
 	}
-	if (gpio == GPIO_2) {
-		PAD_CONFIG->PORT_2_CFG &= ~(3 << (gpioId << 1));
-		PAD_CONFIG->PORT_2_CFG |= func << (gpioId << 1);
+	if (port == GPIO_2) {
+		PAD_CONFIG->PORT_2_CFG &= ~(3 << (pinId << 1));
+		PAD_CONFIG->PORT_2_CFG |= func << (pinId << 1);
 
 		return true;
 	}
 
 	return false; // Error
 }
-
-bool setPortFunction(GPIO_TypeDef *gpio, PadConfigFunction func) {
+/*
+ * WIP
+bool setPinMaskFunction(GPIO_TypeDef *gpio, uint16_t mask, PadConfigFunction func) {
 	if (func > 2) {
 		return false;
 	}
 
-	if (gpio == GPIO_0) {
+	for (int i = 0; i < (gpio == GPIO_2 ? 8 : 16); i++) {
+
+		if (gpio == GPIO_0) {
+			PAD_CONFIG->PORT_0_CFG &= ~(3 << (gpioId << 1));
+			PAD_CONFIG->PORT_0_CFG |= func << (gpioId << 1);
+
+			return true;
+		}
+		if (gpio == GPIO_1) {
+			PAD_CONFIG->PORT_1_CFG &= ~(3 << (gpioId << 1));
+			PAD_CONFIG->PORT_1_CFG |= func << (gpioId << 1);
+
+			return true;
+		}
+
+		if (gpioId > 15) {
+			return false;
+		}
+		if (gpio == GPIO_2) {
+			PAD_CONFIG->PORT_2_CFG &= ~(3 << (gpioId << 1));
+			PAD_CONFIG->PORT_2_CFG |= func << (gpioId << 1);
+
+			return true;
+		}
+	}
+
+	return false; // Error
+}
+*/
+
+bool setPortFunction(GPIO_TypeDef *port, PadConfigFunction func) {
+	if (func > 2) {
+		return false;
+	}
+
+	if (port == GPIO_0) {
 		PAD_CONFIG->PORT_0_CFG = 0x55555555 * func;
 
 		return true;
 	}
-	if (gpio == GPIO_1) {
+	if (port == GPIO_1) {
 		PAD_CONFIG->PORT_1_CFG = 0x55555555 * func;
 
 		return true;
 	}
-	if (gpio == GPIO_2) {
+	if (port == GPIO_2) {
 		PAD_CONFIG->PORT_2_CFG = 0x55555555 * func;
 
 		return true;

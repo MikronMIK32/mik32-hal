@@ -1,15 +1,15 @@
-#include "../mcu32-hal/mcu_core.h"
-#include "../mcu32-hal/mcu_digital.h"
-#include "../mcu32-hal/mcu_timer.h"
+#include "mcu_core.h"
+#include "mcu_digital.h"
+#include "mcu_timer.h"
 
-#define ledPin 0
+#define LED_PIN 0
 
 void main() {
-	setPinFunction(GPIO_2, ledPin, PIN_FUNCTION_GPIO);
-	GPIO_SetPinDirection(GPIO_2, ledPin, GPIO_OUTPUT);
+	setPinFunction(GPIO_2, LED_PIN, PIN_FUNCTION_GPIO);
+	GPIO_SetPinDirection(GPIO_2, LED_PIN, GPIO_OUTPUT);
 
 	while (1) {
-		GPIO_PinToggle(GPIO_2, ledPin);
+		GPIO_PinToggle(GPIO_2, LED_PIN);
 		delay(1000);
 	}
 }

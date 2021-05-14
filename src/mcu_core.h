@@ -1,6 +1,10 @@
 #ifndef FPGA_MCU_CORE_H_INCLUDED
 #define FPGA_MCU_CORE_H_INCLUDED
 
+/**
+ * \file Библиотека для работы с ядром и основными функциями МК
+ */
+
 #include "csr.h"
 #include "scr1_csr_encoding.h"
 
@@ -52,22 +56,47 @@ __attribute__ ((weak)) void ADC_TRAP_HANDLER();
 __attribute__ ((weak)) void PROG_TRAP_HANDLER();
 
 
+/**
+ *
+ */
 typedef enum {
-	PIN_FUNCTION_0 = 0,
-	PIN_FUNCTION_1 = 1,
-	PIN_FUNCTION_2 = 2,
-	PIN_FUNCTION_MAIN = 0,
-	PIN_FUNCTION_GPIO = 1,
-	PIN_FUNCTION_ALT = 2
+	PIN_FUNCTION_0 = 0,    /**< PIN_FUNCTION_0 */
+	PIN_FUNCTION_1 = 1,    /**< PIN_FUNCTION_1 */
+	PIN_FUNCTION_2 = 2,    /**< PIN_FUNCTION_2 */
+	PIN_FUNCTION_MAIN = 0, /**< PIN_FUNCTION_MAIN */
+	PIN_FUNCTION_GPIO = 1, /**< PIN_FUNCTION_GPIO */
+	PIN_FUNCTION_ALT = 2   /**< PIN_FUNCTION_ALT */
 } PadConfigFunction;
 
-bool setPinFunction(GPIO_TypeDef *gpio, uint32_t gpioId, PadConfigFunction func);
 
-bool setPortFunction(GPIO_TypeDef *gpio, PadConfigFunction func);
+/** Устанавливает функцию отдельного вывода
+ *
+ * \param port Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param pinId Номер вывода, принимает значения 0..15 для портов 0..1 и значения 0..7 для порта 2
+ * \param func Функция вывода
+ * \return В случае неверных входных параметров возвращает false
+ */
+bool setPinFunction(GPIO_TypeDef *port, uint32_t pinId, PadConfigFunction func);
+
+//bool setPinMaskFunction(GPIO_TypeDef *gpio, uint32_t mask, PadConfigFunction func);
+
+/** Устанавливает функцию всех выводов порта
+ *
+ * \param port Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param func Функция вывода
+ * \return В случае неверных входных параметров возвращает false
+ */
+bool setPortFunction(GPIO_TypeDef *port, PadConfigFunction func);
 
 
+/**	Функция включения прерываний в ядре МК
+ * \note Функция управляет регистрами mstatus и mie risc-v ядра, регистры EPIC не изменяются
+ */
 void enableInterrupts();
 
+/**	Функция отключения прерываний в ядре МК
+ * \note Функция управляет регистрами mstatus и mie risc-v ядра, регистры EPIC не изменяются
+ */
 void disableInterrupts();
 
 

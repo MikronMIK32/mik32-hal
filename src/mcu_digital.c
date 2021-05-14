@@ -26,6 +26,7 @@ void GPIO_PinToggle(GPIO_TypeDef *gpio, uint32_t gpioNum) {
 
 
 void GPIO_SetPinDirection(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinDirection dir) {
+
 	if (dir == GPIO_DIR_OUTPUT) {
 		gpio->DIRECTION_OUT = 1 << gpioNum;
 	}
