@@ -20,7 +20,7 @@ typedef enum {
  *
  * \param gpio Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
  * \param gpioNum Номер вывода, принимает значения 0..15 для портов 0..1 и значения 0..7 для порта 2
- * \return
+ * \return Логический уровень вывода
  */
 GPIO_PinState GPIO_PinRead(GPIO_TypeDef *gpio, uint32_t gpioNum);
 
@@ -313,14 +313,36 @@ void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
  */
 void GPIO_DeInitInterruptLine(GPIO_Line irq_line);
 
+
+/** Функция получения состояния линии прерывания
+ *
+ * \param irq_line Номер линии прерывания
+ * \return Возвращает true если сработало прерывание данной линии
+ */
 bool GPIO_LineInterruptState(GPIO_Line irq_line);
 
-bool GPIO_LinePinState(GPIO_Line irq_line);
+/** Функция чтения логического уровня вывода, подключенного к линии прерывания
+ *
+ * \param irq_line Номер линии прерывания
+ * \return Логический уровень вывода
+ */
+GPIO_PinState GPIO_LinePinState(GPIO_Line irq_line);
 
+/** Функция сброса регистра состояния прерываний.
+ *  \note Когда срабатывает прерывание на одной из линии, в регистре INTERRUPT выставляется 1 в разряде, соответствующем линии прерывания.
+ *  \note После обработки прерывания необходимо сбросить данный регистр в обработчике прерывания GPIO_IRQ_TRAP_HANDLER().
+ *  \note Если после обработки прерывания регистр не был сброшен, обработчик будет вызван снова, программа будет бесконечно вызывать обработчик.
+ */
 void GPIO_ClearInterrupt();
 
+/** Функция включения прерываний ввода-вывода
+ *  \note Функция включает данный вид прерываний в EPIC
+ */
 void GPIO_EnableInterrupts();
 
+/** Функция отключения прерываний ввода-вывода
+*   \note Функция включает данный вид прерываний в EPIC
+*/
 void GPIO_DisableInterrupts();
 
 

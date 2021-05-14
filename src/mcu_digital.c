@@ -3,11 +3,12 @@
 
 GPIO_PinState GPIO_PinRead(GPIO_TypeDef *gpio, uint32_t gpioNum) {
 	return (gpio->SET & (1 << gpioNum));
+	/*
 	if (gpio->SET & (1 << gpioNum)) {
 		return GPIO_HIGH;
 	} else {
 		return GPIO_LOW;
-	}
+	} */
 }
 
 
@@ -97,7 +98,7 @@ bool GPIO_LineInterruptState(GPIO_Line irq_line) {
 	return GPIO_IRQ->INTERRUPTS & (1 << irq_line);
 }
 
-bool GPIO_LinePinState(GPIO_Line irq_line) {
+GPIO_PinState GPIO_LinePinState(GPIO_Line irq_line) {
 	return GPIO_IRQ->STATE & (1 << irq_line);
 }
 
