@@ -8,42 +8,94 @@
 
 #include "mcu_core.h"
 
-
+/** Константы логического уровня вывода
+ *
+ */
 typedef enum {
-	GPIO_HIGH = 1, GPIO_LOW = 0
+	GPIO_HIGH = 1, /**< Высокий уровень*/
+	GPIO_LOW = 0   /**< Низкий уровень */
 } GPIO_PinState;
 
+/** Функция чтения логического уровня вывода
+ *
+ * \param gpio Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param gpioNum Номер вывода, принимает значения 0..15 для портов 0..1 и значения 0..7 для порта 2
+ * \return
+ */
 GPIO_PinState GPIO_PinRead(GPIO_TypeDef *gpio, uint32_t gpioNum);
 
 
+/** Функция установки логического уровня вывода
+ *
+ * \param gpio Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param gpioNum Номер вывода, принимает значения 0..15 для портов 0..1 и значения 0..7 для порта 2
+ * \param state Устанавливаемый логический уровень
+ */
 void GPIO_PinWrite(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinState state);
 
+
+/** Функция установки низкого логического уровня выводов по маске
+ *
+ * \param GPIO Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param MASK Маска выводов
+ */
 #define GPIO_PIN_MASK_CLEAR(GPIO, MASK)  ((GPIO)->CLEAR = (MASK))
 
+/** Функция установки высокого логического уровня выводов по маске
+ *
+ * \param GPIO Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param MASK Маска выводов
+ */
 #define GPIO_PIN_MASK_SET(GPIO, MASK)  ((GPIO)->SET = (MASK))
 
 
+/** Функция изменения логического уровня вывода на противоположный
+ *
+ * \param gpio Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param gpioNum Номер вывода, принимает значения 0..15 для портов 0..1 и значения 0..7 для порта 2
+ */
 void GPIO_PinToggle(GPIO_TypeDef *gpio, uint32_t gpioNum);
 
 
+/** Константы направления вывода
+ *
+ */
 typedef enum {
-	GPIO_DIR_OUTPUT = 1, GPIO_DIR_INPUT = 0
+	GPIO_DIR_OUTPUT = 1, /**< Вывод установлен на выход*/
+	GPIO_DIR_INPUT = 0   /**< Вывод установлен на вход*/
 } GPIO_PinDirection;
 
+
+/** Функция установки направления вывода
+ *
+ * \param gpio Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param gpioNum Номер вывода, принимает значения 0..15 для портов 0..1 и значения 0..7 для порта 2
+ * \param dir Направление вывода
+ */
 void GPIO_SetPinDirection(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinDirection dir);
 
+
+/** Функция установки направления вывода по маске
+ *
+ * \param gpio \param gpio Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * \param mask Маска выводов
+ * \param dir Направление выводов
+ */
 void GPIO_SetPinMaskDirection(GPIO_TypeDef *gpio, uint32_t mask, GPIO_PinDirection dir);
 
 
+/**
+ *
+ */
 typedef enum {
-	GPIO_LINE_0 = 0,
-	GPIO_LINE_1 = 1,
-	GPIO_LINE_2 = 2,
-	GPIO_LINE_3 = 3,
-	GPIO_LINE_4 = 4,
-	GPIO_LINE_5 = 5,
-	GPIO_LINE_6 = 6,
-	GPIO_LINE_7 = 7,
+	GPIO_LINE_0 = 0,/**< Линия прерываний 0 */
+	GPIO_LINE_1 = 1,/**< Линия прерываний 1 */
+	GPIO_LINE_2 = 2,/**< Линия прерываний 2 */
+	GPIO_LINE_3 = 3,/**< Линия прерываний 3 */
+	GPIO_LINE_4 = 4,/**< Линия прерываний 4 */
+	GPIO_LINE_5 = 5,/**< Линия прерываний 5 */
+	GPIO_LINE_6 = 6,/**< Линия прерываний 6 */
+	GPIO_LINE_7 = 7,/**< Линия прерываний 7 */
 } GPIO_Line;
 
 typedef enum {
@@ -237,16 +289,28 @@ typedef enum {
  *
  */
 typedef enum {
-	GPIO_MODE_LOW = 0b000,    /**< GPIO_MODE_LOW */
-	GPIO_MODE_HIGH = 0b001,   /**< GPIO_MODE_HIGH */
-	GPIO_MODE_FALLING = 0b010,/**< GPIO_MODE_FALLING */
-	GPIO_MODE_RISING = 0b011, /**< GPIO_MODE_RISING */
-	GPIO_MODE_CHANGE = 0b110  /**< GPIO_MODE_CHANGE */
+	GPIO_MODE_LOW = 0b000,    /**< Режим прерывания по низкому уровню на выводе */
+	GPIO_MODE_HIGH = 0b001,   /**< Режим прерывания по высокому уровню на выводе */
+	GPIO_MODE_FALLING = 0b010,/**< Режим прерывания по смене уровня на выводе с высокого на низкий */
+	GPIO_MODE_RISING = 0b011, /**< Режим прерывания по смене уровня на выводе с низкого на высокий */
+	GPIO_MODE_CHANGE = 0b110  /**< Режим прерывания по изменению уровня на выводе */
 } GPIO_InterruptMode;
 
+/** Функция инициализации линии прерывания
+ *
+ * \param irq_line Номер линии прерывания
+ * \param mux Настройка мультиплексора линии прерывания
+ * \param mode Режим линии прерывания
+ * \note Номер линии прерывания можно получить после настройки мультиплексора. Введите в mux GPIO_MUX_GPIO_X_X, где X - номера порта и вывода, и нажмите Ctrl+Пробел: появятся варианты констант для данного вывода, далее достаточно выбрать константу для доступной линии
+ */
 void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
 		GPIO_InterruptMode mode);
 
+
+/** Функция деинициализации линии прерывания, выключает линию и сбрасывает её настройки
+ *
+ * \param irq_line Номер линии прерывания
+ */
 void GPIO_DeInitInterruptLine(GPIO_Line irq_line);
 
 bool GPIO_LineInterruptState(GPIO_Line irq_line);

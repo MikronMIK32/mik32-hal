@@ -60,12 +60,12 @@ __attribute__ ((weak)) void PROG_TRAP_HANDLER();
  *
  */
 typedef enum {
-	PIN_FUNCTION_0 = 0,    /**< PIN_FUNCTION_0 */
-	PIN_FUNCTION_1 = 1,    /**< PIN_FUNCTION_1 */
-	PIN_FUNCTION_2 = 2,    /**< PIN_FUNCTION_2 */
-	PIN_FUNCTION_MAIN = 0, /**< PIN_FUNCTION_MAIN */
-	PIN_FUNCTION_GPIO = 1, /**< PIN_FUNCTION_GPIO */
-	PIN_FUNCTION_ALT = 2   /**< PIN_FUNCTION_ALT */
+	PIN_FUNCTION_0 = 0,    /**< Функция вывода 0 */
+	PIN_FUNCTION_1 = 1,    /**< Функция вывода 1 */
+	PIN_FUNCTION_2 = 2,    /**< Функция вывода 2 */
+	PIN_FUNCTION_MAIN = 0, /**< Основная функция вывода */
+	PIN_FUNCTION_GPIO = 1, /**< Режим ввода-вывода */
+	PIN_FUNCTION_ALT = 2   /**< Дополнительная функция вывода */
 } PadConfigFunction;
 
 typedef enum {
