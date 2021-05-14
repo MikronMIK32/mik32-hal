@@ -68,6 +68,25 @@ typedef enum {
 	PIN_FUNCTION_ALT = 2   /**< PIN_FUNCTION_ALT */
 } PadConfigFunction;
 
+typedef enum {
+	PIN_0 = (1 << 0),
+	PIN_1 = (1 << 1),
+	PIN_2 = (1 << 2),
+	PIN_3 = (1 << 3),
+	PIN_4 = (1 << 4),
+	PIN_5 = (1 << 5),
+	PIN_6 = (1 << 6),
+	PIN_7 = (1 << 7),
+	PIN_8 = (1 << 8),
+	PIN_9 = (1 << 9),
+	PIN_10 = (1 << 10),
+	PIN_11 = (1 << 11),
+	PIN_12 = (1 << 12),
+	PIN_13 = (1 << 13),
+	PIN_14 = (1 << 14),
+	PIN_15 = (1 << 15),
+} PinId;
+
 
 /** Устанавливает функцию отдельного вывода
  *

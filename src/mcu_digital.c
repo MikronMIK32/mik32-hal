@@ -44,13 +44,18 @@ void GPIO_SetPinMaskDirection(GPIO_TypeDef *gpio, uint32_t mask, GPIO_PinDirecti
 	}
 }
 
+/** Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0
+ *
+ */
+uint32_t current_irq_line_mux = 0;
 
 void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
 	GPIO_InterruptMode mode) {
 	if (irq_line > 7) return;
 
-	GPIO_IRQ->CFG &= ~(0b1111 << (irq_line << 2));
-	GPIO_IRQ->CFG |= (mux << (irq_line << 2));
+	current_irq_line_mux &= ~(0b1111 << (irq_line << 2));
+	current_irq_line_mux |= (mux << (irq_line << 2));
+	GPIO_IRQ->CFG = current_irq_line_mux;
 
 	if (mode & GPIO_MODE_BIT_LEVEL) {
 		GPIO_IRQ->LEVEL_SET = (1 << irq_line);

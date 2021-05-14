@@ -233,12 +233,15 @@ typedef enum {
 #define GPIO_MODE_BIT_EDGE 2
 #define GPIO_MODE_BIT_ANYEDGE 4
 
+/** Режимы прерываний
+ *
+ */
 typedef enum {
-	GPIO_MODE_LOW = 0b000,
-	GPIO_MODE_HIGH = 0b001,
-	GPIO_MODE_FALLING = 0b010,
-	GPIO_MODE_RISING = 0b011,
-	GPIO_MODE_CHANGE = 0b100
+	GPIO_MODE_LOW = 0b000,    /**< GPIO_MODE_LOW */
+	GPIO_MODE_HIGH = 0b001,   /**< GPIO_MODE_HIGH */
+	GPIO_MODE_FALLING = 0b010,/**< GPIO_MODE_FALLING */
+	GPIO_MODE_RISING = 0b011, /**< GPIO_MODE_RISING */
+	GPIO_MODE_CHANGE = 0b110  /**< GPIO_MODE_CHANGE */
 } GPIO_InterruptMode;
 
 void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
