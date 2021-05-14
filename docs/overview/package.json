@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "gen": "node mtodoc-proxy"
+  },
+  "type": "module",
+  "dependencies": {
+    "markdown-to-document": "^0.16.0"
+  },
+  "name": "overview",
+  "version": "1.0.0",
+  "main": "mtodoc-proxy.js",
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
