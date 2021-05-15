@@ -15,33 +15,18 @@ void delay(uint32_t periodMs) {
 	DELAY_TIMER->IntClear = TIMER32_INT_OVERFLOW_M;
 }
 
-void delayQs(uint32_t periodQs) {
-	DELAY_TIMER->Enable &= ~(TIMER32_ENABLE_M);
-	DELAY_TIMER->Enable = TIMER32_RESET_VALUE_M;
-	DELAY_TIMER->IntClear = TIMER32_INT_OVERFLOW_M;
-
-	DELAY_TIMER->Top = periodQs * FREQ_BY_QS;
-	DELAY_TIMER->IntMask = TIMER32_INT_OVERFLOW_M;
-	DELAY_TIMER->Enable = TIMER32_ENABLE_M;
-	while (DELAY_TIMER->IntFlags == 0);
-
-	DELAY_TIMER->Enable &= ~(TIMER32_ENABLE_M);
-	DELAY_TIMER->Enable = TIMER32_RESET_VALUE_M;
-	DELAY_TIMER->IntClear = TIMER32_INT_OVERFLOW_M;
-}
-
-void initTimer(TIMER32_TypeDef* timer, uint32_t top) {
+void Timer_Init(TIMER32_TypeDef* timer, uint32_t top) {
 	timer->Enable &= ~(TIMER32_ENABLE_M);
 	timer->Enable = TIMER32_RESET_VALUE_M;
 	timer->IntClear = 1;
 	timer->Top = top;
 }
 
-void startTimer(TIMER32_TypeDef* timer) {
+void Timer_Start(TIMER32_TypeDef* timer) {
 	timer->Enable = TIMER32_ENABLE_M;
 }
 
-void startTimerIT(TIMER32_TypeDef* timer) {
+void Timer_StartIT(TIMER32_TypeDef* timer) {
 	timer->IntMask = 1;
 	EPIC->MASK_SET = 1 << EPIC_TIMER32_1_INDEX;
 	timer->Enable = TIMER32_ENABLE_M;

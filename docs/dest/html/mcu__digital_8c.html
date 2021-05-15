@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>mcu32-hal: C:/Users/Sergey/eclipse/workspace/project/fpga/mcu32-hal/src/mcu_digital.c File Reference</title>
+<title>mcu32-hal: project/fpga/mcu32-hal/src/mcu_digital.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -108,8 +108,8 @@ Functions</h2></td></tr>
 <tr class="separator:a53f46089e7239721ac8589b061c0cf73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89194e478039b3a29ead23397366c6d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8c.html#a89194e478039b3a29ead23397366c6d4">GPIO_LineInterruptState</a> (<a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a> irq_line)</td></tr>
 <tr class="separator:a89194e478039b3a29ead23397366c6d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a696ef7fd9f8e1d37f2b791cd3ef3942c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8c.html#a696ef7fd9f8e1d37f2b791cd3ef3942c">GPIO_LinePinState</a> (<a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a> irq_line)</td></tr>
-<tr class="separator:a696ef7fd9f8e1d37f2b791cd3ef3942c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaea6305e17f5a9140a1c7a3416433de1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcu__digital_8h.html#a5b3ef0486b179415581eb342e0ea6b43">GPIO_PinState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8c.html#aaea6305e17f5a9140a1c7a3416433de1">GPIO_LinePinState</a> (<a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a> irq_line)</td></tr>
+<tr class="separator:aaea6305e17f5a9140a1c7a3416433de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adef3fc92f0b33b15f2aa7444f387498a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8c.html#adef3fc92f0b33b15f2aa7444f387498a">GPIO_ClearInterrupt</a> ()</td></tr>
 <tr class="separator:adef3fc92f0b33b15f2aa7444f387498a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ce3e88296bb24d7399b8d3b3abdaa89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8c.html#a3ce3e88296bb24d7399b8d3b3abdaa89">GPIO_EnableInterrupts</a> ()</td></tr>
@@ -137,6 +137,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция сброса регистра состояния прерываний. </p><dl class="section note"><dt>Note</dt><dd>Когда срабатывает прерывание на одной из линии, в регистре INTERRUPT выставляется 1 в разряде, соответствующем линии прерывания. После обработки прерывания необходимо сбросить данный регистр в обработчике прерывания GPIO_IRQ_TRAP_HANDLER(). Если после обработки прерывания регистр не был сброшен, обработчик будет вызван снова, программа будет бесконечно вызывать обработчик. </dd></dl>
 
 </div>
 </div>
@@ -179,6 +180,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция отключения прерываний ввода-вывода </p><dl class="section note"><dt>Note</dt><dd>Функция включает данный вид прерываний в EPIC </dd></dl>
 
 </div>
 </div>
@@ -196,6 +198,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция включения прерываний ввода-вывода </p><dl class="section note"><dt>Note</dt><dd>Функция включает данный вид прерываний в EPIC </dd></dl>
 
 </div>
 </div>
@@ -258,17 +261,25 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция получения состояния линии прерывания</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">irq_line</td><td>Номер линии прерывания </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Возвращает true если сработало прерывание данной линии </dd></dl>
 
 </div>
 </div>
-<a id="a696ef7fd9f8e1d37f2b791cd3ef3942c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a696ef7fd9f8e1d37f2b791cd3ef3942c">&#9670;&nbsp;</a></span>GPIO_LinePinState()</h2>
+<a id="aaea6305e17f5a9140a1c7a3416433de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaea6305e17f5a9140a1c7a3416433de1">&#9670;&nbsp;</a></span>GPIO_LinePinState()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool GPIO_LinePinState </td>
+          <td class="memname"><a class="el" href="mcu__digital_8h.html#a5b3ef0486b179415581eb342e0ea6b43">GPIO_PinState</a> GPIO_LinePinState </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a>&#160;</td>
           <td class="paramname"><em>irq_line</em></td><td>)</td>
@@ -276,6 +287,14 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция чтения логического уровня вывода, подключенного к линии прерывания</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">irq_line</td><td>Номер линии прерывания </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Логический уровень вывода </dd></dl>
 
 </div>
 </div>
@@ -312,7 +331,7 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Логический уровень вывода </dd></dl>
 
 </div>
 </div>
@@ -491,7 +510,7 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0 </p>
+<p>Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0 </p><dl class="section note"><dt>Note</dt><dd>Используется в функциях GPIO_InitInterruptLine и GPIO_DeInitInterruptLine </dd></dl>
 
 </div>
 </div>
@@ -500,7 +519,7 @@ Variables</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="mcu__digital_8c.html">mcu_digital.c</a></li>
+    <li class="navelem"><a class="el" href="dir_167790342fb55959539d550b874be046.html">project</a></li><li class="navelem"><a class="el" href="dir_f75b5734f71b44b39197624199307f52.html">fpga</a></li><li class="navelem"><a class="el" href="dir_a8b0f9aa4b8c9f222b04560ebc32106f.html">mcu32-hal</a></li><li class="navelem"><a class="el" href="dir_37763145a3a74ff329a6c7aff77afd9a.html">src</a></li><li class="navelem"><a class="el" href="mcu__digital_8c.html">mcu_digital.c</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>

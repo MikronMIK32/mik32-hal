@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>mcu32-hal: C:/Users/Sergey/eclipse/workspace/project/fpga/mcu32-hal/src/mcu_digital.h File Reference</title>
+<title>mcu32-hal: project/fpga/mcu32-hal/src/mcu_digital.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -108,6 +108,8 @@ Macros</h2></td></tr>
 <tr class="separator:acf54c5f26bc6e45a0a0e04ecad3271b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa917adf093f16b3d85b73e1f1d3f4be0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#aa917adf093f16b3d85b73e1f1d3f4be0">GPIO_MODE_BIT_ANYEDGE</a>&#160;&#160;&#160;4</td></tr>
 <tr class="separator:aa917adf093f16b3d85b73e1f1d3f4be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c88f63bebd8ad98b5a2b71337a1bebd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a9c88f63bebd8ad98b5a2b71337a1bebd">GPIO_MODE_BIT_INT</a>&#160;&#160;&#160;8</td></tr>
+<tr class="separator:a9c88f63bebd8ad98b5a2b71337a1bebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -238,12 +240,18 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="separator:a8056505e8b22201e73daca499491cece"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6683052c8694f873e406d0fefd5c9413"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413">GPIO_InterruptMode</a> { <br />
-&#160;&#160;<a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a2e1c8e562f03c0bc91739260559c13de">GPIO_MODE_LOW</a> = 0b000
-, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a6403221f12c158810ccd70423a0a525b">GPIO_MODE_HIGH</a> = 0b001
-, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ab9b6f6d9e498179fccafbaffd688d70e">GPIO_MODE_FALLING</a> = 0b010
-, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413adcb8405c189d6fa7d67516ebb3bce2aa">GPIO_MODE_RISING</a> = 0b011
+&#160;&#160;<a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aa234e5d9a4fe90926780044768c2d431">GPIO_MODE_INT_LOW</a> = 0b1000
+, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ad5ee9bd27322482506becf349217b652">GPIO_MODE_INT_HIGH</a> = 0b1001
+, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aeb2b0440edab410156ca2c8cff7e8288">GPIO_MODE_INT_FALLING</a> = 0b1010
+, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ace5e9e98dbb02907cef817e4884f8b60">GPIO_MODE_INT_RISING</a> = 0b1011
 , <br />
-&#160;&#160;<a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a7f90abae0343760e87cfdff068836721">GPIO_MODE_CHANGE</a> = 0b110
+&#160;&#160;<a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a5b26cd2de108648ce40141eb7db877a9">GPIO_MODE_INT_CHANGE</a> = 0b1110
+, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ab86192d52cb09af2f7cfdc644c93dba7">GPIO_MODE_EVENT_LOW</a> = 0b0000
+, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a27fca7a467b4fa05b4e69a3c219d67d1">GPIO_MODE_EVENT_HIGH</a> = 0b0001
+, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aeea54389f50c5e6743338e06fd404d58">GPIO_MODE_EVENT_FALLING</a> = 0b0010
+, <br />
+&#160;&#160;<a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413af9cce2e52b47964ad516f888e7849b05">GPIO_MODE_EVENT_RISING</a> = 0b0011
+, <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a945390b7cfd91351cdb3d5557d83ec08">GPIO_MODE_EVENT_CHANGE</a> = 0b0110
 <br />
  }</td></tr>
 <tr class="separator:a6683052c8694f873e406d0fefd5c9413"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -266,8 +274,8 @@ Functions</h2></td></tr>
 <tr class="separator:a53f46089e7239721ac8589b061c0cf73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89194e478039b3a29ead23397366c6d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a89194e478039b3a29ead23397366c6d4">GPIO_LineInterruptState</a> (<a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a> irq_line)</td></tr>
 <tr class="separator:a89194e478039b3a29ead23397366c6d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a696ef7fd9f8e1d37f2b791cd3ef3942c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a696ef7fd9f8e1d37f2b791cd3ef3942c">GPIO_LinePinState</a> (<a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a> irq_line)</td></tr>
-<tr class="separator:a696ef7fd9f8e1d37f2b791cd3ef3942c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaea6305e17f5a9140a1c7a3416433de1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mcu__digital_8h.html#a5b3ef0486b179415581eb342e0ea6b43">GPIO_PinState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#aaea6305e17f5a9140a1c7a3416433de1">GPIO_LinePinState</a> (<a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a> irq_line)</td></tr>
+<tr class="separator:aaea6305e17f5a9140a1c7a3416433de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adef3fc92f0b33b15f2aa7444f387498a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#adef3fc92f0b33b15f2aa7444f387498a">GPIO_ClearInterrupt</a> ()</td></tr>
 <tr class="separator:adef3fc92f0b33b15f2aa7444f387498a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ce3e88296bb24d7399b8d3b3abdaa89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a3ce3e88296bb24d7399b8d3b3abdaa89">GPIO_EnableInterrupts</a> ()</td></tr>
@@ -298,6 +306,20 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define GPIO_MODE_BIT_EDGE&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c88f63bebd8ad98b5a2b71337a1bebd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c88f63bebd8ad98b5a2b71337a1bebd">&#9670;&nbsp;</a></span>GPIO_MODE_BIT_INT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GPIO_MODE_BIT_INT&#160;&#160;&#160;8</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -402,17 +424,27 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Режимы прерываний </p>
+<p>Режимы прерываний </p><dl class="section note"><dt>Note</dt><dd>В режиме события (EVENT) функция инициализации не включает прерывания GPIO в EPIC </dd></dl>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413a2e1c8e562f03c0bc91739260559c13de"></a>GPIO_MODE_LOW&#160;</td><td class="fielddoc"><p>Режим прерывания по низкому уровню на выводе </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413aa234e5d9a4fe90926780044768c2d431"></a>GPIO_MODE_INT_LOW&#160;</td><td class="fielddoc"><p>Режим прерывания по низкому уровню на выводе </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413a6403221f12c158810ccd70423a0a525b"></a>GPIO_MODE_HIGH&#160;</td><td class="fielddoc"><p>Режим прерывания по высокому уровню на выводе </p>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413ad5ee9bd27322482506becf349217b652"></a>GPIO_MODE_INT_HIGH&#160;</td><td class="fielddoc"><p>Режим прерывания по высокому уровню на выводе </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413ab9b6f6d9e498179fccafbaffd688d70e"></a>GPIO_MODE_FALLING&#160;</td><td class="fielddoc"><p>Режим прерывания по смене уровня на выводе с высокого на низкий </p>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413aeb2b0440edab410156ca2c8cff7e8288"></a>GPIO_MODE_INT_FALLING&#160;</td><td class="fielddoc"><p>Режим прерывания по смене уровня на выводе с высокого на низкий </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413adcb8405c189d6fa7d67516ebb3bce2aa"></a>GPIO_MODE_RISING&#160;</td><td class="fielddoc"><p>Режим прерывания по смене уровня на выводе с низкого на высокий </p>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413ace5e9e98dbb02907cef817e4884f8b60"></a>GPIO_MODE_INT_RISING&#160;</td><td class="fielddoc"><p>Режим прерывания по смене уровня на выводе с низкого на высокий </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413a7f90abae0343760e87cfdff068836721"></a>GPIO_MODE_CHANGE&#160;</td><td class="fielddoc"><p>Режим прерывания по изменению уровня на выводе </p>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413a5b26cd2de108648ce40141eb7db877a9"></a>GPIO_MODE_INT_CHANGE&#160;</td><td class="fielddoc"><p>Режим прерывания по изменению уровня на выводе </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413ab86192d52cb09af2f7cfdc644c93dba7"></a>GPIO_MODE_EVENT_LOW&#160;</td><td class="fielddoc"><p>Режим события по низкому уровню на выводе </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413a27fca7a467b4fa05b4e69a3c219d67d1"></a>GPIO_MODE_EVENT_HIGH&#160;</td><td class="fielddoc"><p>Режим события по высокому уровню на выводе </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413aeea54389f50c5e6743338e06fd404d58"></a>GPIO_MODE_EVENT_FALLING&#160;</td><td class="fielddoc"><p>Режим события по смене уровня на выводе с высокого на низкий </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413af9cce2e52b47964ad516f888e7849b05"></a>GPIO_MODE_EVENT_RISING&#160;</td><td class="fielddoc"><p>Режим события по смене уровня на выводе с низкого на высокий </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413a945390b7cfd91351cdb3d5557d83ec08"></a>GPIO_MODE_EVENT_CHANGE&#160;</td><td class="fielddoc"><p>Режим события по изменению уровня на выводе </p>
 </td></tr>
 </table>
 
@@ -604,6 +636,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция сброса регистра состояния прерываний. </p><dl class="section note"><dt>Note</dt><dd>Когда срабатывает прерывание на одной из линии, в регистре INTERRUPT выставляется 1 в разряде, соответствующем линии прерывания. После обработки прерывания необходимо сбросить данный регистр в обработчике прерывания GPIO_IRQ_TRAP_HANDLER(). Если после обработки прерывания регистр не был сброшен, обработчик будет вызван снова, программа будет бесконечно вызывать обработчик. </dd></dl>
 
 </div>
 </div>
@@ -646,6 +679,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция отключения прерываний ввода-вывода </p><dl class="section note"><dt>Note</dt><dd>Функция включает данный вид прерываний в EPIC </dd></dl>
 
 </div>
 </div>
@@ -663,6 +697,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция включения прерываний ввода-вывода </p><dl class="section note"><dt>Note</dt><dd>Функция включает данный вид прерываний в EPIC </dd></dl>
 
 </div>
 </div>
@@ -725,17 +760,25 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция получения состояния линии прерывания</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">irq_line</td><td>Номер линии прерывания </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Возвращает true если сработало прерывание данной линии </dd></dl>
 
 </div>
 </div>
-<a id="a696ef7fd9f8e1d37f2b791cd3ef3942c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a696ef7fd9f8e1d37f2b791cd3ef3942c">&#9670;&nbsp;</a></span>GPIO_LinePinState()</h2>
+<a id="aaea6305e17f5a9140a1c7a3416433de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaea6305e17f5a9140a1c7a3416433de1">&#9670;&nbsp;</a></span>GPIO_LinePinState()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool GPIO_LinePinState </td>
+          <td class="memname"><a class="el" href="mcu__digital_8h.html#a5b3ef0486b179415581eb342e0ea6b43">GPIO_PinState</a> GPIO_LinePinState </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019">GPIO_Line</a>&#160;</td>
           <td class="paramname"><em>irq_line</em></td><td>)</td>
@@ -743,6 +786,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Функция чтения логического уровня вывода, подключенного к линии прерывания</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">irq_line</td><td>Номер линии прерывания </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Логический уровень вывода </dd></dl>
 
 </div>
 </div>
@@ -779,7 +830,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Логический уровень вывода </dd></dl>
 
 </div>
 </div>
@@ -951,7 +1002,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="mcu__digital_8h.html">mcu_digital.h</a></li>
+    <li class="navelem"><a class="el" href="dir_167790342fb55959539d550b874be046.html">project</a></li><li class="navelem"><a class="el" href="dir_f75b5734f71b44b39197624199307f52.html">fpga</a></li><li class="navelem"><a class="el" href="dir_a8b0f9aa4b8c9f222b04560ebc32106f.html">mcu32-hal</a></li><li class="navelem"><a class="el" href="dir_37763145a3a74ff329a6c7aff77afd9a.html">src</a></li><li class="navelem"><a class="el" href="mcu__digital_8h.html">mcu_digital.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>

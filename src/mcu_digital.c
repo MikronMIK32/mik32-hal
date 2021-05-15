@@ -46,7 +46,7 @@ void GPIO_SetPinMaskDirection(GPIO_TypeDef *gpio, uint32_t mask, GPIO_PinDirecti
 }
 
 /** Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0
- *
+ *  \note Используется в функциях GPIO_InitInterruptLine и GPIO_DeInitInterruptLine
  */
 uint32_t current_irq_line_mux = 0;
 
@@ -77,20 +77,27 @@ void GPIO_InitInterruptLine(GPIO_Line irq_line, GPIO_Line_Mux mux,
 	}
 
 	GPIO_IRQ->ENABLE_SET = (1 << irq_line);
-	EPIC->MASK_SET = 1 << EPIC_GPIO_IRQ_INDEX;
+	if (mode & GPIO_MODE_BIT_INT) {
+		EPIC->MASK_SET = 1 << EPIC_GPIO_IRQ_INDEX;
+	}
 }
 
 
 void GPIO_DeInitInterruptLine(GPIO_Line irq_line) {
 	if (irq_line > 7) return;
 
-	GPIO_IRQ->CFG &= ~(0b1111 << (irq_line << 2));
+	current_irq_line_mux &= ~(0b1111 << (irq_line << 2));
+	GPIO_IRQ->CFG = current_irq_line_mux;
 
 	GPIO_IRQ->EDGE &= ~(1 << irq_line);
 	GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
 	GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
 
 	GPIO_IRQ->ENABLE_SET &= ~(1 << irq_line);
+
+	if (current_irq_line_mux == 0) {
+		EPIC->MASK_CLEAR = 1 << EPIC_GPIO_IRQ_INDEX;
+	}
 }
 
 

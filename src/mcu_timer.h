@@ -10,15 +10,13 @@
 
 // HAL
 #define FREQ_BY_MS (FREQ/1000)
-#define FREQ_BY_QS (FREQ/10000000)
 
 #define DELAY_TIMER (TIMER32_1)
 
 void delay(uint32_t periodMs);
-void delayQs(uint32_t periodQs);
-void initTimer(TIMER32_TypeDef* timer, uint32_t top);
-void startTimer(TIMER32_TypeDef* timer);
-void startTimerIT(TIMER32_TypeDef* timer);
+void Timer_Init(TIMER32_TypeDef* timer, uint32_t top);
+void Timer_Start(TIMER32_TypeDef* timer);
+void Timer_StartIT(TIMER32_TypeDef* timer);
 
 // END HAL
 

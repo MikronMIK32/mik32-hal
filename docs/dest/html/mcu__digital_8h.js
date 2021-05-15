@@ -2,15 +2,21 @@ var mcu__digital_8h =
 [
     [ "GPIO_MODE_BIT_ANYEDGE", "mcu__digital_8h.html#aa917adf093f16b3d85b73e1f1d3f4be0", null ],
     [ "GPIO_MODE_BIT_EDGE", "mcu__digital_8h.html#acf54c5f26bc6e45a0a0e04ecad3271b4", null ],
+    [ "GPIO_MODE_BIT_INT", "mcu__digital_8h.html#a9c88f63bebd8ad98b5a2b71337a1bebd", null ],
     [ "GPIO_MODE_BIT_LEVEL", "mcu__digital_8h.html#ae367424ffc98cf748f7dfeb586fd76e9", null ],
     [ "GPIO_PIN_MASK_CLEAR", "mcu__digital_8h.html#ac4eebccffaab857739b26552d6af0da6", null ],
     [ "GPIO_PIN_MASK_SET", "mcu__digital_8h.html#a1d2a40ce180c02986b41852787ddf8ed", null ],
     [ "GPIO_InterruptMode", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413", [
-      [ "GPIO_MODE_LOW", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a2e1c8e562f03c0bc91739260559c13de", null ],
-      [ "GPIO_MODE_HIGH", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a6403221f12c158810ccd70423a0a525b", null ],
-      [ "GPIO_MODE_FALLING", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ab9b6f6d9e498179fccafbaffd688d70e", null ],
-      [ "GPIO_MODE_RISING", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413adcb8405c189d6fa7d67516ebb3bce2aa", null ],
-      [ "GPIO_MODE_CHANGE", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a7f90abae0343760e87cfdff068836721", null ]
+      [ "GPIO_MODE_INT_LOW", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aa234e5d9a4fe90926780044768c2d431", null ],
+      [ "GPIO_MODE_INT_HIGH", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ad5ee9bd27322482506becf349217b652", null ],
+      [ "GPIO_MODE_INT_FALLING", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aeb2b0440edab410156ca2c8cff7e8288", null ],
+      [ "GPIO_MODE_INT_RISING", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ace5e9e98dbb02907cef817e4884f8b60", null ],
+      [ "GPIO_MODE_INT_CHANGE", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a5b26cd2de108648ce40141eb7db877a9", null ],
+      [ "GPIO_MODE_EVENT_LOW", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ab86192d52cb09af2f7cfdc644c93dba7", null ],
+      [ "GPIO_MODE_EVENT_HIGH", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a27fca7a467b4fa05b4e69a3c219d67d1", null ],
+      [ "GPIO_MODE_EVENT_FALLING", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aeea54389f50c5e6743338e06fd404d58", null ],
+      [ "GPIO_MODE_EVENT_RISING", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413af9cce2e52b47964ad516f888e7849b05", null ],
+      [ "GPIO_MODE_EVENT_CHANGE", "mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a945390b7cfd91351cdb3d5557d83ec08", null ]
     ] ],
     [ "GPIO_Line", "mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019", [
       [ "GPIO_LINE_0", "mcu__digital_8h.html#a88d6861fd42b20cb08e3e50c896e4019ac4a1df9d2f215200cb6a2a08a63728cb", null ],
@@ -119,7 +125,7 @@ var mcu__digital_8h =
     [ "GPIO_EnableInterrupts", "mcu__digital_8h.html#a3ce3e88296bb24d7399b8d3b3abdaa89", null ],
     [ "GPIO_InitInterruptLine", "mcu__digital_8h.html#a6cbd2cdb5aafc289779b234dc7bef6a5", null ],
     [ "GPIO_LineInterruptState", "mcu__digital_8h.html#a89194e478039b3a29ead23397366c6d4", null ],
-    [ "GPIO_LinePinState", "mcu__digital_8h.html#a696ef7fd9f8e1d37f2b791cd3ef3942c", null ],
+    [ "GPIO_LinePinState", "mcu__digital_8h.html#aaea6305e17f5a9140a1c7a3416433de1", null ],
     [ "GPIO_PinRead", "mcu__digital_8h.html#af9effa4e595fef898543d4822955df31", null ],
     [ "GPIO_PinToggle", "mcu__digital_8h.html#a880ebf8571504b57822793d7d77ea86a", null ],
     [ "GPIO_PinWrite", "mcu__digital_8h.html#acaca99bc868d8faf89383833867fa2c7", null ],

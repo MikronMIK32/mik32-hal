@@ -106,10 +106,6 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>DELAY_TIMER
 : <a class="el" href="mcu__timer_8h.html#a093fb58c584374660f2459896c024b91">mcu_timer.h</a>
 </li>
-<li>delayQs()
-: <a class="el" href="mcu__timer_8c.html#af4d04c2822dbcbe5dab6c13d27483f98">mcu_timer.c</a>
-, <a class="el" href="mcu__timer_8h.html#af4d04c2822dbcbe5dab6c13d27483f98">mcu_timer.h</a>
-</li>
 <li>disableInterrupts()
 : <a class="el" href="mcu__core_8c.html#a877f09d7db05b17679190a906e2eefd5">mcu_core.c</a>
 , <a class="el" href="mcu__core_8h.html#a877f09d7db05b17679190a906e2eefd5">mcu_core.h</a>
@@ -131,9 +127,6 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 </li>
 <li>FREQ_BY_MS
 : <a class="el" href="mcu__timer_8h.html#a7a10258709c46708405323ca5e807502">mcu_timer.h</a>
-</li>
-<li>FREQ_BY_QS
-: <a class="el" href="mcu__timer_8h.html#a85d37bf5dc62c11cb9831e9104ba1a56">mcu_timer.h</a>
 </li>
 </ul>
 
@@ -206,8 +199,8 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 , <a class="el" href="mcu__digital_8h.html#a89194e478039b3a29ead23397366c6d4">mcu_digital.h</a>
 </li>
 <li>GPIO_LinePinState()
-: <a class="el" href="mcu__digital_8c.html#a696ef7fd9f8e1d37f2b791cd3ef3942c">mcu_digital.c</a>
-, <a class="el" href="mcu__digital_8h.html#a696ef7fd9f8e1d37f2b791cd3ef3942c">mcu_digital.h</a>
+: <a class="el" href="mcu__digital_8c.html#aaea6305e17f5a9140a1c7a3416433de1">mcu_digital.c</a>
+, <a class="el" href="mcu__digital_8h.html#aaea6305e17f5a9140a1c7a3416433de1">mcu_digital.h</a>
 </li>
 <li>GPIO_LOW
 : <a class="el" href="mcu__digital_8h.html#a5b3ef0486b179415581eb342e0ea6b43ad41cdd897d9b8714ef45ed6e9eba0dfa">mcu_digital.h</a>
@@ -218,23 +211,41 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>GPIO_MODE_BIT_EDGE
 : <a class="el" href="mcu__digital_8h.html#acf54c5f26bc6e45a0a0e04ecad3271b4">mcu_digital.h</a>
 </li>
+<li>GPIO_MODE_BIT_INT
+: <a class="el" href="mcu__digital_8h.html#a9c88f63bebd8ad98b5a2b71337a1bebd">mcu_digital.h</a>
+</li>
 <li>GPIO_MODE_BIT_LEVEL
 : <a class="el" href="mcu__digital_8h.html#ae367424ffc98cf748f7dfeb586fd76e9">mcu_digital.h</a>
 </li>
-<li>GPIO_MODE_CHANGE
-: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a7f90abae0343760e87cfdff068836721">mcu_digital.h</a>
+<li>GPIO_MODE_EVENT_CHANGE
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a945390b7cfd91351cdb3d5557d83ec08">mcu_digital.h</a>
 </li>
-<li>GPIO_MODE_FALLING
-: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ab9b6f6d9e498179fccafbaffd688d70e">mcu_digital.h</a>
+<li>GPIO_MODE_EVENT_FALLING
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aeea54389f50c5e6743338e06fd404d58">mcu_digital.h</a>
 </li>
-<li>GPIO_MODE_HIGH
-: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a6403221f12c158810ccd70423a0a525b">mcu_digital.h</a>
+<li>GPIO_MODE_EVENT_HIGH
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a27fca7a467b4fa05b4e69a3c219d67d1">mcu_digital.h</a>
 </li>
-<li>GPIO_MODE_LOW
-: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a2e1c8e562f03c0bc91739260559c13de">mcu_digital.h</a>
+<li>GPIO_MODE_EVENT_LOW
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ab86192d52cb09af2f7cfdc644c93dba7">mcu_digital.h</a>
 </li>
-<li>GPIO_MODE_RISING
-: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413adcb8405c189d6fa7d67516ebb3bce2aa">mcu_digital.h</a>
+<li>GPIO_MODE_EVENT_RISING
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413af9cce2e52b47964ad516f888e7849b05">mcu_digital.h</a>
+</li>
+<li>GPIO_MODE_INT_CHANGE
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413a5b26cd2de108648ce40141eb7db877a9">mcu_digital.h</a>
+</li>
+<li>GPIO_MODE_INT_FALLING
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aeb2b0440edab410156ca2c8cff7e8288">mcu_digital.h</a>
+</li>
+<li>GPIO_MODE_INT_HIGH
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ad5ee9bd27322482506becf349217b652">mcu_digital.h</a>
+</li>
+<li>GPIO_MODE_INT_LOW
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413aa234e5d9a4fe90926780044768c2d431">mcu_digital.h</a>
+</li>
+<li>GPIO_MODE_INT_RISING
+: <a class="el" href="mcu__digital_8h.html#a6683052c8694f873e406d0fefd5c9413ace5e9e98dbb02907cef817e4884f8b60">mcu_digital.h</a>
 </li>
 <li>GPIO_MUX_LINE0
 : <a class="el" href="mcu__digital_8h.html#a8056505e8b22201e73daca499491ceceab167acb757f1cf88a602371ce4a68b73">mcu_digital.h</a>
@@ -514,14 +525,6 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 </ul>
 
 
-<h3><a id="index_i"></a>- i -</h3><ul>
-<li>initTimer()
-: <a class="el" href="mcu__timer_8c.html#ac3e7600d76da66ba0f84e4f7a751d263">mcu_timer.c</a>
-, <a class="el" href="mcu__timer_8h.html#ac3e7600d76da66ba0f84e4f7a751d263">mcu_timer.h</a>
-</li>
-</ul>
-
-
 <h3><a id="index_p"></a>- p -</h3><ul>
 <li>PadConfigFunction
 : <a class="el" href="mcu__core_8h.html#a202a8af369e5bb75dd89f53e99ab4355">mcu_core.h</a>
@@ -619,18 +622,22 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 : <a class="el" href="mcu__utils_8c.html#af46ab524338d5ac94367544b085930dd">mcu_utils.c</a>
 , <a class="el" href="mcu__utils_8h.html#af46ab524338d5ac94367544b085930dd">mcu_utils.h</a>
 </li>
-<li>startTimer()
-: <a class="el" href="mcu__timer_8c.html#ab8973ba2eca1b932f85f0624ceb9f56a">mcu_timer.c</a>
-, <a class="el" href="mcu__timer_8h.html#ab8973ba2eca1b932f85f0624ceb9f56a">mcu_timer.h</a>
-</li>
-<li>startTimerIT()
-: <a class="el" href="mcu__timer_8c.html#af9cd797dd163629e9969c04b5061a430">mcu_timer.c</a>
-, <a class="el" href="mcu__timer_8h.html#af9cd797dd163629e9969c04b5061a430">mcu_timer.h</a>
-</li>
 </ul>
 
 
 <h3><a id="index_t"></a>- t -</h3><ul>
+<li>Timer_Init()
+: <a class="el" href="mcu__timer_8c.html#ac79ce7c4fc5df91b5935187c560bfa2c">mcu_timer.c</a>
+, <a class="el" href="mcu__timer_8h.html#ac79ce7c4fc5df91b5935187c560bfa2c">mcu_timer.h</a>
+</li>
+<li>Timer_Start()
+: <a class="el" href="mcu__timer_8c.html#a14bb622a12ab468f745ea2125540d764">mcu_timer.c</a>
+, <a class="el" href="mcu__timer_8h.html#a14bb622a12ab468f745ea2125540d764">mcu_timer.h</a>
+</li>
+<li>Timer_StartIT()
+: <a class="el" href="mcu__timer_8c.html#a8dde7a1fba812d363d31e027ce2203cd">mcu_timer.c</a>
+, <a class="el" href="mcu__timer_8h.html#a8dde7a1fba812d363d31e027ce2203cd">mcu_timer.h</a>
+</li>
 <li>trap_handler()
 : <a class="el" href="mcu__core_8c.html#a854ac00fd47f7ec89466db38dda859fd">mcu_core.c</a>
 </li>

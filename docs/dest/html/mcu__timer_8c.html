@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>mcu32-hal: C:/Users/Sergey/eclipse/workspace/project/fpga/mcu32-hal/src/mcu_timer.c File Reference</title>
+<title>mcu32-hal: project/fpga/mcu32-hal/src/mcu_timer.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -93,14 +93,12 @@ $(document).ready(function(){initNavTree('mcu__timer_8c.html',''); initResizable
 Functions</h2></td></tr>
 <tr class="memitem:a955e8d58dc5543f4f4a4fd24deffb3ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#a955e8d58dc5543f4f4a4fd24deffb3ca">delay</a> (uint32_t periodMs)</td></tr>
 <tr class="separator:a955e8d58dc5543f4f4a4fd24deffb3ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4d04c2822dbcbe5dab6c13d27483f98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#af4d04c2822dbcbe5dab6c13d27483f98">delayQs</a> (uint32_t periodQs)</td></tr>
-<tr class="separator:af4d04c2822dbcbe5dab6c13d27483f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3e7600d76da66ba0f84e4f7a751d263"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#ac3e7600d76da66ba0f84e4f7a751d263">initTimer</a> (TIMER32_TypeDef *timer, uint32_t top)</td></tr>
-<tr class="separator:ac3e7600d76da66ba0f84e4f7a751d263"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8973ba2eca1b932f85f0624ceb9f56a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#ab8973ba2eca1b932f85f0624ceb9f56a">startTimer</a> (TIMER32_TypeDef *timer)</td></tr>
-<tr class="separator:ab8973ba2eca1b932f85f0624ceb9f56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9cd797dd163629e9969c04b5061a430"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#af9cd797dd163629e9969c04b5061a430">startTimerIT</a> (TIMER32_TypeDef *timer)</td></tr>
-<tr class="separator:af9cd797dd163629e9969c04b5061a430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac79ce7c4fc5df91b5935187c560bfa2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#ac79ce7c4fc5df91b5935187c560bfa2c">Timer_Init</a> (TIMER32_TypeDef *timer, uint32_t top)</td></tr>
+<tr class="separator:ac79ce7c4fc5df91b5935187c560bfa2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14bb622a12ab468f745ea2125540d764"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#a14bb622a12ab468f745ea2125540d764">Timer_Start</a> (TIMER32_TypeDef *timer)</td></tr>
+<tr class="separator:a14bb622a12ab468f745ea2125540d764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dde7a1fba812d363d31e027ce2203cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__timer_8c.html#a8dde7a1fba812d363d31e027ce2203cd">Timer_StartIT</a> (TIMER32_TypeDef *timer)</td></tr>
+<tr class="separator:a8dde7a1fba812d363d31e027ce2203cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a955e8d58dc5543f4f4a4fd24deffb3ca"></a>
@@ -121,32 +119,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="af4d04c2822dbcbe5dab6c13d27483f98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4d04c2822dbcbe5dab6c13d27483f98">&#9670;&nbsp;</a></span>delayQs()</h2>
+<a id="ac79ce7c4fc5df91b5935187c560bfa2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac79ce7c4fc5df91b5935187c560bfa2c">&#9670;&nbsp;</a></span>Timer_Init()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void delayQs </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>periodQs</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac3e7600d76da66ba0f84e4f7a751d263"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac3e7600d76da66ba0f84e4f7a751d263">&#9670;&nbsp;</a></span>initTimer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void initTimer </td>
+          <td class="memname">void Timer_Init </td>
           <td>(</td>
           <td class="paramtype">TIMER32_TypeDef *&#160;</td>
           <td class="paramname"><em>timer</em>, </td>
@@ -167,14 +147,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab8973ba2eca1b932f85f0624ceb9f56a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8973ba2eca1b932f85f0624ceb9f56a">&#9670;&nbsp;</a></span>startTimer()</h2>
+<a id="a14bb622a12ab468f745ea2125540d764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14bb622a12ab468f745ea2125540d764">&#9670;&nbsp;</a></span>Timer_Start()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void startTimer </td>
+          <td class="memname">void Timer_Start </td>
           <td>(</td>
           <td class="paramtype">TIMER32_TypeDef *&#160;</td>
           <td class="paramname"><em>timer</em></td><td>)</td>
@@ -185,14 +165,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="af9cd797dd163629e9969c04b5061a430"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af9cd797dd163629e9969c04b5061a430">&#9670;&nbsp;</a></span>startTimerIT()</h2>
+<a id="a8dde7a1fba812d363d31e027ce2203cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dde7a1fba812d363d31e027ce2203cd">&#9670;&nbsp;</a></span>Timer_StartIT()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void startTimerIT </td>
+          <td class="memname">void Timer_StartIT </td>
           <td>(</td>
           <td class="paramtype">TIMER32_TypeDef *&#160;</td>
           <td class="paramname"><em>timer</em></td><td>)</td>
@@ -208,7 +188,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="mcu__timer_8c.html">mcu_timer.c</a></li>
+    <li class="navelem"><a class="el" href="dir_167790342fb55959539d550b874be046.html">project</a></li><li class="navelem"><a class="el" href="dir_f75b5734f71b44b39197624199307f52.html">fpga</a></li><li class="navelem"><a class="el" href="dir_a8b0f9aa4b8c9f222b04560ebc32106f.html">mcu32-hal</a></li><li class="navelem"><a class="el" href="dir_37763145a3a74ff329a6c7aff77afd9a.html">src</a></li><li class="navelem"><a class="el" href="mcu__timer_8c.html">mcu_timer.c</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
