@@ -122,6 +122,7 @@ for (const file of htmlFiles) {
                 const newHref = href.replace('.md', '.html');
                 content = content.replace(href, newHref);
                 content = content.replace(newHref, newHref.replace('./html/', '../html/'));
+                content = content.replace('{{ index_link }}', '/README.html');
                 hrefs.push(href);
                 step = 0;
                 href = '';
