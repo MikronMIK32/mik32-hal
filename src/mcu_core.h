@@ -5,8 +5,8 @@
  * \file Библиотека для работы с ядром и основными функциями МК
  */
 
-#include "csr.h"
-#include "scr1_csr_encoding.h"
+#include "include/csr.h"
+#include "include/scr1_csr_encoding.h"
 
 #include "include/mcu32_memory_map.h"
 #include "periphery/pad_config.h"
