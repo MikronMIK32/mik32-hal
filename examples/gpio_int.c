@@ -1,6 +1,6 @@
-#include "mcu_core.h"
-#include "mcu_digital.h"
-#include "mcu_timer.h"
+#include "../../mcu32-hal-main/src/mcu_core.h"
+#include "../../mcu32-hal-main/src/mcu_digital.h"
+#include "../../mcu32-hal-main/src/mcu_timer.h"
 
 /**
  * \file Пример работы с прерываниями портов ввода-вывода

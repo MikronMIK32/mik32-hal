@@ -1,4 +1,4 @@
-#include "wg12864a.h"
+#include "../../../mcu32-hal-main/examples/libs/wg12864a.h"
 
 #define PIN_CS1 8
 #define PIN_CS2 9

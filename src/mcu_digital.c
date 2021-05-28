@@ -1,4 +1,4 @@
-#include "mcu_digital.h"
+#include "../../mcu32-hal-main/src/mcu_digital.h"
 
 
 GPIO_PinState GPIO_PinRead(GPIO_TypeDef *gpio, uint32_t gpioNum) {
