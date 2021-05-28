@@ -1,0 +1,189 @@
+# ********************************************************************************************
+# Variables that can be set in master makefile
+# 	DIR_OBJ 
+#	DIR_BIN 
+#	DIR_SRC 
+#	SHARED_FILES			- shared source files
+#	IMAGE_BASENAME			- output base name (defaults to firmware)
+#
+#	DEFINES					- defines passed to compiler
+#	
+#	CC_OPTS					- compiler options
+#	CC_OPTS_A				- assembler options
+#	LD_OPTS					- linker options
+#	LD_SCRIPT				- linker script (optional)
+#	
+# ********************************************************************************************
+
+
+# **********************************************
+# Target tool-chains.
+# **********************************************
+
+
+
+
+CC        = riscv64-unknown-linux-gnu-gcc
+AS        = riscv64-unknown-linux-gnu-as
+LD        = riscv64-unknown-linux-gnu-ld
+OBJCOPY   = riscv64-unknown-linux-gnu-objcopy
+OBJDUMP   = riscv64-unknown-linux-gnu-objdump
+TRUNCATE  = truncate
+
+
+ifndef DIR_OBJ
+	DIR_OBJ = .
+endif
+
+ifndef DIR_BIN
+	DIR_BIN = .
+endif
+
+
+# Directories holding source files
+ifndef DIR_SRC
+	DIR_SRC = . 
+endif
+
+
+ifndef IMAGE_BASENAME
+	IMAGE_BASENAME = ROM
+endif
+
+
+
+
+# Targets
+IMAGE_ELF  	= $(DIR_BIN)/$(IMAGE_BASENAME).elf
+IMAGE_BIN  	= $(DIR_BIN)/$(IMAGE_BASENAME).bin
+IMAGE_MEMH 	= $(DIR_BIN)/$(IMAGE_BASENAME).memh
+IMAGE_BYTE_MEMH = $(DIR_BIN)/$(IMAGE_BASENAME).byte.memh
+IMAGE_MIF	= $(DIR_BIN)/$(IMAGE_BASENAME).mif
+IMAGE_MAP  	= $(DIR_BIN)/$(IMAGE_BASENAME).map
+IMAGE_DIS  	= $(DIR_BIN)/$(IMAGE_BASENAME).dis
+IMAGE_EEPROM_MEMH= $(DIR_BIN)/$(IMAGE_BASENAME).eeprom.memh
+
+# Search path for source files.
+VPATH  = $(DIR_SRC) $(DIR_OBJ) $(dir $(SHARED_FILES))
+
+# Source files (C and Assembler).
+SRC_C  = $(foreach dir, $(DIR_SRC), $(wildcard $(dir)/*.c))
+SRC_C += $(filter %.c, $(SHARED_FILES))
+SRC_S  = $(foreach dir, $(DIR_SRC), $(wildcard $(dir)/*.S))
+SRC_S += $(filter %.S, $(SHARED_FILES))
+SRC    = $(SRC_C) $(SRC_S)
+
+# Object files.
+OBJ_C  = $(notdir $(patsubst %.c, %.o, $(SRC_C)))
+OBJ_S  = $(notdir $(patsubst %.S, %.o, $(SRC_S)))
+OBJ    = $(OBJ_C) $(OBJ_S) 
+OBJ_WITH_DIR = $(addprefix $(DIR_OBJ)/, $(OBJ))
+
+CLEAN_FILES = $(OBJ_WITH_DIR) $(IMAGE_ELF) $(IMAGE_BIN) $(IMAGE_MEMH) $(IMAGE_EEPROM_MEMH) $(IMAGE_BYTE_MEMH) $(IMAGE_MIF) $(IMAGE_MAP) $(IMAGE_DIS) $(DIR_BIN)/depend.mk
+
+ifeq ($(DIR_OBJ), $(DIR_BIN))
+    CLEAN_DIRS = $(DIR_OBJ)
+else
+    CLEAN_DIRS = $(DIR_OBJ) $(DIR_BIN) 
+endif
+
+
+override CC_OPTS_COMMON += -c $(addprefix -I, $(DIR_INCLUDE)) 
+
+ifdef DEFINES
+	override CC_OPTS_COMMON += $(addprefix -D, $(DEFINES))
+endif
+
+CC_OPTS += $(CC_OPTS_COMMON)
+
+CC_OPTS_A += $(CC_OPTS_COMMON) -D_ASSEMBLER_
+
+ifdef LD_SCRIPT
+	override LD_OPTS += -T $(LD_SCRIPT)
+endif
+
+
+
+
+
+
+
+# **********************************************
+#                     Targets
+# **********************************************
+
+.PHONY : all clean depend memh mif bin mem_in
+
+#all :  clean eeprom_memh byte_memh
+all :  byte_memh
+
+mif : $(IMAGE_MIF)
+
+memh : $(IMAGE_MEMH) 
+
+byte_memh : $(IMAGE_BYTE_MEMH)
+
+bin : $(IMAGE_BIN)
+
+eeprom_memh : $(IMAGE_EEPROM_MEMH)
+
+$(IMAGE_EEPROM_MEMH) : $(IMAGE_MEMH) 
+$(IMAGE_EEPROM_MEMH) :
+	convert_file.py $< $@
+
+
+$(IMAGE_MEMH) : $(IMAGE_BIN)
+$(IMAGE_MEMH) :
+	od -A n -t x4 -v --width=4 $< > $@
+
+$(IMAGE_BYTE_MEMH) : $(IMAGE_BIN)
+$(IMAGE_BYTE_MEMH) :
+	od -A n -t x1 -v --width=1 $< > $@
+
+
+convert_eeprom:
+	eeprom/convert_file.py
+	
+	
+BIN_BYTE_SIZE 	= $(shell wc -c $(IMAGE_BIN) | cut -d " " -f 1)
+BIN_WORD_SIZE	= $(shell echo \($(BIN_BYTE_SIZE) + 3\) / 4 | bc)
+BIN_QWORD_SIZE 	= $(shell echo \($(BIN_WORD_SIZE) + 3\) / 4 | bc)
+
+$(IMAGE_MIF) : $(IMAGE_BIN)
+	@echo "WIDTH=32;"              >  $(IMAGE_MIF)
+	@echo "DEPTH=$(BIN_WORD_SIZE);">> $(IMAGE_MIF)
+	@echo "ADDRESS_RADIX=UNS;"     >> $(IMAGE_MIF)
+	@echo "DATA_RADIX=HEX;"        >> $(IMAGE_MIF)
+	@echo "CONTENT BEGIN"          >> $(IMAGE_MIF)
+	od -A n -t x4 -v --width=4 $(IMAGE_BIN) | gawk ' BEGIN {offset=0} {print offset" : " $$0 ";" ; offset+=1}' | tee >> $(IMAGE_MIF)
+	@echo "END;"                   >> $(IMAGE_MIF)
+
+
+$(IMAGE_BIN) : $(IMAGE_ELF)
+	$(OBJCOPY) -O binary $(IMAGE_ELF) $(IMAGE_BIN)
+
+
+$(IMAGE_ELF) : $(OBJ)
+	@mkdir -p $(DIR_BIN)
+	$(LD) $(LD_OPTS) -o $(IMAGE_ELF) -Map $(IMAGE_MAP)  --oformat elf32-littleriscv   $(OBJ_WITH_DIR) $(OBJ_WITH_DIR_EXT)
+	$(OBJDUMP) -D -S $(IMAGE_ELF) > $(IMAGE_DIS)
+
+$(OBJ_C) : %.o : %.c
+	@mkdir -p $(DIR_OBJ)
+	$(CC) $(CC_OPTS) -o $(DIR_OBJ)/$@ $<
+
+
+$(OBJ_S) : %.o : %.S
+	@mkdir -p $(DIR_OBJ)
+	$(CC) $(CC_OPTS_A) -o $(DIR_OBJ)/$@ $<
+
+
+clean :
+	-rm -f $(CLEAN_FILES)
+	-rmdir -p $(CLEAN_DIRS)
+
+depend: | $(DIR_BIN)  
+	$(CC) $(CC_OPTS) -I$(DIR_INCLUDE) -M $(SRC) > $(DIR_BIN)/depend.mk
+
+
+-include $(DIR_BIN)/depend.mk
