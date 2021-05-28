@@ -2,7 +2,7 @@
 BASE_PATH = ./
 
 MAKE_COMMON = $(BASE_PATH)/makefile.common
-MCU32_HAL_DIR_PATH = $(BASE_PATH)/mcu32-hal
+MCU32_HAL_DIR_PATH = $(BASE_PATH)/mcu32-hal-main
 
 #SHARED_DIR_PATH 
 
