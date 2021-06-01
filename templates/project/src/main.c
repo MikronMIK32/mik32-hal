@@ -1,6 +1,6 @@
+#include <mcu_timer32.h>
 #include "../../../../mcu32-hal-main/src/mcu_core.h"
 #include "../../../../mcu32-hal-main/src/mcu_digital.h"
-#include "../../../../mcu32-hal-main/src/mcu_timer.h"
 
 /**
  * \file Пример работы с портом ввода-вывода с мигающим светодиодом

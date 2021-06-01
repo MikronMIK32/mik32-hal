@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 
-#include "../../mcu32-hal-main/src/mcu_core.h"
+#include "mcu_core.h"
 
 /** Константы логического уровня вывода
  *
@@ -286,7 +286,7 @@ typedef enum {
 #define GPIO_MODE_BIT_ANYEDGE 4
 #define GPIO_MODE_BIT_INT 8
 
-/** Режимы прерываний
+/** Режим прерывания линии GPIO
  * \note В режиме события (EVENT) функция инициализации не включает прерывания GPIO в EPIC
  */
 typedef enum {
@@ -330,12 +330,16 @@ void GPIO_DeInitInterruptLine(GPIO_Line irq_line);
  */
 bool GPIO_LineInterruptState(GPIO_Line irq_line);
 
+#define GPIO_LINE_INTERRUPT_STATE(irq_line) ((GPIO_IRQ->INTERRUPTS & (1 << (irq_line))) != 0)
+
 /** Функция чтения логического уровня вывода, подключенного к линии прерывания
  *
  * \param irq_line Номер линии прерывания
  * \return Логический уровень вывода
  */
 GPIO_PinState GPIO_LinePinState(GPIO_Line irq_line);
+
+#define GPIO_LINE_PIN_STATE(irq_line) (GPIO_IRQ->STATE & (1 << (irq_line)))
 
 /** Функция сброса регистра состояния прерываний.
  *  \note Когда срабатывает прерывание на одной из линии, в регистре INTERRUPT
@@ -346,6 +350,8 @@ GPIO_PinState GPIO_LinePinState(GPIO_Line irq_line);
  *  обработчик будет вызван снова, программа будет бесконечно вызывать обработчик.
  */
 void GPIO_ClearInterrupt();
+
+#define GPIO_CLEAR_INTERRUPT()  (GPIO_IRQ->CLEAR = 0b11111111)
 
 /** Функция включения прерываний ввода-вывода
  *  \note Функция включает данный вид прерываний в EPIC

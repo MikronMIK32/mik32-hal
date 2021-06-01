@@ -1,4 +1,4 @@
-#include "../../mcu32-hal-main/src/mcu_digital.h"
+#include "mcu_digital.h"
 
 
 GPIO_PinState GPIO_PinRead(GPIO_TypeDef *gpio, uint32_t gpioNum) {
@@ -100,13 +100,12 @@ void GPIO_DeInitInterruptLine(GPIO_Line irq_line) {
 	}
 }
 
-
 bool GPIO_LineInterruptState(GPIO_Line irq_line) {
-	return GPIO_IRQ->INTERRUPTS & (1 << irq_line);
+	return (GPIO_IRQ->INTERRUPTS & (1 << (irq_line))) != 0;
 }
 
 GPIO_PinState GPIO_LinePinState(GPIO_Line irq_line) {
-	return GPIO_IRQ->STATE & (1 << irq_line);
+	return GPIO_IRQ->STATE & (1 << (irq_line));
 }
 
 void GPIO_ClearInterrupt() {

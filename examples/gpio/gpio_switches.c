@@ -1,6 +1,6 @@
-#include "../../mcu32-hal-main/src/mcu_core.h"
-#include "../../mcu32-hal-main/src/mcu_digital.h"
-#include "../../mcu32-hal-main/src/mcu_timer.h"
+#include <mcu_timer32.h>
+#include <mcu_core.h>
+#include <mcu_digital.h>
 
 /**
  * \file Пример работы с портом ввода-вывода, чтение и вывод логического уровня

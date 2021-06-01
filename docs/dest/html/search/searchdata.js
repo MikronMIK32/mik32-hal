@@ -4,9 +4,9 @@ var indexSectionsWithContent =
   1: "m",
   2: "_degrst",
   3: "c",
-  4: "gp",
-  5: "gp",
-  6: "dfg"
+  4: "gpt",
+  5: "gpt",
+  6: "dfgt"
 };
 
 var indexSectionNames =

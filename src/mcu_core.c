@@ -1,4 +1,4 @@
-#include "../../mcu32-hal-main/src/mcu_core.h"
+#include "mcu_core.h"
 
 __attribute__ ((weak)) void TIMER32_0_TRAP_HANDLER() {}
 __attribute__ ((weak)) void UART_0_TRAP_HANDLER() {}

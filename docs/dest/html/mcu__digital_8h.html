@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>mcu32-hal: project/fpga/mcu32-hal/src/mcu_digital.h File Reference</title>
+<title>mcu32-hal: project/mcu32-hal-main/src/mcu_digital.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -110,6 +110,12 @@ Macros</h2></td></tr>
 <tr class="separator:aa917adf093f16b3d85b73e1f1d3f4be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c88f63bebd8ad98b5a2b71337a1bebd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a9c88f63bebd8ad98b5a2b71337a1bebd">GPIO_MODE_BIT_INT</a>&#160;&#160;&#160;8</td></tr>
 <tr class="separator:a9c88f63bebd8ad98b5a2b71337a1bebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eec6dc99bd482aa8401074bdd0ff96e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a7eec6dc99bd482aa8401074bdd0ff96e">GPIO_LINE_INTERRUPT_STATE</a>(irq_line)&#160;&#160;&#160;((GPIO_IRQ-&gt;INTERRUPTS &amp; (1 &lt;&lt; (irq_line))) != 0)</td></tr>
+<tr class="separator:a7eec6dc99bd482aa8401074bdd0ff96e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86a3022c5281d4115bc58c027d932359"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a86a3022c5281d4115bc58c027d932359">GPIO_LINE_PIN_STATE</a>(irq_line)&#160;&#160;&#160;(GPIO_IRQ-&gt;STATE &amp; (1 &lt;&lt; (irq_line)))</td></tr>
+<tr class="separator:a86a3022c5281d4115bc58c027d932359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bb027f33061b54dc290ce3c1079d474"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mcu__digital_8h.html#a0bb027f33061b54dc290ce3c1079d474">GPIO_CLEAR_INTERRUPT</a>()&#160;&#160;&#160;(GPIO_IRQ-&gt;CLEAR = 0b11111111)</td></tr>
+<tr class="separator:a0bb027f33061b54dc290ce3c1079d474"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -284,6 +290,59 @@ Functions</h2></td></tr>
 <tr class="separator:a2539bbed2b5ded18fe8be29e239196e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a0bb027f33061b54dc290ce3c1079d474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bb027f33061b54dc290ce3c1079d474">&#9670;&nbsp;</a></span>GPIO_CLEAR_INTERRUPT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GPIO_CLEAR_INTERRUPT</td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td>&#160;&#160;&#160;(GPIO_IRQ-&gt;CLEAR = 0b11111111)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7eec6dc99bd482aa8401074bdd0ff96e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eec6dc99bd482aa8401074bdd0ff96e">&#9670;&nbsp;</a></span>GPIO_LINE_INTERRUPT_STATE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GPIO_LINE_INTERRUPT_STATE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">irq_line</td><td>)</td>
+          <td>&#160;&#160;&#160;((GPIO_IRQ-&gt;INTERRUPTS &amp; (1 &lt;&lt; (irq_line))) != 0)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a86a3022c5281d4115bc58c027d932359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86a3022c5281d4115bc58c027d932359">&#9670;&nbsp;</a></span>GPIO_LINE_PIN_STATE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GPIO_LINE_PIN_STATE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">irq_line</td><td>)</td>
+          <td>&#160;&#160;&#160;(GPIO_IRQ-&gt;STATE &amp; (1 &lt;&lt; (irq_line)))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aa917adf093f16b3d85b73e1f1d3f4be0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa917adf093f16b3d85b73e1f1d3f4be0">&#9670;&nbsp;</a></span>GPIO_MODE_BIT_ANYEDGE</h2>
 
@@ -424,7 +483,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Режимы прерываний </p><dl class="section note"><dt>Note</dt><dd>В режиме события (EVENT) функция инициализации не включает прерывания GPIO в EPIC </dd></dl>
+<p>Режим прерывания линии GPIO </p><dl class="section note"><dt>Note</dt><dd>В режиме события (EVENT) функция инициализации не включает прерывания GPIO в EPIC </dd></dl>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a6683052c8694f873e406d0fefd5c9413aa234e5d9a4fe90926780044768c2d431"></a>GPIO_MODE_INT_LOW&#160;</td><td class="fielddoc"><p>Режим прерывания по низкому уровню на выводе </p>
 </td></tr>
@@ -1002,7 +1061,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_167790342fb55959539d550b874be046.html">project</a></li><li class="navelem"><a class="el" href="dir_f75b5734f71b44b39197624199307f52.html">fpga</a></li><li class="navelem"><a class="el" href="dir_a8b0f9aa4b8c9f222b04560ebc32106f.html">mcu32-hal</a></li><li class="navelem"><a class="el" href="dir_37763145a3a74ff329a6c7aff77afd9a.html">src</a></li><li class="navelem"><a class="el" href="mcu__digital_8h.html">mcu_digital.h</a></li>
+    <li class="navelem"><a class="el" href="dir_167790342fb55959539d550b874be046.html">project</a></li><li class="navelem"><a class="el" href="dir_90cce7696c144c241cc128c40b780d28.html">mcu32-hal-main</a></li><li class="navelem"><a class="el" href="dir_fca768567fa78b8f4ac9cb801c3dcc3d.html">src</a></li><li class="navelem"><a class="el" href="mcu__digital_8h.html">mcu_digital.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
