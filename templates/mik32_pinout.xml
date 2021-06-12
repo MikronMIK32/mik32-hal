@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE xml>
-<template name="lqfp64">
+<template name="qfn-64">
 	<pinout>
 		<pin id="1" analog="" name="PORT_1_12">
 			<mode sign="I2C1_sda" type="IO">Интерфейс I2C 1, линия данных</mode>
