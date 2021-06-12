@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE xml>
+<template name="lqfp64">
+	<pinout>
+		<pin id="1" analog="" name="PORT_1_12">
+			<mode sign="I2C1_sda" type="IO">Интерфейс I2C 1, линия данных</mode>
+			<mode sign="GPIO1_12" type="IO">Порт общего назначения 1. Разряд 12</mode>
+			<mode sign="UART0_ndtr" type="Output">Готовность приемника данных</mode>
+			<mode sign="DAC_1" type="Output">Готовность приемника данных</mode>
+		</pin>
+		<pin id="2" analog="REF_DAC" name="PORT_1_11">
+			<mode sign="UART1_rts" type="Output">Интерфейс UART 1, запрос на передачу</mode>
+			<mode sign="GPIO1_11" type="IO">Порт общего назначения 1. Разряд 11</mode>
+		</pin>
+		<pin id="3" analog="REF_ADC" name="PORT_1_10">
+			<mode sign="UART1_cts" type="Input">Интерфейс UART 1, готовность
+				передачи</mode>
+			<mode sign="GPIO1_10" type="IO">Порт общего назначения 1. Разряд 10</mode>
+		</pin>
+		<pin id="4" analog="" name="PORT_1_9">
+			<mode sign="UART1_txd" type="Output">Интерфейс UART 1, данные для
+				передачи</mode>
+			<mode sign="GPIO1_9" type="IO">Порт общего назначения 1. Разряд 9</mode>
+		</pin>
+		<pin id="5" analog="" name="VCC">
+			<mode sign="VCC" type="Power">Основное питание 3.3В</mode>
+		</pin>
+		<pin id="6" analog="" name="VDD">
+			<mode sign="VDD" type="Power">Выход системного LDO для подключения конденсаторов</mode>
+		</pin>
+		<pin id="7" analog="" name="PORT_1_8">
+			<mode sign="UART1_rxd" type="Input">Интерфейс UART 1, принимаемые данные</mode>
+			<mode sign="GPIO1_8" type="IO">Порт общего назначения 1. Разряд 8</mode>
+		</pin>
+		<pin id="8" analog="" name="VCC_BAT">
+			<mode sign="VCC_BAT" type="Power">Питание батарейного домена 3.3В</mode>
+		</pin>
+		<pin id="9" analog="" name="VCC_BU">
+			<mode sign="VCC_BU" type="Power">Питание батарейного домена 3.3В</mode>
+		</pin>
+		<pin id="10" analog="" name="VDD_BU">
+			<mode sign="VDD_BU" type="Power">Выход батарейного LDO для подключения
+				конденсаторов</mode>
+		</pin>
+		<pin id="11" analog="" name="VSS">
+			<mode sign="VSS" type="GND">Общий вывод</mode>
+		</pin>
+		<pin id="12" analog="" name="OSC32k_XO">
+			<mode sign="OSC32K_out" type="OSC">Выход осциллятора 32К (3.3В)</mode>
+		</pin>
+		<pin id="13" analog="" name="OSC32k_XI">
+			<mode sign="OSC32K_in" type="OSC">Вход осциллятора 32К (3.3В)</mode>
+		</pin>
+		<pin id="14" analog="" name="RST">
+			<mode sign="Ext_Resetn" type="Input">Внешний сброс (активный уровень 0)</mode>
+		</pin>
+		<pin id="15" analog="" name="EXT_WU">
+			<mode sign="ext_wu" type="Input">Выход из режима пониженного потребления</mode>
+		</pin>
+		<pin id="16" analog="" name="RTC_ALARM">
+			<mode sign="RTC Alarm" type="Output">Будильник (активный уровень 1)</mode>
+		</pin>
+		<pin id="17" analog="" name="BOOT_0">
+			<mode sign="BOOT_0" type="Input">Вход управления устройтвом загрузки</mode>
+		</pin>
+		<pin id="18" analog="" name="BOOT_1">
+			<mode sign="BOOT_1" type="Input">Вход управления устройтвом загрузки</mode>
+		</pin>
+		<pin id="19" analog="" name="VPRG">
+			<mode sign="VPRG" type="Power">Напряжение программирования OTP 8.0В</mode>
+		</pin>
+		<pin id="20" analog="" name="VCC">
+			<mode sign="VCC" type="Power">Основное питание 3.3В</mode>
+		</pin>
+		<pin id="21" analog="АЦП_6" name="PORT_1_7">
+			<mode sign="SPI1_n_ss_out_3" type="Output">Интерфейс SPI 1, сигнал выбора ведомого 3</mode>
+			<mode sign="GPIO1_7" type="IO">Порт общего назначения 1. Разряд 7</mode>
+			<mode sign="digital_test_pad" type="Output">Выход цифровой подсистемы тестирования аналоговых блоков</mode>
+		</pin>
+		<pin id="22" analog="" name="PORT_1_6">
+			<mode sign="SPI1_n_ss_out_2" type="Output">Интерфейс SPI 1, сигнал выбора ведомого 2</mode>
+			<mode sign="GPIO1_6" type="IO">Порт общего назначения 1. Разряд 6</mode>
+			<mode sign="UART0_ddis" type="Output">Сигнал считывания принятых данных</mode>
+		</pin>
+		<pin id="23" analog="АЦП_7" name="PORT_1_5">
+			<mode sign="SPI1_n_ss_out_1" type="Output">Интерфейс SPI 1, сигнал выбора ведомого 1</mode>
+			<mode sign="GPIO1_5" type="IO">Порт общего назначения 1. Разряд 5</mode>
+			<mode sign="UART0_ck" type="Output">Сигнал синхронизации для приема и передачи</mode>
+		</pin>
+		<pin id="24" analog="" name="VDD">
+			<mode sign="VDD" type="Power">Выход системного LDO для подключения конденсаторов</mode>
+		</pin>
+		<pin id="25" analog="" name="PORT_1_4">
+			<mode sign="SPI1_n_ss_out_0" type="Output">Интерфейс SPI 1, сигнал выбора ведомого 0</mode>
+			<mode sign="GPIO1_4" type="IO">Порт общего назначения 1. Разряд 4</mode>
+			<mode sign="Timer32_2_Tx" type="Input">32х-разрядный таймер2. Внешний вход тактирования</mode>
+		</pin>
+		<pin id="26" analog="" name="PORT_1_3">
+			<mode sign="SPI1_n_ss_in" type="Input">Интерфейс SPI 1, сигнал выбора в режиме ведомого</mode>
+			<mode sign="GPIO1_3" type="IO">Порт общего назначения 1. Разряд 3</mode>
+			<mode sign="Timer32_2_ch4" type="IO">32х-разрядный таймер2. Канал 4. Выход-ШИМ, вход - захват/сравнение</mode>
+		</pin>
+		<pin id="27" analog="" name="PORT_1_2">
+			<mode sign="SPI1_clk" type="IO">Интерфейс SPI 1, тактовый сигнал</mode>
+			<mode sign="GPIO1_2" type="IO">Порт общего назначения 1. Разряд 2</mode>
+			<mode sign="Timer32_2_ch3" type="IO">32х-разрядный таймер2. Канал 3. Выход-ШИМ, вход - захват/сравнение</mode>
+		</pin>
+		<pin id="28" analog="" name="PORT_1_12">
+			<mode sign="SPI1_mosi" type="IO">Интерфейс SPI 1, линия данных от ведущего к ведомому</mode>
+			<mode sign="GPIO1_1" type="IO">Порт общего назначения 1. Разряд 1</mode>
+			<mode sign="Timer32_2_ch2" type="IO">32х-разрядный таймер2. Канал 2. Выход-ШИМ, вход - захват/сравнение</mode>
+		</pin>
+		<pin id="29" analog="" name="VSS">
+			<mode sign="VSS" type="GND">Общий вывод</mode>
+		</pin>
+		<pin id="30" analog="" name="PORT_1_0">
+			<mode sign="SPI1_miso" type="IO">Интерфейс SPI 1, линия данных от ведомого к ведущему</mode>
+			<mode sign="GPIO1_0" type="IO">Порт общего назначения 1. Разряд 0</mode>
+			<mode sign="Timer32_2_ch1" type="IO">32х-разрядный таймер2. Канал 1. Выход-ШИМ, вход - захват/сравнение</mode>
+		</pin>
+		<pin id="31" analog="" name="PORT_2_7">
+			<mode id="1" sign="GPIO2_7" type="IO">Порт общего назначения 2. Разряд 7</mode>
+			<mode id="2" sign="UART1_ddis" type="Output">Сигнал считывания принятых данных</mode>
+		</pin>
+		<pin id="32" analog="" name="PORT_2_6">
+			<mode sign="SPI0_n_ss_out_3" type="Output">Интерфейс SPI 0, сигнал выбора ведомого 3</mode>
+			<mode sign="GPIO2_6" type="IO">Порт общего назначения 2. Разряд 6</mode>
+			<mode sign="UART1_ck" type="Output">Сигнал синхронизации для приема и передачи</mode>
+		</pin>
+		<pin id="33" analog="" name="PORT_2_5">
+			<mode sign="SPIFI_DATA_3" type="IO">Интерфейс SPIFI, шина данных, разряд 3</mode>
+			<mode sign="GPIO2_5" type="IO">Порт общего назначения 2. Разряд 5</mode>
+		</pin>
+		<pin id="34" analog="" name="PORT_2_4">
+			<mode sign="SPIFI_DATA_2" type="IO">Интерфейс SPIFI, шина данных, разряд 2</mode>
+			<mode sign="GPIO2_4" type="IO">Порт общего назначения 2. Разряд 4</mode>
+		</pin>
+		<pin id="35" analog="" name="PORT_2_3">
+			<mode sign="SPIFI_DATA_1" type="IO">Интерфейс SPIFI, шина данных, разряд 1</mode>
+			<mode sign="GPIO2_3" type="IO">Порт общего назначения 2. Разряд 3</mode>
+			<mode sign="UART1_ri" type="Input">Звонок (вызов) на телефонной линии</mode>
+		</pin>
+		<pin id="36" analog="" name="PORT_2_2">
+			<mode sign="SPIFI_DATA_0" type="IO">Интерфейс SPIFI, шина данных, разряд 0</mode>
+			<mode sign="GPIO2_2" type="IO">Порт общего назначения 2. Разряд 2</mode>
+			<mode sign="UART1_dsr" type="Input">Сигнал готовности источника данных</mode>
+		</pin>
+		<pin id="37" analog="" name="PORT_2_1">
+			<mode sign="SPIFI_CS" type="Output">Интерфейс SPIFI, сигнал CS</mode>
+			<mode sign="GPIO2_1" type="IO">Порт общего назначения 2. Разряд 1</mode>
+			<mode sign="UART1_dcd" type="Input">Сигнал обнаружения несущей</mode>
+		</pin>
+		<pin id="38" analog="" name="PORT_2_0">
+			<mode sign="SPIFI_SCLK" type="IO">Интерфейс SPIFI, тактовый сигнал</mode>
+			<mode sign="GPIO2_0" type="IO">Порт общего назначения 2. Разряд 0</mode>
+			<mode sign="UART1_dtr" type="Output">Готовность приемника данных</mode>
+		</pin>
+		<pin id="39" analog="" name="OSC32M_XO">
+			<mode sign="OSC32M_out" type="OSC">Выход осциллятора 32М (3.3В)</mode>
+		</pin>
+		<pin id="40" analog="" name="OSC32M_XI">
+			<mode sign="OSC32M_in" type="OSC">Вход осциллятора 32М (3.3В)</mode>
+		</pin>
+		<pin id="41" analog="" name="VDD">
+			<mode sign="VDD" type="Power">Выход системного LDO для подключения конденсаторов</mode>
+		</pin>
+		<pin id="42" analog="" name="PORT_0_15">
+			<mode sign="TDO" type="Output">Интерфейс JTAG. Выход данных</mode>
+			<mode sign="GPIO0_15" type="IO">Порт общего назначения 0. Разряд 15</mode>
+		</pin>
+		<pin id="43" analog="" name="PORT_0_14">
+			<mode sign="TRSTn" type="Input">Интерфейс JTAG. Сброс (активный уровень 0)</mode>
+			<mode sign="GPIO0_14" type="IO">Порт общего назначения 0. Разряд 14</mode>
+		</pin>
+		<pin id="44" analog="АЦП_0" name="PORT_0_13">
+			<mode sign="TMS" type="Input">Интерфейс JTAG. Сигнала управление</mode>
+			<mode sign="GPIO0_13" type="IO">Порт общего назначения 0. Разряд 13</mode>
+			<mode sign="Timer16_2_out" type="Output">16-разрядный таймер 2.Выход</mode>
+		</pin>
+		<pin id="45" analog="" name="PORT_0_12">
+			<mode sign="TCK" type="Input">Интерфейс JTAG.Сигнал тактирования</mode>
+			<mode sign="GPIO0_12" type="IO">Порт общего назначения 0. Разряд 12</mode>
+			<mode sign="Timer16_2_in2" type="Input">16-разрядный таймер 2.Вход 2</mode>
+		</pin>
+		<pin id="46" analog="АЦП_1" name="PORT_0_11">
+			<mode sign="TDI" type="Input">Интерфейс JTAG. Вход данных</mode>
+			<mode sign="GPIO0_11" type="IO">Порт общего назначения 0. Разряд 11</mode>
+			<mode sign="Timer16_2_in1" type="Input">16-разрядный таймер 2.Вход 1</mode>
+		</pin>
+		<pin id="47" analog="" name="PORT_0_10">
+			<mode sign="I2C0_scl" type="IO">Интерфейс I2C 0, сигнал тактирования</mode>
+			<mode sign="GPIO0_10" type="IO">Порт общего назначения 0. Разряд 10</mode>
+			<mode sign="Timer16_1_out" type="Output">16-разрядный таймер 1.Выход</mode>
+		</pin>
+		<pin id="48" analog="АЦП_2" name="PORT_0_9">
+			<mode sign="I2C0_sda" type="IO">Интерфейс I2C 0, линия данных</mode>
+			<mode sign="GPIO0_9" type="IO">Порт общего назначения 0. Разряд 9</mode>
+			<mode sign="Timer16_1_in2" type="Input">16-разрядный таймер 1.Вход 2</mode>
+		</pin>
+		<pin id="49" analog="" name="PORT_0_8">
+			<mode sign="UART0_rts" type="Output">Интерфейс UART 0, запрос на передачу</mode>
+			<mode sign="GPIO0_8" type="IO">Порт общего назначения 0. Разряд 8</mode>
+			<mode sign="Timer16_1_in1" type="Input">16-разрядный таймер 1.Вход 1</mode>
+		</pin>
+		<pin id="50" analog="АЦП_3" name="PORT_0_7">
+			<mode sign="UART0_cts" type="Input">Интерфейс UART 0, готовность передачи</mode>
+			<mode sign="GPIO0_7" type="IO">Порт общего назначения 0. Разряд 7</mode>
+			<mode sign="Timer16_0_out" type="Output">16-разрядный таймер 0.Выход</mode>
+		</pin>
+		<pin id="51" analog="" name="PORT_0_6">
+			<mode sign="UART0_txd" type="Output">Интерфейс UART 0, данные для передачи</mode>
+			<mode sign="GPIO0_6" type="IO">Порт общего назначения 0. Разряд 6</mode>
+			<mode sign="Timer16_0_in2" type="Input">16-разрядный таймер 0.Вход 2</mode>
+		</pin>
+		<pin id="52" analog="" name="VCC">
+			<mode sign="VCC" type="Power">Основное питание 3.3В</mode>
+		</pin>
+		<pin id="53" analog="" name="PORT_0_5">
+			<mode sign="UART0_rxd" type="Input">Интерфейс UART 0, принимаемые данные</mode>
+			<mode sign="GPIO0_5" type="IO">Порт общего назначения 0. Разряд 5</mode>
+			<mode sign="Timer16_0_in1" type="Input">16-разрядный таймер 0.Вход 1</mode>
+		</pin>
+		<pin id="54" analog="АЦП_4" name="PORT_0_4">
+			<mode sign="SPI0_n_ss_out_0" type="Output">Интерфейс SPI 0, сигнал выбора ведомого 0</mode>
+			<mode sign="GPIO0_4" type="IO">Порт общего назначения 0. Разряд 4</mode>
+			<mode sign="Timer32_1_Tx" type="Input">32х-разрядный таймер1. Внешний вход тактирования</mode>
+		</pin>
+		<pin id="55" analog="" name="PORT_0_3">
+			<mode sign="SPI0_n_ss_in" type="Input">Интерфейс SPI 0, сигнал выбора в режиме ведомого</mode>
+			<mode sign="GPIO0_3" type="IO">Порт общего назначения 0. Разряд 3</mode>
+			<mode sign="Timer32_1_ch4" type="IO">32х-разрядный таймер1. Канал 4.Выход-ШИМ, Вход - захват/сравнение</mode>
+		</pin>
+		<pin id="56" analog="АЦП_5" name="PORT_0_2">
+			<mode sign="SPI0_clk" type="IO">Интерфейс SPI 0, тактовый сигнал</mode>
+			<mode sign="GPIO0_2" type="IO">Порт общего назначения 0. Разряд 2</mode>
+			<mode sign="Timer32_1_ch3" type="IO">32х-разрядный таймер1. Канал 3.Выход-ШИМ, Вход - захват/сравнение</mode>
+		</pin>
+		<pin id="57" analog="" name="PORT_0_1">
+			<mode sign="SPI0_mosi" type="IO">Интерфейс SPI 0, линия данных от ведущего к ведомому</mode>
+			<mode sign="GPIO0_1" type="IO">Порт общего назначения 0. Разряд 1</mode>
+			<mode sign="Timer32_1_ch2" type="IO">32х-разрядный таймер1. Канал 2.Выход-ШИМ, Вход - захват/сравнение</mode>
+		</pin>
+		<pin id="58" analog="REF_VOLT_MON_AVCC" name="PORT_0_0">
+			<mode sign="SPI0_miso" type="IO">Интерфейс SPI 0, линия данных от ведомого к ведущему</mode>
+			<mode sign="GPIO0_0" type="IO">Порт общего назначения 0. Разряд 0</mode>
+			<mode sign="Timer32_1_ch1" type="IO">32х-разрядный таймер1. Канал 1.Выход-ШИМ, Вход - захват/сравнение</mode>
+		</pin>
+		<pin id="59" analog="" name="VSS">
+			<mode sign="VSS" type="GND">Общий вывод</mode>
+		</pin>
+		<pin id="60" analog="TEST MUX OUT" name="PORT_1_15">
+			<mode sign="SPI0_n_ss_out_2" type="Output">Интерфейс SPI 0, сигнал выбора ведомого 2</mode>
+			<mode sign="GPIO1_15" type="IO">Порт общего назначения 1. Разряд 15</mode>
+			<mode sign="UART0_ri" type="Input">Звонок (вызов) на телефонной линии</mode>
+		</pin>
+		<pin id="61" analog="REF_VOLT_MON_VCC" name="PORT_1_14">
+			<mode sign="SPI0_n_ss_out_1" type="Output">Интерфейс SPI 0, сигнал выбора ведомого 1</mode>
+			<mode sign="GPIO1_14" type="IO">Порт общего назначения 1. Разряд 14</mode>
+			<mode sign="UART0_dsr" type="Input">Сигнал готовности источника данных</mode>
+		</pin>
+		<pin id="62" analog="" name="AVCC">
+			<mode sign="AVCC" type="Power">Питание аналоговых блоков 3.3В</mode>
+		</pin>
+		<pin id="63" analog="" name="AGND">
+			<mode sign="AGND" type="GND">Общий вывод аналоговых блоков</mode>
+		</pin>
+		<pin id="64" analog="" name="PORT_1_13">
+			<mode sign="I2C1_scl" type="IO">Интерфейс I2C 1, сигнал тактирования</mode>
+			<mode sign="GPIO1_13" type="IO">Порт общего назначения 1. Разряд 13</mode>
+			<mode sign="UART0_dcd" type="Input">Сигнал обнаружения несущей</mode>
+		</pin>
+	</pinout>
+</template>

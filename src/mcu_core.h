@@ -5,6 +5,9 @@
  * \file Библиотека для работы с ядром и основными функциями МК
  */
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "include/csr.h"
 #include "include/scr1_csr_encoding.h"
 
@@ -13,9 +16,6 @@
 #include "periphery/epic.h"
 #include "periphery/gpio.h"
 #include "periphery/gpio_irq.h"
-
-#include <stdbool.h>
-
 
 #ifndef FREQ
 #define FREQ 10000000

@@ -1,3 +1,4 @@
+#include <mcu_utils.h>
 
 static uint32_t miState;
 int32_t rand() {
