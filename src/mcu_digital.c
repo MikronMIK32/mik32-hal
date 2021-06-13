@@ -36,7 +36,7 @@ void GPIO_SetPinDirection(GPIO_TypeDef *gpio, uint32_t gpioNum, GPIO_PinDirectio
 	}
 }
 
-void GPIO_SetPinMaskDirection(GPIO_TypeDef *gpio, uint32_t mask, GPIO_PinDirection dir) {
+void GPIO_SetPinMaskDirection(GPIO_TypeDef *gpio, uint16_t mask, GPIO_PinDirection dir) {
 	if (dir == GPIO_DIR_OUTPUT) {
 		gpio->DIRECTION_OUT = mask;
 	}

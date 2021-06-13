@@ -97,7 +97,14 @@ typedef enum {
  */
 bool setPinFunction(GPIO_TypeDef *port, uint32_t pinId, PadConfigFunction func);
 
-//bool setPinMaskFunction(GPIO_TypeDef *gpio, uint32_t mask, PadConfigFunction func);
+/** Устанавливает функцию выводов по маске
+ *
+ * @param port Порт ввода-вывода, принимает значения констант GPIO_0, GPIO_1, GPIO_2
+ * @param mask Маска выводов
+ * @param func Функция вывода
+ * @return
+ */
+bool setPinMaskFunction(GPIO_TypeDef *port, uint32_t mask, PadConfigFunction func);
 
 /** Устанавливает функцию всех выводов порта
  *
