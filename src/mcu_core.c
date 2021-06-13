@@ -80,42 +80,43 @@ bool setPinFunction(GPIO_TypeDef *port, uint32_t pinId, PadConfigFunction func) 
 
 	return false; // Error
 }
-/*
- * WIP
-bool setPinMaskFunction(GPIO_TypeDef *gpio, uint16_t mask, PadConfigFunction func) {
+
+
+bool setPinMaskFunction(GPIO_TypeDef *port, uint16_t mask, PadConfigFunction func) {
 	if (func > 2) {
 		return false;
 	}
 
-	for (int i = 0; i < (gpio == GPIO_2 ? 8 : 16); i++) {
+	for (int i = 0; i < (port == GPIO_2 ? 8 : 16); i++) {
+		if (mask & (1 < i)) {
+			if (port == GPIO_0) {
+				PAD_CONFIG->PORT_0_CFG &= ~(3 << (i << 1));
+				PAD_CONFIG->PORT_0_CFG |= func << (i << 1);
 
-		if (gpio == GPIO_0) {
-			PAD_CONFIG->PORT_0_CFG &= ~(3 << (gpioId << 1));
-			PAD_CONFIG->PORT_0_CFG |= func << (gpioId << 1);
+				return true;
+			}
+			if (port == GPIO_1) {
+				PAD_CONFIG->PORT_1_CFG &= ~(3 << (i << 1));
+				PAD_CONFIG->PORT_1_CFG |= func << (i << 1);
 
-			return true;
-		}
-		if (gpio == GPIO_1) {
-			PAD_CONFIG->PORT_1_CFG &= ~(3 << (gpioId << 1));
-			PAD_CONFIG->PORT_1_CFG |= func << (gpioId << 1);
+				return true;
+			}
 
-			return true;
-		}
+			if (gpioId > 15) {
+				return false;
+			}
+			if (port == GPIO_2) {
+				PAD_CONFIG->PORT_2_CFG &= ~(3 << (i << 1));
+				PAD_CONFIG->PORT_2_CFG |= func << (i << 1);
 
-		if (gpioId > 15) {
-			return false;
-		}
-		if (gpio == GPIO_2) {
-			PAD_CONFIG->PORT_2_CFG &= ~(3 << (gpioId << 1));
-			PAD_CONFIG->PORT_2_CFG |= func << (gpioId << 1);
-
-			return true;
+				return true;
+			}
 		}
 	}
 
 	return false; // Error
 }
-*/
+
 
 bool setPortFunction(GPIO_TypeDef *port, PadConfigFunction func) {
 	if (func > 2) {
