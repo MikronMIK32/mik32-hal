@@ -101,10 +101,6 @@ bool setPinMaskFunction(GPIO_TypeDef *port, uint16_t mask, PadConfigFunction fun
 
 				return true;
 			}
-
-			if (gpioId > 15) {
-				return false;
-			}
 			if (port == GPIO_2) {
 				PAD_CONFIG->PORT_2_CFG &= ~(3 << (i << 1));
 				PAD_CONFIG->PORT_2_CFG |= func << (i << 1);
