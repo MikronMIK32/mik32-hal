@@ -104,7 +104,7 @@ bool setPinFunction(GPIO_TypeDef *port, uint32_t pinId, PadConfigFunction func);
  * @param func Функция вывода
  * @return
  */
-bool setPinMaskFunction(GPIO_TypeDef *port, uint32_t mask, PadConfigFunction func);
+bool setPinMaskFunction(GPIO_TypeDef *port, uint16_t mask, PadConfigFunction func);
 
 /** Устанавливает функцию всех выводов порта
  *
