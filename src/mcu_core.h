@@ -95,7 +95,7 @@ typedef enum {
  * \param func Функция вывода
  * \return В случае неверных входных параметров возвращает false
  */
-bool setPinFunction(GPIO_TypeDef *port, uint32_t pinId, PadConfigFunction func);
+bool setPinFunction(GPIO_TypeDef *port, uint16_t pinId, PadConfigFunction func);
 
 /** Устанавливает функцию выводов по маске
  *

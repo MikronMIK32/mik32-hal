@@ -47,7 +47,7 @@ void trap_handler() {
 }
 
 
-bool setPinFunction(GPIO_TypeDef *port, uint32_t pinId, PadConfigFunction func) {
+bool setPinFunction(GPIO_TypeDef *port, uint16_t pinId, PadConfigFunction func) {
 	if (func > 2) {
 		return false;
 	}
