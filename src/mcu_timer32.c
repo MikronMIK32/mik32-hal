@@ -16,7 +16,7 @@ void Timer_Delay(uint32_t periodMs) {
 }
 
 void Timer_Init(TIMER32_TypeDef* timer, uint32_t top, uint32_t prescale,
-		Timer_CountMode count_mode, Timer_Source source) {
+		Timer32_CountMode count_mode, Timer32_Source source) {
 	timer->Enable &= ~(TIMER32_ENABLE_M);
 	timer->Enable = TIMER32_RESET_VALUE_M;
 	timer->Channels[0].Control = 0;
@@ -27,6 +27,8 @@ void Timer_Init(TIMER32_TypeDef* timer, uint32_t top, uint32_t prescale,
 	timer->Top = top;
 	timer->Prescaler = prescale;
 	timer->Control = count_mode | (source << 2);
+
+
 }
 
 void Timer_DeInit(TIMER32_TypeDef* timer) {
@@ -50,20 +52,8 @@ void Timer_Start(TIMER32_TypeDef* timer) {
 	timer->Enable = TIMER32_ENABLE_M;
 }
 
-void Timer_StartIT(TIMER32_TypeDef* timer, Timer_InterruptMode intMode) {
-	timer->IntMask = intMode & TIMER_MODE_BIT_UDF;
-
-	if (intMode & TIMER_MODE_BIT_INT) {
-		if (timer == TIMER32_0) {
-			EPIC->MASK_SET = 1 << EPIC_TIMER32_0_INDEX;
-		}
-		if (timer == TIMER32_1) {
-			EPIC->MASK_SET = 1 << EPIC_TIMER32_1_INDEX;
-		}
-		if (timer == TIMER32_2) {
-			EPIC->MASK_SET = 1 << EPIC_TIMER32_2_INDEX;
-		}
-	}
+void Timer_StartIT(TIMER32_TypeDef* timer, Timer32_InterruptMode intMode) {
+	timer->IntMask = intMode & (TIMER_MODE_BIT_OVF | TIMER_MODE_BIT_UDF);
 
 	timer->Enable = TIMER32_ENABLE_M;
 }

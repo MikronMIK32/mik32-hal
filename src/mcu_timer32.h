@@ -30,7 +30,7 @@ typedef enum {
 	TIMER_COUNT_FORWARD = 0,
 	TIMER_COUNT_REVERSE = 1,
 	TIMER_COUNT_BIDIRECTIONAL = 2,
-} Timer_CountMode;
+} Timer32_CountMode;
 
 /** Выбор источника тактового сигнала для счета таймера
  *
@@ -40,7 +40,7 @@ typedef enum {
 	TIMER_SOURCE_TIM1 = 1,     /** Вход модуля TIM1 */
 	TIMER_SOURCE_TIMER_TX = 2, /** Вход микросхемы timerX_Tx_pin_pad (X – номер таймера) */
 	TIMER_SOURCE_TIM2 = 3,     /** Вход модуля TIM2 */
-} Timer_Source;
+} Timer32_Source;
 
 /** Инициализация таймера
  *
@@ -53,7 +53,7 @@ typedef enum {
  *  предделитель
  */
 void Timer_Init(TIMER32_TypeDef* timer, uint32_t top, uint32_t prescale,
-		Timer_CountMode count_mode, Timer_Source source);
+		Timer32_CountMode count_mode, Timer32_Source source, bool);
 
 /** Функция деинициализации таймера, выключает таймер и сбрасывает его настройки
  *
@@ -75,20 +75,17 @@ void Timer_Reset(TIMER32_TypeDef* timer);
  */
 void Timer_Start(TIMER32_TypeDef* timer);
 
-#define TIMER_MODE_BIT_UDF 1 //1 if Underflow or OC
-#define TIMER_MODE_BIT_INT 2 //1 if interrupt
+#define TIMER_MODE_BIT_OVF 1 //1 if Overflow
+#define TIMER_MODE_BIT_UDF 2 //1 if Underflow
 
 /** Режим прерывания таймера
  * \note В режиме события (EVENT) функция инициализации не включает прерывания
  *  таймера в EPIC
  */
 typedef enum {
-	TIMER_MODE_INT_UNDERFLOW = 0b11,  /** Режим прерывания по переполнению счетчика */
-	TIMER_MODE_INT_OVERFLOW = 0b10,   /** Режим прерывания по опустошению счетчика */
-	TIMER_MODE_EVENT_UNDERFLOW = 0b01,/** Режим события по переполнению счетчика */
-	TIMER_MODE_EVENT_OVERFLOW = 0b00, /** Режим события по опустошению счетчика */
-
-} Timer_InterruptMode;
+	TIMER_MODE_INT_UNDERFLOW = 1,  /** Режим прерывания по переполнению счетчика */
+	TIMER_MODE_INT_OVERFLOW = 2,   /** Режим прерывания по опустошению счетчика */
+} Timer32_InterruptMode;
 
 /** Включение счета таймера и прерывания
  *
@@ -97,7 +94,7 @@ typedef enum {
  * \param timer Выбор таймера, TIMER32_X (X - номер таймера)
  * \param intMode Выбор режима прерывания
  */
-void Timer_StartIT(TIMER32_TypeDef* timer, Timer_InterruptMode intMode);
+void Timer_StartIT(TIMER32_TypeDef* timer, Timer32_InterruptMode intMode);
 
 /** Остановка таймера
  *

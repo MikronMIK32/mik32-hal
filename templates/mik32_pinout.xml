@@ -105,7 +105,7 @@
 			<mode sign="GPIO1_2" type="IO">Порт общего назначения 1. Разряд 2</mode>
 			<mode sign="Timer32_2_ch3" type="IO">32х-разрядный таймер2. Канал 3. Выход-ШИМ, вход - захват/сравнение</mode>
 		</pin>
-		<pin id="28" analog="" name="PORT_1_12">
+		<pin id="28" analog="" name="PORT_1_1">
 			<mode sign="SPI1_mosi" type="IO">Интерфейс SPI 1, линия данных от ведущего к ведомому</mode>
 			<mode sign="GPIO1_1" type="IO">Порт общего назначения 1. Разряд 1</mode>
 			<mode sign="Timer32_2_ch2" type="IO">32х-разрядный таймер2. Канал 2. Выход-ШИМ, вход - захват/сравнение</mode>
