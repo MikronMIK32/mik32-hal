@@ -53,7 +53,7 @@ typedef enum {
  *  предделитель
  */
 void Timer_Init(TIMER32_TypeDef* timer, uint32_t top, uint32_t prescale,
-		Timer32_CountMode count_mode, Timer32_Source source, bool);
+		Timer32_CountMode count_mode, Timer32_Source source);
 
 /** Функция деинициализации таймера, выключает таймер и сбрасывает его настройки
  *
