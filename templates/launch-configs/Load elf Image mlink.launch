@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<launchConfiguration type="org.eclipse.ui.externaltools.ProgramLaunchConfigurationType">
-    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${eclipse_home}\toolchain\openocd\bin\openocd.exe"/>
-    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-s ../share/openocd/scripts -f interface/ftdi/m-link.cfg -f target/mcu32.cfg -c halt -c &quot;load_image ROM.elf 0x0 elf&quot; -c &quot;resume 0x0&quot; -c &quot;exit&quot;"/>
-    <stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc}/${project_path}/build"/>
-</launchConfiguration>
