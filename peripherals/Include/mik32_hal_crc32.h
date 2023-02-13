@@ -1,13 +1,13 @@
 #ifndef MIK32_HAL_CRC32
 #define MIK32_HAL_CRC32
 
+#ifdef USE_DEF_LIST
 #include "def_list.h"
+#endif
+
 #include "mcu32_memory_map.h"
 #include "crc.h"
 
-#ifdef MIK32_CRC_DEBUG
-#include "common.h"
-#endif
  
 /* CRC_Reverse - Перестановка битов/байтов данных */
 #define CRC_REVERSE_OFF             0 // Перестановка выключена

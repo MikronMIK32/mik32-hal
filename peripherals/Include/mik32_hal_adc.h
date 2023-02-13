@@ -1,15 +1,15 @@
 #ifndef MIK32_HAL_ADC
 #define MIK32_HAL_ADC
 
+#ifdef USE_DEF_LIST
 #include "def_list.h"
+#endif
+
 #include "mcu32_memory_map.h"
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
 
-#ifdef MIK32_ADC_DEBUG
-#include "common.h"
-#endif
 
 /* Sel - Выбор канала */
 #define ADC_CHANNEL0        0       /* Канал АЦП0 - PORT_1_5 */

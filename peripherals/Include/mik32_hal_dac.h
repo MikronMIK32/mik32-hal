@@ -1,15 +1,15 @@
 #ifndef MIK32_HAL_DAC
 #define MIK32_HAL_DAC
 
+#ifdef USE_DEF_LIST
 #include "def_list.h"
+#endif
+
 #include "mcu32_memory_map.h"
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
 
-#ifdef MIK32_DAC_DEBUG
-#include "common.h"
-#endif
 
 /* Выбор ЦАП */
 #define HAL_DAC1      &(ANALOG_REG->DAC0)       /* DAC1 - PORT_1_12 */

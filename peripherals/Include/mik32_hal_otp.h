@@ -1,16 +1,15 @@
 #ifndef MIK32_HAL_OTP
 #define MIK32_HAL_OTP
 
+#ifdef USE_DEF_LIST
 #include "def_list.h"
+#endif
+
 #include "mcu32_memory_map.h"
 #include "power_manager.h"
 #include "otp.h"
 #include "pad_config.h"
 #include "stdbool.h"
-
-#ifdef MIK32_OTP_DEBUG
-#include "common.h"
-#endif
 
 
 #define MIK32_FREQ          32000000      /* Входная частота, Гц */

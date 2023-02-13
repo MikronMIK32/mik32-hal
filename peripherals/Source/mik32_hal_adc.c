@@ -56,7 +56,6 @@ void HAL_ADC_ChannelSet(ADC_HandleTypeDef *hadc)
         break;
     case ADC_CHANNEL2:
         PAD_CONFIG->PORT_0_CFG |= (ADC_PORT_AS_FUNC3 << 2 * ADC_CHANNEL2_PORT_0_2);
-        xprintf("PAD_CONFIG_0 = %d\n", (PAD_CONFIG->PORT_0_CFG & (ADC_PORT_AS_FUNC3 << 2 * ADC_CHANNEL2_PORT_0_2)) >> 2 * ADC_CHANNEL2_PORT_0_2);
         break;
     case ADC_CHANNEL3:
         PAD_CONFIG->PORT_0_CFG |= (ADC_PORT_AS_FUNC3 << 2 * ADC_CHANNEL3_PORT_0_4);
@@ -85,7 +84,9 @@ void HAL_ADC_Init(ADC_HandleTypeDef *hadc)
     HAL_ADC_Enable(hadc);
 
     HAL_ADC_ChannelSet(hadc); /* Настройка канала АЦП. Перевод используемого вывода в аналоговый режим */
+    #ifdef MIK32_ADC_DEBUG
     xprintf("ADC_INIT: Channel - %d \n", (hadc->Instance->ADC_CONFIG & (0b111 << ADC_SEL_S)) >> ADC_SEL_S);
+    #endif
     if((hadc->Init.EXTRef == ADC_EXTREF_ON) || (hadc->Init.EXTClb == ADC_EXTCLB_ADCREF))
     {
         PAD_CONFIG->PORT_1_CFG |= (ADC_PORT_AS_FUNC3 << 2 * ADC_REF_PORT_1_10);

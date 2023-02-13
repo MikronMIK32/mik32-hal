@@ -1,14 +1,13 @@
 #ifndef MIK32_HAL_I2C
 #define MIK32_HAL_I2C
 
+#ifdef USE_DEF_LIST
 #include "def_list.h"
+#endif
+
 #include "mcu32_memory_map.h"
 #include "spi.h"
 #include "stdbool.h"
-
-#ifdef MIK32_SPI_DEBUG
-#include "common.h"
-#endif
 
 
 /* Регистры SPI */
