@@ -1,10 +1,8 @@
 #ifndef MIK32_HAL_RTC
 #define MIK32_HAL_RTC
 
-#ifdef USE_DEF_LIST
-#include "def_list.h"
-#endif
 
+#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "rtc.h"
 
@@ -12,6 +10,9 @@
 #include "mik32_hal_irq.h"
 #endif
 
+#ifdef MIK32_RTC_DEBUG
+#include "common.h"
+#endif
 
 typedef struct
 {

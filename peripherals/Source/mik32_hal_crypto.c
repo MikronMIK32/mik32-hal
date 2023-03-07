@@ -13,6 +13,8 @@ void HAL_Crypto_WaitReady(Crypto_HandleTypeDef *hcrypto)
 
 void HAL_Crypto_SetAlgorithm(Crypto_HandleTypeDef *hcrypto, uint8_t Algorithm)
 {
+    hcrypto->Algorithm = Algorithm;
+
     uint32_t ConfigTemp = hcrypto->Instance->CONFIG;
     
     ConfigTemp &= ~CRYPTO_CONFIG_DECODE_M; /* Обнуление DECODE */ 
@@ -24,6 +26,8 @@ void HAL_Crypto_SetAlgorithm(Crypto_HandleTypeDef *hcrypto, uint8_t Algorithm)
 
 void HAL_Crypto_SetCipherMode(Crypto_HandleTypeDef *hcrypto, uint8_t CipherMode)
 {
+    hcrypto->CipherMode = CipherMode;
+    
     uint32_t ConfigTemp = hcrypto->Instance->CONFIG;
 
     ConfigTemp &= ~CRYPTO_CONFIG_MODE_SEL_M; /* Обнуление MODE_SEL */
@@ -35,6 +39,8 @@ void HAL_Crypto_SetCipherMode(Crypto_HandleTypeDef *hcrypto, uint8_t CipherMode)
 
 void HAL_Crypto_SetSwapMode(Crypto_HandleTypeDef *hcrypto, uint8_t SwapMode)
 {
+    hcrypto->SwapMode = SwapMode;
+    
     uint32_t ConfigTemp = hcrypto->Instance->CONFIG;
 
     ConfigTemp &= ~CRYPTO_CONFIG_SWAP_MODE_M; /* Обнуление SWAP_MODE */ 
@@ -46,6 +52,8 @@ void HAL_Crypto_SetSwapMode(Crypto_HandleTypeDef *hcrypto, uint8_t SwapMode)
 
 void HAL_Crypto_SetOrderMode(Crypto_HandleTypeDef *hcrypto, uint8_t OrderMode)
 {
+    hcrypto->OrderMode = OrderMode;
+    
     uint32_t ConfigTemp = hcrypto->Instance->CONFIG;
 
     ConfigTemp &= ~CRYPTO_CONFIG_ORDER_MODE_M; /* Обнуление ORDER_MODE */ 
@@ -55,12 +63,23 @@ void HAL_Crypto_SetOrderMode(Crypto_HandleTypeDef *hcrypto, uint8_t OrderMode)
     hcrypto->Instance->CONFIG = ConfigTemp;
 }
 
-void HAL_Crypto_SetINIT(Crypto_HandleTypeDef *hcrypto, uint32_t InitVector[])
+void HAL_Crypto_SetIV(Crypto_HandleTypeDef *hcrypto, uint32_t InitVector[], uint32_t IvLength)
 {
-    for (uint32_t i = 0; i < IV_LENGTH; i++)
+
+    for (uint32_t i = 0; i < IvLength; i++)
     {
         hcrypto->Instance->INIT = InitVector[i];
-    }    
+    } 
+
+    /* В режиме шифрования CTR длина вектора инициализации равна половине блока и такое же количество нулей */
+    if(hcrypto->CipherMode == CRYPTO_CIPHER_MODE_CTR)
+    {
+        for (uint32_t i = 0; i < IvLength; i++)
+        {
+            hcrypto->Instance->INIT = 0;
+        }   
+    }
+
 }
 
 void HAL_Crypto_SetKey(Crypto_HandleTypeDef *hcrypto, uint32_t crypto_key[])
@@ -79,6 +98,9 @@ void HAL_Crypto_SetKey(Crypto_HandleTypeDef *hcrypto, uint32_t crypto_key[])
         key_length = CRYPTO_KEY_AES;
         break;
     }
+
+    /* Ключ должен быть инициализирован в режиме шифрования */
+    hcrypto->Instance->CONFIG &= ~CRYPTO_CONFIG_DECODE_M;
 
     for (uint32_t i = 0; i < key_length; i++)
     {
