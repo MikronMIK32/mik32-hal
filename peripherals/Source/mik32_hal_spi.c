@@ -111,8 +111,10 @@ void HAL_SPI_Init(SPI_HandleTypeDef *hspi)
     HAL_SPI_SetThresholdTX(hspi, SPI_THRESHOLD_DEFAULT);
 
     HAL_SPI_ClearRxBuffer(hspi);
-
+    #ifdef MIK32_SPI_DEBUG
     xprintf("SPI_Init\n");
+    #endif
+    
 
     // /* Включение модуля SPI */
     // HAL_SPI_Enable(hspi);
@@ -122,13 +124,19 @@ void HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 void HAL_SPI_ClearTXFIFO(SPI_HandleTypeDef *hspi)
 {
     hspi->Instance->Enable |= SPI_ENABLE_CLEAR_TX_FIFO_M;
+    #ifdef MIK32_SPI_DEBUG
     xprintf("TX_Clear\n");
+    #endif
+    
 }
 
 void HAL_SPI_ClearRXFIFO(SPI_HandleTypeDef *hspi)
 {
     hspi->Instance->Enable |= SPI_ENABLE_CLEAR_RX_FIFO_M;
+    #ifdef MIK32_SPI_DEBUG
     xprintf("RX_Clear\n");
+    #endif
+    
 }
 
 void HAL_SPI_ClearError(SPI_HandleTypeDef *hspi)
@@ -144,7 +152,11 @@ void HAL_SPI_CheckError(SPI_HandleTypeDef *hspi)
         HAL_SPI_ClearRxBuffer(hspi);
         HAL_SPI_ClearRXFIFO(hspi);
         HAL_SPI_ClearTXFIFO(hspi);
+        #ifdef MIK32_SPI_DEBUG
+        xprintf("RX_Clear\n");
         xprintf("OVR = %d; FAIL = %d\n", hspi->Error.RXOVR, hspi->Error.ModeFail);
+        #endif
+        
         HAL_SPI_ClearError(hspi);
     } 
 }
@@ -161,7 +173,10 @@ void HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi)
         if((status & SPI_MODE_FAIL_M) || (!hspi->Instance->Enable))
         {
             hspi->Error.ModeFail = SPI_ERROR_ModeFail_ON;
+            #ifdef MIK32_SPI_DEBUG
             xprintf("TX_FAIL\n");
+            #endif
+            
             break;
         }
     }
@@ -179,7 +194,10 @@ void HAL_SPI_WaitRxNotEmpty(SPI_HandleTypeDef *hspi)
         if((status & SPI_MODE_FAIL_M) || (!hspi->Instance->Enable))
         {
             hspi->Error.ModeFail = SPI_ERROR_ModeFail_ON;
+            #ifdef MIK32_SPI_DEBUG
             xprintf("RX_FAIL\n");
+            #endif
+            
             break;
         }
     }
