@@ -1,5 +1,6 @@
 #include "mik32_hal_rtc.h"
 
+
 void HAL_RTC_WaitFlag(RTC_HandleTypeDef *hrtc)
 {
     uint32_t retry_limit = 10000;
@@ -30,14 +31,6 @@ void HAL_RTC_Enable(RTC_HandleTypeDef *hrtc)
     HAL_RTC_WaitFlag(hrtc);
 }
 
-/** Установка времени
- *
- * \param dow День недели: 1 - Пн; 2 - Вт; 3 - Ср; 4 - Чт; 5 - Пт; 6 - Сб; 7 - Вс
- * \param hour Часы
- * \param minute Минуты
- * \param second Секунды
- * 
- */
 void HAL_RTC_SetTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *sTime)
 {
     uint8_t DOW, TH, H, TM, M, TS, S;
@@ -66,14 +59,6 @@ void HAL_RTC_SetTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *sTime)
     HAL_RTC_WaitFlag(hrtc);
 }
 
-/** Установка даты. Записывается в виде CC.YY.MM.DD
- * 
- * \param century Век
- * \param day Число
- * \param month Месяц (Ноябрь - 11)
- * \param year Год (2022 год - 22)
- * 
- */
 void HAL_RTC_SetDate(RTC_HandleTypeDef *hrtc, RTC_DateTypeDef *sDate)
 {
     uint8_t TC, C, TY, Y, TM, M, TD, D;
@@ -103,15 +88,6 @@ void HAL_RTC_SetDate(RTC_HandleTypeDef *hrtc, RTC_DateTypeDef *sDate)
     HAL_RTC_WaitFlag(hrtc);
 }
 
-/** Установка времени будильника
- *
- * \param dow День недели: 1 - Пн; 2 - Вт; 3 - Ср; 4 - Чт; 5 - Пт; 6 - Сб; 7 - Вс
- * \param hour Часы
- * \param minute Минуты
- * \param second Секунды
- * \param alarm_mask Маска сравнения. CDOW - день недели; CH - часы; CM - минуты; CS - секунды
- * 
- */
 void HAL_RTC_Alarm_SetTime(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *sAlarm)
 {
     uint8_t DOW, TH, H, TM, M, TS, S;
@@ -140,15 +116,6 @@ void HAL_RTC_Alarm_SetTime(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *sAlarm)
     HAL_RTC_WaitFlag(hrtc);
 }
 
-/** Установка даты будильника. Дата в виде CC.YY.MM.DD
- * 
- * \param century Век
- * \param day Число
- * \param month Месяц (Ноябрь - 11)
- * \param year Год (2022 год - 22)
- * \param alarm_mask Маска сравнения. CC - век; CD - день; CM - месяц; CY - год
- * 
- */
 void HAL_RTC_Alarm_SetDate(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *sAlarm) 
 {
     uint8_t TC, C, TY, Y, TM, M, TD, D;
@@ -193,20 +160,24 @@ void HAL_RTC_AlarmDisable(RTC_HandleTypeDef *hrtc)
     HAL_RTC_WaitFlag(hrtc);
 }
 
-void HAL_RTC_AlrmClear(RTC_HandleTypeDef *hrtc)
+void HAL_RTC_ClearAlrmFlag(RTC_HandleTypeDef *hrtc)
 {
     /* Сброс флага ALRM в RTC */
-    hrtc->Instance->CTRL &= ~RTC_CTRL_ALRM_M; 
+    hrtc->Instance->CTRL &= ~RTC_CTRL_ALRM_M;
 	HAL_RTC_WaitFlag(hrtc);
 }
 
+int HAL_RTC_GetAlrmFlag(RTC_HandleTypeDef *hrtc)
+{
+    return (hrtc->Instance->CTRL & RTC_CTRL_ALRM_M) >> RTC_CTRL_ALRM_S;
+}
 
-#ifdef MIK32_RTC_DEBUG
-
-void HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc)
+RTC_DateTypeDef HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc)
 {
     uint8_t TC, C, TY, Y, TM, M, TD, D;
     uint32_t rtc_date_read = hrtc->Instance->DATE;
+    RTC_DateTypeDef sDate = {0};
+
     TC = (rtc_date_read & RTC_DATE_TC_M) >> RTC_DATE_TC_S;
     C = (rtc_date_read & RTC_DATE_C_M) >> RTC_DATE_C_S;
     TY = (rtc_date_read & RTC_DATE_TY_M) >> RTC_DATE_TY_S;
@@ -216,12 +187,29 @@ void HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc)
     TD = (rtc_date_read & RTC_DATE_TD_M) >> RTC_DATE_TD_S;
     D = (rtc_date_read & RTC_DATE_D_M) >> RTC_DATE_D_S;
 
+    sDate.Century = TC * 10 + C;
+    sDate.Year = TY * 10 + Y;
+    sDate.Month = TM * 10 + M;
+    sDate.Day = TD * 10 + D;
+
+    #ifdef MIK32_RTC_DEBUG
     xprintf("\n%d%d век\n", TC, C);
     xprintf("%d%d.%d%d.%d%d\n", TD, D, TM, M, TY, Y);
+    #endif
+
+    return sDate;
 }
 
-void HAL_RTC_CheckTime(RTC_HandleTypeDef *hrtc)
+RTC_TimeTypeDef HAL_RTC_CheckTime(RTC_HandleTypeDef *hrtc)
 {
+    RTC_TimeTypeDef sTime;
+
+    sTime.Dow = hrtc->Instance->DOW;
+    sTime.Hours = hrtc->Instance->TH * 10 + hrtc->Instance->H;
+    sTime.Minutes = hrtc->Instance->TM * 10 + hrtc->Instance->M;
+    sTime.Seconds = hrtc->Instance->TS * 10 + hrtc->Instance->S;
+
+    #ifdef MIK32_RTC_DEBUG
     switch (hrtc->Instance->DOW)
     {
     case 1:
@@ -248,16 +236,12 @@ void HAL_RTC_CheckTime(RTC_HandleTypeDef *hrtc)
     }
     xprintf("%d%d:%d%d:%d%d.%d\n", hrtc->Instance->TH, hrtc->Instance->H, hrtc->Instance->TM, 
                                     hrtc->Instance->M, hrtc->Instance->TS, hrtc->Instance->S, hrtc->Instance->TOS);
+    #endif
 
+    return sTime;
 }
 
-void HAL_RTC_Check(RTC_HandleTypeDef *hrtc)
-{
-    HAL_RTC_CheckDate(hrtc);
-    HAL_RTC_CheckTime(hrtc);
-}
 
-#endif
 
 // #ifdef MIK32_HAL_IRQ
 // void HAL_RTC_IRQnEnable(RTC_HandleTypeDef *hrtc)
