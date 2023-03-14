@@ -1,18 +1,9 @@
 #ifndef MIK32_HAL_RTC
 #define MIK32_HAL_RTC
 
-
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "rtc.h"
 
-#ifdef MIK32_RTC_IRQn
-#include "mik32_hal_irq.h"
-#endif
-
-#ifdef MIK32_RTC_DEBUG
-#include "common.h"
-#endif
 
 typedef struct
 {
@@ -115,15 +106,16 @@ void HAL_RTC_SetAlarm(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *sAlarm);
 void HAL_RTC_AlarmDisable(RTC_HandleTypeDef *hrtc);
 void HAL_RTC_AlrmClear(RTC_HandleTypeDef *hrtc);
 
-#ifdef MIK32_RTC_IRQn
-void HAL_RTC_IRQnEnable(RTC_HandleTypeDef *hrtc);
-void HAL_RTC_IRQnDisable(RTC_HandleTypeDef *hrtc);
-#endif
-
 #ifdef MIK32_RTC_DEBUG
 void HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc);
 void HAL_RTC_CheckTime(RTC_HandleTypeDef *hrtc);
 void HAL_RTC_Check(RTC_HandleTypeDef *hrtc);
 #endif
+
+// /* Функции для прерываний RTC */
+// #ifdef MIK32_HAL_IRQ
+// void HAL_RTC_IRQnEnable(RTC_HandleTypeDef *hrtc);
+// void HAL_RTC_IRQnDisable(RTC_HandleTypeDef *hrtc);
+// #endif
 
 #endif

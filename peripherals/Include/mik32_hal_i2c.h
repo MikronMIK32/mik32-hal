@@ -1,14 +1,10 @@
 #ifndef MIK32_HAL_I2C
 #define MIK32_HAL_I2C
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "i2c.h"
 #include "stdbool.h"
 
-#ifdef MIK32_I2C_DEBUG
-#include "common.h"
-#endif
 
 #define I2C_TIMEOUT 1000000
 #define I2C_NBYTE_MAX 255

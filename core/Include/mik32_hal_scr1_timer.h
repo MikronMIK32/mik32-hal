@@ -1,7 +1,6 @@
 #ifndef MIK32_HAL_SCR1_TIMER
 #define MIK32_HAL_SCR1_TIMER
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "power_manager.h"
 
@@ -9,9 +8,6 @@
 #include "scr1_csr_encoding.h"
 #include "scr1_timer.h"
 
-#ifdef MIK32_SCR1_TIMER_DEBUG
-#include "common.h"
-#endif
 
 
 #define MIK32_FREQ          32000000      /* Входная частота, Гц */

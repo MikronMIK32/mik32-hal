@@ -1,15 +1,11 @@
 #ifndef MIK32_HAL_DAC
 #define MIK32_HAL_DAC
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
 
-#ifdef MIK32_DAC_DEBUG
-#include "common.h"
-#endif
 
 /* Title: Макросы */
 

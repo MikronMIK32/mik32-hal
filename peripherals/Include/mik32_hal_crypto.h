@@ -1,14 +1,10 @@
 #ifndef MIK32_HAL_CRYPTO
 #define MIK32_HAL_CRYPTO
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "crypto.h"
 #include "pad_config.h"
 
-#ifdef MIK32_CRYPTO_DEBUG
-#include "common.h"
-#endif
 
 
 /* Title: Макросы */

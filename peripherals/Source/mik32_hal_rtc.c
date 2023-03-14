@@ -200,34 +200,6 @@ void HAL_RTC_AlrmClear(RTC_HandleTypeDef *hrtc)
 	HAL_RTC_WaitFlag(hrtc);
 }
 
-#ifdef MIK32_RTC_IRQn
-void HAL_RTC_IRQnEnable(RTC_HandleTypeDef *hrtc)
-{
-
-    if(hrtc->Interrupts.Alarm == RTC_ALARM_IRQn_ENABLE)
-    {
-        HAL_EPIC_MaskLevelSet(EPIC_RTC_INDEX); // Прерывание по уровню
-        xprintf("Прерывание по уровню\n");
-        hrtc->Instance->CTRL |= RTC_CTRL_INTE_M; // Разрешение прерывания в RTC
-        HAL_RTC_WaitFlag(hrtc);
-        xprintf("Разрешить прерывание по Alrm\n");
-    }
-    
-    /* Включение глобальных прерываний */
-    HAL_IRQ_EnableInterrupts(); 
-    xprintf("Глобальные прерывания включены\n");
-
-}
-
-void HAL_RTC_IRQnDisable(RTC_HandleTypeDef *hrtc)
-{
-
-    HAL_EPIC_MaskLevelClear(EPIC_RTC_INDEX); // Выключение прерывания по уровню
-    hrtc->Instance->CTRL &= ~RTC_CTRL_INTE_M; // Запрет прерывания в RTC
-    HAL_RTC_WaitFlag(hrtc);
-
-}
-#endif
 
 #ifdef MIK32_RTC_DEBUG
 
@@ -286,3 +258,32 @@ void HAL_RTC_Check(RTC_HandleTypeDef *hrtc)
 }
 
 #endif
+
+// #ifdef MIK32_HAL_IRQ
+// void HAL_RTC_IRQnEnable(RTC_HandleTypeDef *hrtc)
+// {
+
+//     if(hrtc->Interrupts.Alarm == RTC_ALARM_IRQn_ENABLE)
+//     {
+//         HAL_EPIC_MaskLevelSet(EPIC_RTC_INDEX); // Прерывание по уровню
+//         xprintf("Прерывание по уровню\n");
+//         hrtc->Instance->CTRL |= RTC_CTRL_INTE_M; // Разрешение прерывания в RTC
+//         HAL_RTC_WaitFlag(hrtc);
+//         xprintf("Разрешить прерывание по Alrm\n");
+//     }
+    
+//     /* Включение глобальных прерываний */
+//     HAL_IRQ_EnableInterrupts(); 
+//     xprintf("Глобальные прерывания включены\n");
+
+// }
+
+// void HAL_RTC_IRQnDisable(RTC_HandleTypeDef *hrtc)
+// {
+
+//     HAL_EPIC_MaskLevelClear(EPIC_RTC_INDEX); // Выключение прерывания по уровню
+//     hrtc->Instance->CTRL &= ~RTC_CTRL_INTE_M; // Запрет прерывания в RTC
+//     HAL_RTC_WaitFlag(hrtc);
+
+// }
+// #endif

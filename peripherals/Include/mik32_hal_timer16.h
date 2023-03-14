@@ -1,16 +1,12 @@
 #ifndef MIK32_HAL_TIMER16
 #define MIK32_HAL_TIMER16
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "power_manager.h"
 #include "timer16.h"
 #include "pad_config.h"
 #include "stdbool.h"
 
-#ifdef MIK32_HAL_TIMER16_DEBUG
-#include "common.h"
-#endif
 
 
 /* Title: Макросы */

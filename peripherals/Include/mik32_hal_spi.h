@@ -1,14 +1,13 @@
-#ifndef MIK32_HAL_I2C
-#define MIK32_HAL_I2C
+#ifndef MIK32_HAL_SPI
+#define MIK32_HAL_SPI
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
-#include "spi.h"
-#include "stdbool.h"
+#include "power_manager.h"
 
-#ifdef MIK32_SPI_DEBUG
-#include "common.h"
-#endif
+#include "spi.h"
+// #include "inttypes.h"
+// #include "stdbool.h"
+
 
 
 /* Title: Макросы */

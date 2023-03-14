@@ -1,13 +1,9 @@
 #ifndef MIK32_HAL_CRC32
 #define MIK32_HAL_CRC32
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "crc.h"
 
-#ifdef MIK32_CRC_DEBUG
-#include "common.h"
-#endif
  
 /* Title: Макросы */
 

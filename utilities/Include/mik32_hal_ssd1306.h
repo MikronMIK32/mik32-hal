@@ -34,7 +34,6 @@
 
 #define SYMBOL_COLON            58
 
-#include "def_list.h"
 #include <stdint.h>
 #include "mik32_hal_i2c.h"
 
