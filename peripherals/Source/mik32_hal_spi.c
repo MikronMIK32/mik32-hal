@@ -2,12 +2,16 @@
 
 void HAL_SPI_Enable(SPI_HandleTypeDef *hspi)
 {
+    HAL_SPI_CheckError(hspi);
+    
     hspi->Instance->Enable = SPI_ENABLE_M;
 }
 
 void HAL_SPI_Disable(SPI_HandleTypeDef *hspi)
 {
     hspi->Instance->Enable &= ~SPI_ENABLE_M;
+
+    HAL_SPI_CheckError(hspi);
 }
 
 void HAL_SPI_ClearRxBuffer(SPI_HandleTypeDef *hspi)
@@ -146,14 +150,15 @@ void HAL_SPI_CheckError(SPI_HandleTypeDef *hspi)
 {
     if(hspi->Error.RXOVR || hspi->Error.ModeFail)
     {
-        HAL_SPI_ClearRxBuffer(hspi);
-        HAL_SPI_ClearRXFIFO(hspi);
-        HAL_SPI_ClearTXFIFO(hspi);
         #ifdef MIK32_SPI_DEBUG
         xprintf("OVR = %d; FAIL = %d\n", hspi->Error.RXOVR, hspi->Error.ModeFail);
         #endif
-        HAL_SPI_ClearError(hspi);
     } 
+
+    HAL_SPI_ClearRxBuffer(hspi);
+    HAL_SPI_ClearRXFIFO(hspi);
+    HAL_SPI_ClearTXFIFO(hspi);
+    HAL_SPI_ClearError(hspi);
 }
 
 void HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi)
@@ -216,7 +221,7 @@ void HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t transmit_bytes[], uint8_t
         HAL_SPI_Enable(hspi);
     }
     /* Очищение флагов ошибок hspi */
-    HAL_SPI_ClearError(hspi);
+    //HAL_SPI_ClearError(hspi);
 
     for(uint32_t i = 0; i < count; i++)
     {    
@@ -255,6 +260,6 @@ void HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t transmit_bytes[], uint8_t
         HAL_SPI_Disable(hspi);
     }
     /* Обработка ошибок */
-    HAL_SPI_CheckError(hspi);
+    //HAL_SPI_CheckError(hspi);
     
 }
