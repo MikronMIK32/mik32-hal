@@ -284,7 +284,7 @@ typedef struct
 
 /*
  * Struct: SPI_HandleTypeDef
- * Настройки инициализации SPI
+ * Настройки SPI
  * 
  */
 typedef struct

@@ -42,7 +42,7 @@ void HAL_I2C_SetClockSpeed(I2C_HandleTypeDef *hi2c)
     * 
     * SCLH(0-255) - Время удержания SCL в состоянии логической «1» в режиме ведущего
     * 
-    * PRESC(0-15) - Делитель частоты I2CCLK. Используется для вычесления периода сигнала TPRESC для счетчиков предустановки, 
+    * PRESC(0-15) - Делитель частоты I2CCLK. Используется для вычисления периода сигнала TPRESC для счетчиков предустановки, 
     * удержания, уровня «0» и «1»
     * 
     */
@@ -197,7 +197,7 @@ void HAL_I2C_Master_CheckError(I2C_HandleTypeDef *hi2c)
         xprintf("Ожидание превышено\n");
         #endif
 
-        HAL_I2C_Slave_Restart(hi2c);// Программный сброс модуля i2c и его повторная инициалиизация 
+        HAL_I2C_Slave_Restart(hi2c);// Программный сброс модуля i2c и его повторная инициализация 
         break;
     case I2C_ERROR_NACK:
         #ifdef MIK32_I2C_DEBUG
@@ -252,7 +252,7 @@ void HAL_I2C_Master_Transfer_Init(I2C_HandleTypeDef *hi2c)
     * 
     * NBYTES - Количество байт для приема / передачи
     * 
-    * AUTOEND - Управление режимом автоматического окончания: 0 – автоматическое окончание выкл; 1 – автоматическе окончание вкл
+    * AUTOEND - Управление режимом автоматического окончания: 0 – автоматическое окончание выкл; 1 – автоматическое окончание вкл
     * 
     */
     hi2c->Instance->CR2 |= I2C_CR2_SADD(hi2c->SlaveAddress) | I2C_CR2_WR_M;
@@ -467,7 +467,7 @@ void HAL_I2C_Master_ReadNBYTE(I2C_HandleTypeDef *hi2c, uint16_t slave_adr, uint8
             {
                 hi2c->Instance->CR2 |= I2C_CR2_NBYTES(I2C_NBYTE_MAX);
             }
-            else // Выключение режима Reload и отправка отсавшихся байтов
+            else // Выключение режима Reload и отправка оставшихся байтов
             {
                 HAL_I2C_ReloadDisable(hi2c);
                 uint32_t CR2_NBYTES = hi2c->Instance->CR2;
@@ -547,7 +547,7 @@ void HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c)
     } 
     
     /*
-    * Сброс флага ADDR для подверждения принятия адреса
+    * Сброс флага ADDR для подтверждения принятия адреса
     * ADDR - Флаг соответствия адреса в режиме ведомого
     */
     hi2c->Instance->ICR |= I2C_ICR_ADDRCF_M;
@@ -556,7 +556,7 @@ void HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c)
 
 void HAL_I2C_Slave_ACK(I2C_HandleTypeDef *hi2c)
 {
-    /*Формирование сигнала ACK*/
+    /* Формирование сигнала ACK в режиме "ведомый" */
     hi2c->Instance->CR2 &= ~I2C_CR2_NACK_M;
 }
 
@@ -594,7 +594,7 @@ void HAL_I2C_Slave_CheckError(I2C_HandleTypeDef *hi2c)
         xprintf("Ожидание превышено\n");
         #endif
 
-        HAL_I2C_Slave_Restart(hi2c);// Программный сброс модуля i2c и его повторная инициалиизация 
+        HAL_I2C_Slave_Restart(hi2c);// Программный сброс модуля i2c и его повторная инициализация 
         break;
     case I2C_ERROR_NACK:
         #ifdef MIK32_I2C_DEBUG
@@ -628,7 +628,7 @@ void HAL_I2C_Slave_WriteNBYTE(I2C_HandleTypeDef *hi2c, uint8_t data[], uint32_t 
     {
         
         int timeout_counter = 0; // Счетчик для ожидания
-        while(!(hi2c->Instance->ISR & I2C_ISR_TXE_M)) // TXE = 1 - Данные заиисываются в сдвиговый регистр
+        while(!(hi2c->Instance->ISR & I2C_ISR_TXE_M)) // TXE = 1 - Данные записываются в сдвиговый регистр
         {
             timeout_counter++;
             if(timeout_counter == I2C_TIMEOUT)

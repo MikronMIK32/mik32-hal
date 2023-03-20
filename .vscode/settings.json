@@ -1,0 +1,30 @@
+{
+    "cSpell.language": "en,ru,ru-RU",
+    "cSpell.words": [
+        "Базоый",
+        "дополнительнрого",
+        "Максимальлное",
+        "недозагрузка",
+        "ограчений",
+        "предустановки",
+        "режимн",
+        "соответсвии",
+        "ADDRESSINGMODE",
+        "autoend",
+        "AUTOEND",
+        "BERR",
+        "CCLK",
+        "CLOCKCYCLES",
+        "DUALADDRESS",
+        "nostretch",
+        "NOSTRETCH",
+        "OWNADDRESS",
+        "PRESC",
+        "RXNE",
+        "SCLDEL",
+        "SCLH",
+        "SCLL",
+        "SDADEL",
+        "TXIS"
+    ]
+}
