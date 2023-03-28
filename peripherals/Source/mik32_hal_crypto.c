@@ -166,7 +166,7 @@ void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uin
         break;
     }
     
-    if((text_length % block_size) != 0)
+    if(((text_length % block_size) != 0)/* && (hcrypto->CipherMode != CRYPTO_CIPHER_MODE_CTR) */)
     {
         #ifdef MIK32_CRYPTO_DEBUG
         xprintf("Длина текста не кратна длине блока\n");
@@ -180,16 +180,27 @@ void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uin
 
     for (volatile uint32_t block_index = 0; block_index < text_length; block_index += block_size)
     {
-        for (volatile uint32_t i = block_index; i < (block_index + block_size); i++)
+        for (volatile uint32_t word_index = block_index; word_index < (block_index + block_size); word_index++)
         {
-            hcrypto->Instance->BLOCK = plain_text[i];
+            if (word_index >= text_length)
+            {
+                break;
+            }
+            
+            hcrypto->Instance->BLOCK = plain_text[word_index];
+            
         }
 
         HAL_Crypto_WaitReady(hcrypto);
 
-        for (volatile uint32_t i = block_index; i < (block_index + block_size); i++)
+        for (volatile uint32_t word_index = block_index; word_index < (block_index + block_size); word_index++)
         {
-            cipher_text[i] = hcrypto->Instance->BLOCK;
+            if (word_index >= text_length)
+            {
+                break;
+            }
+            
+            cipher_text[word_index] = hcrypto->Instance->BLOCK;
         }
     }
      
@@ -212,12 +223,12 @@ void HAL_Crypto_Decode(Crypto_HandleTypeDef *hcrypto, uint32_t cipher_text[], ui
         break;
     }
 
-    if((text_length % block_size) != 0)
+    if(((text_length % block_size) != 0)/* && (hcrypto->CipherMode != CRYPTO_CIPHER_MODE_CTR)*/)
     {
         #ifdef MIK32_CRYPTO_DEBUG
         xprintf("Длина текста не кратна длине блока\n");
         #endif
-
+        
         return;
     }
     
@@ -226,17 +237,26 @@ void HAL_Crypto_Decode(Crypto_HandleTypeDef *hcrypto, uint32_t cipher_text[], ui
 
     for (volatile uint32_t block_index = 0; block_index < text_length; block_index += block_size)
     {
-        for (volatile uint32_t i = block_index; i < (block_index + block_size); i++)
+        for (volatile uint32_t word_index = block_index; word_index < (block_index + block_size); word_index++)
         {
-            hcrypto->Instance->BLOCK = cipher_text[i];
+            if (word_index >= text_length)
+            {
+                break;
+            }
+            hcrypto->Instance->BLOCK = cipher_text[word_index];
         }
 
         HAL_Crypto_WaitReady(hcrypto);
 
-        for (volatile uint32_t i = block_index; i < (block_index + block_size); i++)
+        for (volatile uint32_t word_index = block_index; word_index < (block_index + block_size); word_index++)
         {
-            plain_text[i] = hcrypto->Instance->BLOCK;
+            if (word_index >= text_length)
+            {
+                break;
+            }
+            plain_text[word_index] = hcrypto->Instance->BLOCK;
         }
     }
+
 }
 
