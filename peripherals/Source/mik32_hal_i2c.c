@@ -1,6 +1,6 @@
 #include "mik32_hal_i2c.h"
 
-
+//#define MIK32_I2C_DEBUG
 void HAL_I2C_Disable(I2C_HandleTypeDef *hi2c)
 {
     hi2c->Instance->CR1 &= ~I2C_CR1_PE_M;

@@ -95,7 +95,7 @@ void HAL_SPI_Init(SPI_HandleTypeDef *hspi)
                    (hspi->Init.DataSize << SPI_CONFIG_DATA_SZ_S);               /* Длина передаваемой посылки */
 
     
-    /* Выбор ведомого в соответсвии с режимом ManualCS */
+    /* Выбор ведомого в соответствии с режимом ManualCS */
     if(hspi->Init.ManualCS == SPI_MANUALCS_ON)
     {
         /* Ведомое устройство не выбрано. Ручное управление сигналом CS */
@@ -215,7 +215,7 @@ void HAL_SPI_CS_Disable(SPI_HandleTypeDef *hspi)
 
 void HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t transmit_bytes[], uint8_t receive_bytes[], uint32_t count)
 {
-    /* Не включатать SPI в ручном режиме */
+    /* Не включать SPI в ручном режиме */
     if(hspi->Init.ManualCS == SPI_MANUALCS_OFF)
     {
         HAL_SPI_Enable(hspi);

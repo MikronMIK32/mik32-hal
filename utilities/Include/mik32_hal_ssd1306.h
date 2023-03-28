@@ -1,7 +1,6 @@
 #ifndef MIK32_HAL_SSD130
 #define MIK32_HAL_SSD130
 
-
 #ifndef SSD1306_128x64
 #define SSD1306_128x32
 #endif
@@ -28,7 +27,7 @@
 /* Десятые минут */
 #define START_COLUMN_TM         75
 #define END_COLUMN_TM           99
-/* Еденицы минут */
+/* Единицы минут */
 #define START_COLUMN_M          100
 #define END_COLUMN_M            124
 
