@@ -6,8 +6,8 @@
 
 
 /* ReadStatus. Разрешить читать текущий статус канала */
-#define DMA_CURRENT_VALUE_DISABLED    0
-#define DMA_CURRENT_VALUE_ENABLED     1
+#define DMA_CURRENT_VALUE_DISABLE    0
+#define DMA_CURRENT_VALUE_ENABLE     1
 
 
 /* Channel */
@@ -101,7 +101,7 @@ typedef struct
 
 typedef struct
 {
-    DMA_CONFIG_TypeDef *Instance;
+    DMA_InitTypeDef *dma;
 
     DMA_ChannelInitHandleTypeDef ChannelInit;
     
@@ -109,25 +109,11 @@ typedef struct
 
 
 void HAL_DMA_SetChannel(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelIndex);
-void HAL_DMA_SetPriority(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelPriority);
-void HAL_DMA_SetReadMode(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelReadMode);
-void HAL_DMA_SetReadInc(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelReadInc);
-void HAL_DMA_SetReadSize(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelReadSize);
-void HAL_DMA_SetReadBurstSize(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelReadBurstSize);
-void HAL_DMA_SetReadRequest(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelReadRequest);
-void HAL_DMA_SetReadAck(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelReadAck);
-void HAL_DMA_SetWriteMode(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelWriteMode);
-void HAL_DMA_SetWriteInc(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelWriteInc);
-void HAL_DMA_SetWriteSize(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelWriteSize);
-void HAL_DMA_SetWriteBurstSize(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelWriteBurstSize);
-void HAL_DMA_SetWriteRequest(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelWriteRequest);
-void HAL_DMA_SetWriteAck(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelWriteAck);
-void HAL_DMA_ChannelInit(DMA_ChannelHandleTypeDef *hdma_channel);
-void HAL_DMA_SetCurrentValue(DMA_InitTypeDef *hdma, uint32_t ChannelStatus);
 void HAL_DMA_ClearLocalIrq(DMA_InitTypeDef *hdma);
 void HAL_DMA_ClearGlobalIrq(DMA_InitTypeDef *hdma);
 void HAL_DMA_ClearErrorIrq(DMA_InitTypeDef *hdma);
 void HAL_DMA_ClearIrq(DMA_InitTypeDef *hdma);
+void HAL_DMA_SetCurrentValue(DMA_InitTypeDef *hdma, uint32_t ChannelStatus);
 int HAL_DMA_GetChannelCurrentValue(DMA_InitTypeDef *hdma);
 void HAL_DMA_Init(DMA_InitTypeDef *hdma);
 void HAL_DMA_Wait(DMA_ChannelHandleTypeDef* hdma_channel);
