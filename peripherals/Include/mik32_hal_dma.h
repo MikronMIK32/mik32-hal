@@ -36,6 +36,23 @@
 #define DMA_CHANNEL_SIZE_WORD           2
 
 /* ReadRequest/WriteRequest */
+
+/* Для макетного образца V1 */
+// #define DMA_CHANNEL_USART_0_REQUEST        0
+// #define DMA_CHANNEL_USART_1_REQUEST        1
+// #define DMA_CHANNEL_CRYPTO_REQUEST         2
+// #define DMA_CHANNEL_SPI_0_REQUEST          3
+// #define DMA_CHANNEL_SPI_1_REQUEST          4
+// #define DMA_CHANNEL_I2C_0_REQUEST          5
+// #define DMA_CHANNEL_I2C_1_REQUEST          6
+// #define DMA_CHANNEL_SPIFI_REQUEST          7
+// #define DMA_CHANNEL_Timer32_1_REQUEST      8
+// #define DMA_CHANNEL_Timer32_2_REQUEST      9  
+// #define DMA_CHANNEL_DAC_0_REQUEST          10 
+// #define DMA_CHANNEL_DAC_1_REQUEST          11 
+// #define DMA_CHANNEL_Timer32_0_REQUEST      12 
+
+/* Для макетного образца V0 */
 #define DMA_CHANNEL_USART_0_REQUEST        0
 #define DMA_CHANNEL_USART_1_REQUEST        1
 #define DMA_CHANNEL_CRYPTO_REQUEST         2
@@ -44,11 +61,9 @@
 #define DMA_CHANNEL_I2C_0_REQUEST          5
 #define DMA_CHANNEL_I2C_1_REQUEST          6
 #define DMA_CHANNEL_SPIFI_REQUEST          7
-#define DMA_CHANNEL_Timer32_1_REQUEST      8
-#define DMA_CHANNEL_Timer32_2_REQUEST      9    /* #define DMA_TIMER32_1_INDEX         8*/
-#define DMA_CHANNEL_DAC_0_REQUEST          10   /* #define DMA_TIMER32_2_INDEX         9*/
-#define DMA_CHANNEL_DAC_1_REQUEST          11   /* #define DMA_TIMER32_0_INDEX         10 */
-#define DMA_CHANNEL_Timer32_0_REQUEST      12  
+#define DMA_CHANNEL_TIMER32_1_REQUEST      8
+#define DMA_CHANNEL_TIMER32_2_REQUEST      9
+#define DMA_CHANNEL_TIMER32_0_REQUEST      10
 
 /* ReadAck/WriteAck */
 #define DMA_CHANNEL_ACK_DISABLE            0 
