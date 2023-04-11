@@ -75,7 +75,7 @@ int HAL_DMA_GetChannelReadyStatus(DMA_ChannelHandleTypeDef* hdma_channel)
     uint32_t ChannelIndex = hdma_channel->ChannelInit.Channel;
 
     int status = ((hdma_channel->dma->Instance->CONTROL) & ((1 << ChannelIndex) << DMA_STATUS_READY_S));
-    status = status >> ChannelIndex;
+    status = (status >> DMA_STATUS_READY_S ) >> ChannelIndex;
     return status;
 }
 
@@ -84,7 +84,7 @@ int HAL_DMA_GetChannelIrq(DMA_ChannelHandleTypeDef* hdma_channel)
     uint32_t ChannelIndex = hdma_channel->ChannelInit.Channel;
 
     int ChannelIrq = ((hdma_channel->dma->Instance->CONTROL) & ((1 << ChannelIndex) << DMA_STATUS_IRQ_S));
-    ChannelIrq = ChannelIrq >> ChannelIndex;
+    ChannelIrq = ( ChannelIrq >> DMA_STATUS_IRQ_S ) >> ChannelIndex;
     return ChannelIrq;
 }
 
@@ -93,7 +93,7 @@ int HAL_DMA_GetBusError(DMA_ChannelHandleTypeDef* hdma_channel)
     uint32_t ChannelIndex = hdma_channel->ChannelInit.Channel;
 
     int BusError = ((hdma_channel->dma->Instance->CONTROL) & ((1 << ChannelIndex) << DMA_STATUS_ERROR_S));
-    BusError = BusError >> ChannelIndex;
+    BusError = ( BusError >> DMA_STATUS_ERROR_S ) >> ChannelIndex;
     return BusError;
 }
 
