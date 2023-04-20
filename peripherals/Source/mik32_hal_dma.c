@@ -1,6 +1,6 @@
 #include "mik32_hal_dma.h"
 
-
+// #define MIK32_DMA_DEBUG
 void HAL_DMA_SetChannel(DMA_ChannelHandleTypeDef *hdma_channel, uint32_t ChannelIndex)
 {
     hdma_channel->ChannelInit.Channel = ChannelIndex;
@@ -52,14 +52,13 @@ void HAL_DMA_Wait(DMA_ChannelHandleTypeDef* hdma_channel)
 {
     uint32_t ChannelIndex = hdma_channel->ChannelInit.Channel;
 
-    uint32_t Timeout = 10000000;
-    // while (((hdma_channel->dma->Instance->CONTROL) & (DMA_STATUS_READY(ChannelIndex))) == 0)
-    while (((hdma_channel->dma->Instance->CONTROL) & ((1 << ChannelIndex) << DMA_STATUS_READY_S)) == 0)
-    {
-        //xprintf("DMA.CONTROL: %d\n", hdma_channel->dma->Instance->CONTROL);
+    uint32_t mask = (1 << ChannelIndex) << DMA_STATUS_READY_S;
 
-        Timeout--;
-        if (Timeout == 0)
+    uint32_t Timeout = 1000000;
+    // while (((hdma_channel->dma->Instance->CONTROL) & (DMA_STATUS_READY(ChannelIndex))) == 0)
+    while ((hdma_channel->dma->Instance->CONTROL & mask) == 0)
+    {
+        if (Timeout-- == 0)
         {
             #ifdef MIK32_DMA_DEBUG
             xprintf("DMA.CONTROL: %d\n", hdma_channel->dma->Instance->CONTROL);
@@ -68,6 +67,7 @@ void HAL_DMA_Wait(DMA_ChannelHandleTypeDef* hdma_channel)
         }
         
     }
+
 }
 
 int HAL_DMA_GetChannelReadyStatus(DMA_ChannelHandleTypeDef* hdma_channel)
