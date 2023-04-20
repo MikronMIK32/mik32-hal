@@ -32,6 +32,7 @@
 #define END_COLUMN_M            124
 
 #define SYMBOL_COLON            58
+#define SYMBOL_SMILE            13
 
 #include <stdint.h>
 #include "mik32_hal_i2c.h"
