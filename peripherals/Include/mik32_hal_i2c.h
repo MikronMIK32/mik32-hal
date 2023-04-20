@@ -740,6 +740,18 @@ void HAL_I2C_Master_Read(I2C_HandleTypeDef *hi2c, uint16_t slave_adr, uint8_t da
 extern void HAL_I2C_Slave_SBC(I2C_HandleTypeDef *hi2c, uint32_t byte_count);
 
 /*
+ * Function: HAL_I2C_Slave_GetRequestedAddress
+ * Получить запрошенный адрес
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ * 
+ * Returns:
+ * (uint8_t ) - запрошенный адрес
+ */
+uint8_t HAL_I2C_Slave_GetRequestedAddress(I2C_HandleTypeDef *hi2c);
+
+/*
  * Function: HAL_I2C_Slave_WaitADDR
  * Ожидать соответствия с собственным адресом. 
  * 
@@ -752,6 +764,23 @@ extern void HAL_I2C_Slave_SBC(I2C_HandleTypeDef *hi2c, uint32_t byte_count);
  * void
  */
 void HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c);
+
+/*
+ * Function: HAL_I2C_Slave_GetDirection
+ * Получить направление передачи 
+ * 
+ * Возвращает значение флага DIR
+ * 
+ * - DIR = 0. Режим ведомого - приемник;
+ * - DIR = 1. Режим ведомого - передатчик.
+ * 
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ * 
+ * Returns:
+ * (int ) - Значение флага DIR
+ */
+int HAL_I2C_Slave_GetDirection(I2C_HandleTypeDef *hi2c);
 
 /*
  * Function: HAL_I2C_Slave_ACK
@@ -869,5 +898,109 @@ void HAL_I2C_Slave_Write(I2C_HandleTypeDef *hi2c, uint8_t data[], uint32_t byte_
  * void
  */
 void HAL_I2C_Slave_Read(I2C_HandleTypeDef *hi2c, uint8_t data[], uint32_t byte_count);
+
+/*
+ * Function: HAL_DMA_I2C_Master_Write
+ * Отправить данные ведущим с использованием DMA.
+ * 
+ * Канал DMA должен быть настроен до вызова этой функции.
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ * slave_adr - Адрес ведомого
+ * byte_count - Количество байт данных
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_Master_Write(I2C_HandleTypeDef *hi2c, uint16_t slave_adr, uint32_t byte_count);
+
+/*
+ * Function: HAL_DMA_I2C_Master_Read
+ * Прочитать данные ведущим с использованием DMA.
+ * 
+ * Канал DMA должен быть настроен до вызова этой функции.
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ * slave_adr - Адрес ведомого
+ * byte_count - Количество байт данных
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_Master_Read(I2C_HandleTypeDef *hi2c, uint16_t slave_adr, uint32_t byte_count);
+
+/*
+ * Function: HAL_DMA_I2C_TXEnable
+ * Включить режим поддержки DMA при передаче данных
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_TXEnable(I2C_HandleTypeDef *hi2c);
+
+/*
+ * Function: HAL_DMA_I2C_RXEnable
+ * Включить режим поддержки DMA при приеме данных
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_RXEnable(I2C_HandleTypeDef *hi2c);
+
+/*
+ * Function: HAL_DMA_I2C_Enable
+ * Включить режим поддержки DMA при передаче и приеме данных
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_Enable(I2C_HandleTypeDef *hi2c);
+
+/*
+ * Function: HAL_DMA_I2C_TXDisable
+ * Выключить режим поддержки DMA при передаче данных
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_TXDisable(I2C_HandleTypeDef *hi2c);
+
+/*
+ * Function: HAL_DMA_I2C_RXDisable
+ * Выключить режим поддержки DMA при приеме данных
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_RXDisable(I2C_HandleTypeDef *hi2c);
+
+/*
+ * Function: HAL_DMA_I2C_Disable
+ * Выключить режим поддержки DMA при передаче и приеме данных
+ *
+ * Parameters:
+ * hi2c - Указатель на структуру с настройками I2C
+ *
+ * Returns:
+ * void
+ */
+void HAL_DMA_I2C_Disable(I2C_HandleTypeDef *hi2c);
 
 #endif

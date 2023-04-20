@@ -1,6 +1,7 @@
 #include "mik32_hal_i2c.h"
 
-//#define MIK32_I2C_DEBUG
+
+// #define MIK32_I2C_DEBUG
 void HAL_I2C_Disable(I2C_HandleTypeDef *hi2c)
 {
     hi2c->Instance->CR1 &= ~I2C_CR1_PE_M;
@@ -175,6 +176,11 @@ void HAL_I2C_CheckError(I2C_HandleTypeDef *hi2c)
 /* Ведущий */
 void HAL_I2C_Master_Stop(I2C_HandleTypeDef *hi2c)
 {
+    if(hi2c->Init.AutoEnd == AUTOEND_DISABLE)
+    {
+        while(!(hi2c->Instance->ISR & I2C_ISR_TC_M));
+    }
+    
     hi2c->Instance->CR2 |= I2C_CR2_STOP_M;
     while(hi2c->Instance->ISR & I2C_ISR_BUSY_M);
     HAL_I2C_Slave_CleanFlag(hi2c);
@@ -255,12 +261,12 @@ void HAL_I2C_Master_Transfer_Init(I2C_HandleTypeDef *hi2c)
     * AUTOEND - Управление режимом автоматического окончания: 0 – автоматическое окончание выкл; 1 – автоматическое окончание вкл
     * 
     */
-    hi2c->Instance->CR2 |= I2C_CR2_SADD(hi2c->SlaveAddress) | I2C_CR2_WR_M;
+    hi2c->Instance->CR2 |= I2C_CR2_SADD(hi2c->SlaveAddress);
 
     switch (hi2c->TransferDirection)
     {
     case I2C_TRANSFER_WRITE:
-        hi2c->Instance->CR2 |= I2C_CR2_WR_M;
+        hi2c->Instance->CR2 &= ~I2C_CR2_RD_M;
         break;
 
     case I2C_TRANSFER_READ:
@@ -524,6 +530,11 @@ void __attribute__((weak)) HAL_I2C_Slave_SBC(I2C_HandleTypeDef *hi2c, uint32_t b
     HAL_I2C_Slave_ACK(hi2c);
 }
 
+uint8_t HAL_I2C_Slave_GetRequestedAddress(I2C_HandleTypeDef *hi2c)
+{
+    return (hi2c->Instance->ISR & I2C_ISR_ADDCODE_M) >> I2C_ISR_ADDCODE_S;
+}
+
 void HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c)
 {
     #ifdef MIK32_I2C_DEBUG
@@ -545,6 +556,7 @@ void HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c)
         }
         
     } 
+
     
     /*
     * Сброс флага ADDR для подтверждения принятия адреса
@@ -552,6 +564,16 @@ void HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c)
     */
     hi2c->Instance->ICR |= I2C_ICR_ADDRCF_M;
     while(hi2c->Instance->ISR & I2C_ISR_ADDR_M);
+}
+
+int HAL_I2C_Slave_GetDirection(I2C_HandleTypeDef *hi2c)
+{
+    int direction = (hi2c->Instance->ISR & I2C_ISR_DIR_M) >> I2C_ISR_DIR_S;
+    /* 
+    * DIR = 0. Режим ведомого - приемник
+    * DIR = 1. Режим ведомого - передатчик 
+    */
+    return direction;
 }
 
 void HAL_I2C_Slave_ACK(I2C_HandleTypeDef *hi2c)
@@ -801,4 +823,77 @@ void HAL_I2C_Slave_Read(I2C_HandleTypeDef *hi2c, uint8_t data[], uint32_t byte_c
         HAL_I2C_CheckError(hi2c);
         
     } 
+}
+
+
+/* DMA */
+void HAL_DMA_I2C_Master_Write(I2C_HandleTypeDef *hi2c, uint16_t slave_adr, uint32_t byte_count)
+{
+
+    // true когда адрес вводится без сдвига
+    if((hi2c->ShiftAddress == SHIFT_ADDRESS_DISABLE) && (slave_adr <= 0x7F))
+    {
+        slave_adr = slave_adr << 1;
+    } 
+
+    hi2c->SlaveAddress = slave_adr;
+    hi2c->TransferSize = byte_count;
+    hi2c->TransferDirection = I2C_TRANSFER_WRITE;
+
+    /* Настройка CR2 */
+    HAL_I2C_Master_Transfer_Init(hi2c);
+
+}
+
+void HAL_DMA_I2C_Master_Read(I2C_HandleTypeDef *hi2c, uint16_t slave_adr, uint32_t byte_count)
+{
+    
+    #ifdef MIK32_I2C_DEBUG
+    xprintf("\nЧтение\n");
+    uint16_t slave_adr_print = slave_adr; // переменная используется для вывода адреса
+    #endif
+
+    // true когда адрес вводится без сдвига
+    if((hi2c->ShiftAddress == SHIFT_ADDRESS_DISABLE) && (slave_adr <= 0x7F))
+    {
+        slave_adr = slave_adr << 1;
+    }
+
+    hi2c->SlaveAddress = slave_adr;
+    hi2c->TransferSize = byte_count;
+    hi2c->TransferDirection = I2C_TRANSFER_READ;
+
+    /* Настройка CR2 */
+    HAL_I2C_Master_Transfer_Init(hi2c);
+
+}
+
+void HAL_DMA_I2C_TXEnable(I2C_HandleTypeDef *hi2c)
+{
+    hi2c->Instance->CR1 |= I2C_CR1_TXDMAEN_M;
+}
+
+void HAL_DMA_I2C_RXEnable(I2C_HandleTypeDef *hi2c)
+{
+    hi2c->Instance->CR1 |= I2C_CR1_RXDMAEN_M;
+}
+
+void HAL_DMA_I2C_Enable(I2C_HandleTypeDef *hi2c)
+{
+    hi2c->Instance->CR1 |= I2C_CR1_TXDMAEN_M | I2C_CR1_RXDMAEN_M;
+}
+
+void HAL_DMA_I2C_TXDisable(I2C_HandleTypeDef *hi2c)
+{
+    hi2c->Instance->CR1 &= ~I2C_CR1_TXDMAEN_M;
+}
+
+void HAL_DMA_I2C_RXDisable(I2C_HandleTypeDef *hi2c)
+{
+    hi2c->Instance->CR1 &= ~I2C_CR1_RXDMAEN_M;
+}
+
+void HAL_DMA_I2C_Disable(I2C_HandleTypeDef *hi2c)
+{
+    hi2c->Instance->CR1 &= ~(I2C_CR1_TXDMAEN_M | I2C_CR1_RXDMAEN_M);
 }
