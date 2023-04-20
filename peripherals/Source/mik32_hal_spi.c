@@ -103,7 +103,7 @@ void HAL_SPI_Init(SPI_HandleTypeDef *hspi)
     }
     else
     {
-        /* Выбор ведомого устройства в атоматическом режиме управления CS */
+        /* Выбор ведомого устройства в автоматическом режиме управления CS */
         SPI_config |= hspi->ChipSelect << SPI_CONFIG_CS_S;
     }
 
@@ -111,7 +111,7 @@ void HAL_SPI_Init(SPI_HandleTypeDef *hspi)
     /* Установка выбранных настроек */
     hspi->Instance->Config = SPI_config;
 
-    /* уровень при котором регистр TX считается незаполненым и формируется прерывание */
+    /* уровень при котором регистр TX считается незаполненным и формируется прерывание */
     HAL_SPI_SetThresholdTX(hspi, SPI_THRESHOLD_DEFAULT);
 
     HAL_SPI_ClearRxBuffer(hspi);
@@ -241,7 +241,7 @@ void HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t transmit_bytes[], uint8_t
         /* Чтение слова */
         for (uint8_t offset = 0; offset < hspi->Init.DataSize + 1; offset++)
         {
-            /* Ожидание когда в RX_FIFO появится хотябы один байт */
+            /* Ожидание когда в RX_FIFO появится хотя бы один байт */
             HAL_SPI_WaitRxNotEmpty(hspi);
             /* Чтение байта */
             receive_bytes[i + offset] = hspi->Instance->RxData;
@@ -254,7 +254,7 @@ void HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t transmit_bytes[], uint8_t
         i = i + hspi->Init.DataSize;
     }
 
-    /* Не выключатать SPI в ручном режиме */
+    /* Не выключать SPI в ручном режиме */
     if(hspi->Init.ManualCS == SPI_MANUALCS_OFF)
     {
         HAL_SPI_Disable(hspi);
