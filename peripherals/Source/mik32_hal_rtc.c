@@ -44,7 +44,7 @@ void HAL_RTC_SetTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *sTime)
 
     uint32_t RTC_time = (DOW << RTC_TIME_DOW_S) | // День недели
                         (TH << RTC_TIME_TH_S)   | // Десятки часов
-                        (H << RTC_TIME_H_S)     | // Еденицы часов
+                        (H << RTC_TIME_H_S)     | // Единицы часов
                         (TM << RTC_TIME_TM_S)   | // Десятки минут
                         (M << RTC_TIME_M_S)     | // Единицы минут 
                         (TS << RTC_TIME_TS_S)   | // Десятки секунд
@@ -101,7 +101,7 @@ void HAL_RTC_Alarm_SetTime(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *sAlarm)
 
     uint32_t RTC_alarm_time = (DOW << RTC_TIME_DOW_S) | // День недели
                               (TH << RTC_TIME_TH_S)   | // Десятки часов
-                              (H << RTC_TIME_H_S)     | // Еденицы часов
+                              (H << RTC_TIME_H_S)     | // Единицы часов
                               (TM << RTC_TIME_TM_S)   | // Десятки минут
                               (M << RTC_TIME_M_S)     | // Единицы минут 
                               (TS << RTC_TIME_TS_S)   | // Десятки секунд
@@ -172,7 +172,7 @@ int HAL_RTC_GetAlrmFlag(RTC_HandleTypeDef *hrtc)
     return (hrtc->Instance->CTRL & RTC_CTRL_ALRM_M) >> RTC_CTRL_ALRM_S;
 }
 
-RTC_DateTypeDef HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc)
+RTC_DateTypeDef HAL_RTC_GetDate(RTC_HandleTypeDef *hrtc)
 {
     uint8_t TC, C, TY, Y, TM, M, TD, D;
     uint32_t rtc_date_read = hrtc->Instance->DATE;
@@ -200,7 +200,7 @@ RTC_DateTypeDef HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc)
     return sDate;
 }
 
-RTC_TimeTypeDef HAL_RTC_CheckTime(RTC_HandleTypeDef *hrtc)
+RTC_TimeTypeDef HAL_RTC_GetTime(RTC_HandleTypeDef *hrtc)
 {
     RTC_TimeTypeDef sTime;
 
@@ -241,33 +241,24 @@ RTC_TimeTypeDef HAL_RTC_CheckTime(RTC_HandleTypeDef *hrtc)
     return sTime;
 }
 
+void HAL_RTC_SetInterruptAlarm(RTC_HandleTypeDef *hrtc, uint32_t InterruptEnable)
+{
+    hrtc->Interrupts.Alarm = InterruptEnable;
 
+    uint32_t config = hrtc->Instance->CTRL;
+    config &= ~RTC_CTRL_INTE_M;
+    config |= InterruptEnable << RTC_CTRL_INTE_S;
+    hrtc->Instance->CTRL = config;
 
-// #ifdef MIK32_HAL_IRQ
-// void HAL_RTC_IRQnEnable(RTC_HandleTypeDef *hrtc)
-// {
+    HAL_RTC_WaitFlag(hrtc);
+}
 
-//     if(hrtc->Interrupts.Alarm == RTC_ALARM_IRQn_ENABLE)
-//     {
-//         HAL_EPIC_MaskLevelSet(EPIC_RTC_INDEX); // Прерывание по уровню
-//         xprintf("Прерывание по уровню\n");
-//         hrtc->Instance->CTRL |= RTC_CTRL_INTE_M; // Разрешение прерывания в RTC
-//         HAL_RTC_WaitFlag(hrtc);
-//         xprintf("Разрешить прерывание по Alrm\n");
-//     }
-    
-//     /* Включение глобальных прерываний */
-//     HAL_IRQ_EnableInterrupts(); 
-//     xprintf("Глобальные прерывания включены\n");
+void HAL_RTC_InterruptInit(RTC_HandleTypeDef *hrtc)
+{
+    HAL_RTC_SetInterruptAlarm(hrtc, hrtc->Interrupts.Alarm);
+}
 
-// }
-
-// void HAL_RTC_IRQnDisable(RTC_HandleTypeDef *hrtc)
-// {
-
-//     HAL_EPIC_MaskLevelClear(EPIC_RTC_INDEX); // Выключение прерывания по уровню
-//     hrtc->Instance->CTRL &= ~RTC_CTRL_INTE_M; // Запрет прерывания в RTC
-//     HAL_RTC_WaitFlag(hrtc);
-
-// }
-// #endif
+int HAL_RTC_GetINTE(RTC_HandleTypeDef *hrtc)
+{
+    return (hrtc->Instance->CTRL & RTC_CTRL_INTE_M) >> RTC_CTRL_INTE_S;
+}

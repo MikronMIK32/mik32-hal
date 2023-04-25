@@ -62,9 +62,16 @@
 #define RTC_WEEKDAY_SATURDAY           6
 #define RTC_WEEKDAY_SUNDAY             7
 
-/* Прерывание будильника Alarm */
-#define RTC_ALARM_IRQn_DISABLE         0
-#define RTC_ALARM_IRQn_ENABLE          1
+/*
+ * Defines: Прерывание будильника Alarm 
+ *
+ * 
+ * RTC_ALARM_IRQ_DISABLE - Запретить прерывание Alarm
+ * RTC_ALARM_IRQ_ENABLE  - Разрешить прерывание Alarm
+ *
+ */
+#define RTC_ALARM_IRQ_DISABLE         0   /* Запретить прерывание Alarm */
+#define RTC_ALARM_IRQ_ENABLE          1   /* Разрешить прерывание Alarm */
 
 /* Title: Структуры */
 
@@ -83,12 +90,12 @@ typedef struct
 {
   /*
   * Variable: Instance
-  * Базоый адрес регистров RTC
+  * Базовый адрес регистров RTC
   *
   */
   RTC_TypeDef                 *Instance;
 
-  //RTC_IRQnTypeDef             Interrupts; /* Прерывания RTC */
+  RTC_IRQnTypeDef             Interrupts; /* Прерывания RTC */
 
 } RTC_HandleTypeDef;
 
@@ -394,7 +401,7 @@ void HAL_RTC_ClearAlrmFlag(RTC_HandleTypeDef *hrtc);
 int HAL_RTC_GetAlrmFlag(RTC_HandleTypeDef *hrtc);
 
 /*  
- * Function: HAL_RTC_CheckDate
+ * Function: HAL_RTC_GetDate
  * 
  * Получить текущую дату RTC
  * 
@@ -405,10 +412,10 @@ int HAL_RTC_GetAlrmFlag(RTC_HandleTypeDef *hrtc);
  * Returns:
  * (RTC_DateTypeDef ) - Структура с текущей датой RTC
  */
-RTC_DateTypeDef HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc);
+RTC_DateTypeDef HAL_RTC_GetDate(RTC_HandleTypeDef *hrtc);
 
 /*  
- * Function: HAL_RTC_CheckTime
+ * Function: HAL_RTC_GetTime
  * 
  * Получить текущее время RTC
  * 
@@ -419,12 +426,49 @@ RTC_DateTypeDef HAL_RTC_CheckDate(RTC_HandleTypeDef *hrtc);
  * Returns:
  * (RTC_DateTypeDef ) - Структура с текущей датой RTC
  */
-RTC_TimeTypeDef HAL_RTC_CheckTime(RTC_HandleTypeDef *hrtc);
+RTC_TimeTypeDef HAL_RTC_GetTime(RTC_HandleTypeDef *hrtc);
 
-// /* Функции для прерываний RTC */
-// #ifdef MIK32_HAL_IRQ
-// void HAL_RTC_IRQnEnable(RTC_HandleTypeDef *hrtc);
-// void HAL_RTC_IRQnDisable(RTC_HandleTypeDef *hrtc);
-// #endif
+/*
+ * Function: HAL_RTC_SetInterruptAlarm
+ * Задать разрешение на включение прерывания Alarm в соответствии с InterruptEnable
+ *
+ * Parameters:
+ * hrtc - Указатель на структуру с настройками RTC.
+ * InterruptEnable - Разрешение прерывания Alarm.
+ * 
+ * Этот параметр должен быть одним из значений:
+ * 
+ * - <RTC_ALARM_IRQ_DISABLE>
+ * - <RTC_ALARM_IRQ_ENABLE>
+ *
+ * Returns:
+ * void.
+ */
+void HAL_RTC_SetInterruptAlarm(RTC_HandleTypeDef *hrtc, uint32_t InterruptEnable);
+
+/*
+ * Function: HAL_RTC_InterruptInit
+ * Инициализировать прерывания RTC в соответствии с настройками hrtc
+ *
+ * Parameters:
+ * hrtc - Указатель на структуру с настройками RTC.
+ *
+ * Returns:
+ * void.
+ */
+void HAL_RTC_InterruptInit(RTC_HandleTypeDef *hrtc);
+
+/*
+ * Function: HAL_RTC_GetINTE
+ * Получить текущее значение бита разрешения прерывания Alarm - INTE
+ *
+ * Parameters:
+ * hrtc - Указатель на структуру с настройками RTC.
+ *
+ * Returns:
+ * (int ) - Текущее значение бита разрешения прерывания Alarm - INTE
+ *
+ */
+int HAL_RTC_GetINTE(RTC_HandleTypeDef *hrtc);
 
 #endif
