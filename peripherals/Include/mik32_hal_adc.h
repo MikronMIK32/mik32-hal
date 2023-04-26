@@ -1,10 +1,10 @@
 #ifndef MIK32_HAL_ADC
 #define MIK32_HAL_ADC
 
-#include "mcu32_memory_map.h"
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
+#include "mcu32_memory_map.h"
 
 
 /* Title: Макросы */

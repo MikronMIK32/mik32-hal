@@ -1,5 +1,7 @@
 #include "mik32_hal_irq.h"
 
+// #define MIK32_IRQ_DEBUG
+
 void HAL_IRQ_EnableInterrupts()
 {   
     set_csr(mstatus, MSTATUS_MIE);
@@ -81,6 +83,13 @@ __attribute__ ((weak)) void ADC_IRQHandler() {}
 
 void trap_handler()
 {
+  #ifdef MIK32_IRQ_DEBUG
+  xprintf("\nTrap\n");
+  xprintf("EPIC->RAW_STATUS = %d\n", EPIC->RAW_STATUS);
+  xprintf("EPIC->STATUS = %d\n", EPIC->STATUS);
+  #endif
+
+  
   if (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_0_INDEX)) 
   {
 		Timer32_0_IRQHandler();
@@ -236,7 +245,14 @@ void trap_handler()
 		ADC_IRQHandler();
 	}
 
-    /* Сброс прерываний */
-    HAL_EPIC_Clear(0xFFFFFFFF);
+  /* Сброс прерываний */
+  HAL_EPIC_Clear(0xFFFFFFFF);
+
+
+  #ifdef MIK32_IRQ_DEBUG
+  xprintf("Clear\n");
+  xprintf("EPIC->RAW_STATUS = %d\n", EPIC->RAW_STATUS);
+  xprintf("EPIC->STATUS = %d\n", EPIC->STATUS);
+  #endif
 }
 
