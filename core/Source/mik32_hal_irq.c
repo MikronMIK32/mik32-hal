@@ -81,42 +81,42 @@ __attribute__ ((weak)) void ADC_IRQHandler() {}
 
 void trap_handler()
 {
-  if (EPIC->STATUS & (1 << EPIC_TIMER32_0_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_0_INDEX)) 
   {
 		Timer32_0_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_UART_0_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_UART_0_INDEX)) 
   {
 		UART_0_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_UART_1_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_UART_1_INDEX)) 
   {
 		UART_1_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_SPI_0_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_SPI_0_INDEX)) 
   {
 		SPI_0_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_SPI_1_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_SPI_1_INDEX)) 
   {
 		SPI_1_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_GPIO_IRQ_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_GPIO_IRQ_INDEX)) 
   {
 		GPIO_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_I2C_0_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_I2C_0_INDEX)) 
   {
 		I2C_0_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_I2C_1_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_I2C_1_INDEX)) 
   {
 		I2C_1_IRQHandler();
 	}
@@ -126,67 +126,67 @@ void trap_handler()
 		WDT_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_TIMER16_0_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_0_INDEX)) 
   {
 		TIMER16_0_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_TIMER16_1_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_1_INDEX)) 
   {
 		TIMER16_1_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_TIMER16_2_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_2_INDEX)) 
   {
 		TIMER16_2_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_TIMER32_1_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_1_INDEX)) 
   {
 		TIMER32_1_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_TIMER32_2_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_2_INDEX)) 
   {
 		TIMER32_2_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_EEPROM_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_SPIFI_INDEX)) 
   {
 		SPIFI_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_RTC_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_RTC_INDEX)) 
   {
 		RTC_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_EEPROM_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_EEPROM_INDEX)) 
   {
 		EEPROM_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_WDT_DOM3_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_WDT_DOM3_INDEX)) 
   {
 		WDT_DOM3_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_WDT_SPIFI_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_WDT_SPIFI_INDEX)) 
   {
 		WDT_SPIFI_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_WDT_EEPROM_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_WDT_EEPROM_INDEX)) 
   {
 		WDT_EEPROM_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_DMA_GLB_ERR_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_DMA_GLB_ERR_INDEX)) 
   {
 		DMA_GLB_ERR_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_DMA_CHANNELS_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_DMA_CHANNELS_INDEX)) 
   {
 		DMA_CHANNELS_IRQHandler();
 	}
@@ -226,7 +226,7 @@ void trap_handler()
 		BOR_IRQHandler();
 	}
 
-  if (EPIC->STATUS & (1 << EPIC_TSENS_INDEX)) 
+  if (EPIC->RAW_STATUS & (1 << EPIC_TSENS_INDEX)) 
   {
 		TSENS_IRQHandler();
 	}
