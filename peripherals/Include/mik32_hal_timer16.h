@@ -439,6 +439,42 @@
  */
 #define TIMER16_ENCODER_ENABLE     1
 
+/* Title: Прерывания Timer16 */
+#define TIMER16_DOWN_IRQ        6
+#define TIMER16_UP_IRQ          5
+#define TIMER16_ARROK_IRQ       4
+#define TIMER16_CMPOK_IRQ       3
+#define TIMER16_EXTTRIG_IRQ     2
+#define TIMER16_ARRM_IRQ        1
+#define TIMER16_CMPM_IRQ        0
+
+/* Разрешить/запретить */   
+#define TIMER16_DOWN_IRQ_DISABLE        0
+#define TIMER16_DOWN_IRQ_ENABLE         1
+
+#define TIMER16_UP_IRQ_DISABLE          0
+#define TIMER16_UP_IRQ_ENABLE           1
+
+#define TIMER16_ARROK_IRQ_DISABLE       0
+#define TIMER16_ARROK_IRQ_ENABLE        1
+
+#define TIMER16_CMPOK_IRQ_DISABLE       0
+#define TIMER16_CMPOK_IRQ_ENABLE        1
+
+#define TIMER16_EXTTRIG_IRQ_DISABLE     0
+#define TIMER16_EXTTRIG_IRQ_ENABLE      1
+
+#define TIMER16_ARRM_IRQ_DISABLE        0
+#define TIMER16_ARRM_IRQ_ENABLE         1
+
+#define TIMER16_CMPM_IRQ_DISABLE        0
+#define TIMER16_CMPM_IRQ_ENABLE         1
+
+/* Используется для учета текущей маски прерывания в функции HAL_Timer16_GetInterruptStatus */
+#define TIMER16_IRQ_MASK_DISABLE          0
+#define TIMER16_IRQ_MASK_ENABLE           1
+
+
 /* Title: Структуры */
 /*
  * Struct: Timer16_ClockConfigTypeDef
@@ -518,6 +554,23 @@ typedef struct
 
 } Timer16_FilterConfigTypeDef;
 
+typedef struct
+{
+  uint8_t DOWN; /* Изменение направления счетчика c вверх на вниз. Режим энкодера */
+
+  uint8_t UP; /* Изменение направления счетчика с вниз на вверх. Режим энкодера */
+
+  uint8_t ARROK; /* Обновление регистра автозагрузки OK */
+
+  uint8_t CMPOK; /* Обновление регистра сравнения OK */
+
+  uint8_t EXTTRIG; /* Событие фронта внешнего триггера */
+
+  uint8_t ARRM; /* Соответствие автозагрузки */
+
+  uint8_t CMPM; /* Совпадение сравнения */
+
+} Timer16_IRQnTypeDef;
 
 /*
  * Struct: Timer16_HandleTypeDef
@@ -591,6 +644,13 @@ typedef struct
     *
     */
     uint8_t EncoderMode;
+
+    /*
+    * Variable: Interrupts
+    * Прерывания Timer16
+    *
+    */
+    Timer16_IRQnTypeDef Interrupts;
     
 } Timer16_HandleTypeDef;
 
@@ -772,18 +832,6 @@ void HAL_Timer16_SetARR(Timer16_HandleTypeDef *htimer16, uint16_t Period);
  * void
  */
 void HAL_Timer16_SetCMP(Timer16_HandleTypeDef *htimer16, uint16_t Compare);
-
-/*
- * Function: HAL_Timer16_ClearCMPFlag
- * Очистить флаг CMPM, который устанавливается при совпадении значений в регистрах CNT с CMP.
- *
- * Parameters:
- * htimer16 - Указатель на структуру с настройками Timer16.
- *
- * Returns:
- * void
- */
-void HAL_Timer16_ClearCMPFlag(Timer16_HandleTypeDef *htimer16);
 
 /*
  * Function: HAL_Timer16_SelectTrigger
@@ -1056,18 +1104,6 @@ void HAL_Timer16_StartOneShot(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
 void HAL_Timer16_StartSetOnes(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
 
 /*
- * Function: HAL_Timer16_ClearTriggerFlag
- * Очистить флаг триггера - EXTTRIG.
- *
- * Parameters:
- * htimer16 - Указатель на структуру с настройками Timer16.
- *
- * Returns:
- * void
- */
-void HAL_Timer16_ClearTriggerFlag(Timer16_HandleTypeDef *htimer16);
-
-/*
  * Function: HAL_Timer16_WaitTrigger
  * TОжидать флаг триггера - EXTTRIG.
  *
@@ -1079,29 +1115,17 @@ void HAL_Timer16_ClearTriggerFlag(Timer16_HandleTypeDef *htimer16);
  */
 void HAL_Timer16_WaitTrigger(Timer16_HandleTypeDef *htimer16);
 
-/*
- * Function: HAL_Timer16_ClearUpFlag
- * Очистить флаг смены направления счета - UP.
- *
- * Parameters:
- * htimer16 - Указатель на структуру с настройками Timer16.
- *
- * Returns:
- * void
- */
-void HAL_Timer16_ClearUpFlag(Timer16_HandleTypeDef *htimer16);
-
-/*
- * Function: HAL_Timer16_ClearDownFlag
- * Очистить флаг смены направления счета - DOWN.
- *
- * Parameters:
- * htimer16 - Указатель на структуру с настройками Timer16.
- *
- * Returns:
- * void.
- */
-void HAL_Timer16_ClearDownFlag(Timer16_HandleTypeDef *htimer16);
-
+void HAL_Timer16_SetInterruptMask(Timer16_HandleTypeDef *htimer16, uint32_t InterruptMask);
+void HAL_Timer16_SetInterruptDOWN(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
+void HAL_Timer16_SetInterruptUP(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
+void HAL_Timer16_SetInterruptARROK(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
+void HAL_Timer16_SetInterruptCMPOK(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
+void HAL_Timer16_SetInterruptEXTTRIG(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
+void HAL_Timer16_SetInterruptARRM(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
+void HAL_Timer16_SetInterruptCMPM(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
+void HAL_Timer16_InterruptInit(Timer16_HandleTypeDef *htimer16);
+uint32_t HAL_Timer16_GetInterruptStatus(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt, uint32_t Mask);
+void HAL_Timer16_ClearInterruptFlag(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt);
+void HAL_Timer16_SetClearInterruptMask(Timer16_HandleTypeDef *htimer16, uint32_t InterruptMask);
 
 #endif

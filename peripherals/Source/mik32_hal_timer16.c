@@ -107,14 +107,14 @@ void HAL_Timer16_SetPreload(Timer16_HandleTypeDef *htimer16, uint8_t Preload)
 void HAL_Timer16_WaitARROK(Timer16_HandleTypeDef *htimer16)
 {
     while (!(htimer16->Instance->ISR & TIMER16_ISR_ARR_OK_M));
-    htimer16->Instance->ICR |= TIMER16_ICR_ARROKCF_M;
+    HAL_Timer16_ClearInterruptFlag(htimer16, TIMER16_ARROK_IRQ);
     //while (htimer16->Instance->ISR & TIMER16_ISR_ARR_OK_M);
 }
 
 void HAL_Timer16_WaitCMPOK(Timer16_HandleTypeDef *htimer16)
 {
     while (!(htimer16->Instance->ISR & TIMER16_ISR_CMP_OK_M));
-    htimer16->Instance->ICR |= TIMER16_ICR_CMPOKCF_M;
+    HAL_Timer16_ClearInterruptFlag(htimer16, TIMER16_CMPOK_IRQ);
     //while (htimer16->Instance->ISR & TIMER16_ISR_CMP_OK_M);
 }
 
@@ -124,14 +124,23 @@ void HAL_Timer16_SetARR(Timer16_HandleTypeDef *htimer16, uint16_t Period)
 
     /* Выключение таймера для записи ARR */
     htimer16->Instance->ARR = Period;
-    HAL_Timer16_WaitARROK(htimer16);
+    if(htimer16->Interrupts.CMPOK == TIMER16_CMPOK_IRQ_DISABLE)
+    {
+        HAL_Timer16_WaitARROK(htimer16);
+    }
+    
 }
 
 void HAL_Timer16_SetCMP(Timer16_HandleTypeDef *htimer16, uint16_t Compare)
 {
     /* Выключение таймера для записи CMP */
     htimer16->Instance->CMP = Compare;
-    HAL_Timer16_WaitCMPOK(htimer16);
+
+    if(htimer16->Interrupts.CMPOK == TIMER16_CMPOK_IRQ_DISABLE)
+    {
+        HAL_Timer16_WaitCMPOK(htimer16);
+    }
+    
 }
 
 void HAL_Timer16_SelectTrigger(Timer16_HandleTypeDef *htimer16, uint8_t TriggerSource)
@@ -271,11 +280,6 @@ uint8_t HAL_Timer16_CheckCMP(Timer16_HandleTypeDef *htimer16)
     }
 }
 
-void HAL_Timer16_ClearCMPFlag(Timer16_HandleTypeDef *htimer16)
-{
-    htimer16->Instance->ICR |= TIMER16_ICR_CMPMCF_M;
-}
-
 void HAL_Timer16_WaitCMP(Timer16_HandleTypeDef *htimer16)
 {
     while (!(htimer16->Instance->ISR & TIMER16_ISR_CMP_MATCH_M));
@@ -347,23 +351,158 @@ void HAL_Timer16_StartSetOnes(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
     HAL_Timer16_StartSingleMode(htimer16);
 }
 
-void HAL_Timer16_ClearTriggerFlag(Timer16_HandleTypeDef *htimer16)
-{
-    htimer16->Instance->ICR |= TIMER16_ICR_EXTTRIGCF_M;
-}
-
 void HAL_Timer16_WaitTrigger(Timer16_HandleTypeDef *htimer16)
 {
     while (!(htimer16->Instance->ISR & TIMER16_ISR_EXT_TRIG_M));
-    HAL_Timer16_ClearTriggerFlag(htimer16);
+    HAL_Timer16_ClearInterruptFlag(htimer16, TIMER16_EXTTRIG_IRQ);
 }
 
-void HAL_Timer16_ClearUpFlag(Timer16_HandleTypeDef *htimer16)
+void HAL_Timer16_SetInterruptMask(Timer16_HandleTypeDef *htimer16, uint32_t InterruptMask)
 {
-    htimer16->Instance->ICR |= TIMER16_ICR_UPCF_M;
+    htimer16->Instance->IER = InterruptMask;
+
+    htimer16->Interrupts.DOWN = (InterruptMask & TIMER16_IER_DOWNIE_M) >> TIMER16_IER_DOWNIE_S;
+    htimer16->Interrupts.UP = (InterruptMask & TIMER16_IER_UPIE_M) >> TIMER16_IER_UPIE_S;
+    htimer16->Interrupts.ARROK = (InterruptMask & TIMER16_IER_ARROKIE_M) >> TIMER16_IER_ARROKIE_S;
+    htimer16->Interrupts.CMPOK = (InterruptMask & TIMER16_IER_CMPOKIE_M) >> TIMER16_IER_CMPOKIE_S;
+    htimer16->Interrupts.EXTTRIG = (InterruptMask & TIMER16_IER_EXTTRIGIE_M) >> TIMER16_IER_EXTTRIGIE_S;
+    htimer16->Interrupts.ARRM = (InterruptMask & TIMER16_IER_ARRMIE_M) >> TIMER16_IER_ARRMIE_S;
+    htimer16->Interrupts.CMPM = (InterruptMask & TIMER16_IER_CMPMIE_M) >> TIMER16_IER_CMPMIE_S;
 }
 
-void HAL_Timer16_ClearDownFlag(Timer16_HandleTypeDef *htimer16)
+void HAL_Timer16_SetInterruptDOWN(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable)
 {
-    htimer16->Instance->ICR |= TIMER16_ICR_DOWNCF_M;
+    htimer16->Interrupts.DOWN = InterruptEnable;
+
+    uint32_t config = htimer16->Instance->IER;
+    config &= ~TIMER16_IER_DOWNIE_M;
+    config |= InterruptEnable << TIMER16_IER_DOWNIE_S;
+    htimer16->Instance->IER = config;
+}
+
+void HAL_Timer16_SetInterruptUP(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable)
+{
+    htimer16->Interrupts.UP = InterruptEnable;
+
+    uint32_t config = htimer16->Instance->IER;
+    config &= ~TIMER16_IER_UPIE_M;
+    config |= InterruptEnable << TIMER16_IER_UPIE_S;
+    htimer16->Instance->IER = config;
+}
+
+void HAL_Timer16_SetInterruptARROK(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable)
+{
+    htimer16->Interrupts.ARROK = InterruptEnable;
+
+    uint32_t config = htimer16->Instance->IER;
+    config &= ~TIMER16_IER_ARROKIE_M;
+    config |= InterruptEnable << TIMER16_IER_ARROKIE_S;
+    htimer16->Instance->IER = config;
+}
+
+void HAL_Timer16_SetInterruptCMPOK(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable)
+{
+    htimer16->Interrupts.CMPOK = InterruptEnable;
+
+    uint32_t config = htimer16->Instance->IER;
+    config &= ~TIMER16_IER_CMPOKIE_M;
+    config |= InterruptEnable << TIMER16_IER_CMPOKIE_S;
+    htimer16->Instance->IER = config;
+}
+
+void HAL_Timer16_SetInterruptEXTTRIG(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable)
+{
+    htimer16->Interrupts.EXTTRIG = InterruptEnable;
+
+    uint32_t config = htimer16->Instance->IER;
+    config &= ~TIMER16_IER_EXTTRIGIE_M;
+    config |= InterruptEnable << TIMER16_IER_EXTTRIGIE_S;
+    htimer16->Instance->IER = config;
+}
+
+void HAL_Timer16_SetInterruptARRM(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable)
+{
+    htimer16->Interrupts.ARRM = InterruptEnable;
+
+    uint32_t config = htimer16->Instance->IER;
+    config &= ~TIMER16_IER_ARRMIE_M;
+    config |= InterruptEnable << TIMER16_IER_ARRMIE_S;
+    htimer16->Instance->IER = config;
+}
+
+void HAL_Timer16_SetInterruptCMPM(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable)
+{
+    htimer16->Interrupts.CMPM = InterruptEnable;
+
+    uint32_t config = htimer16->Instance->IER;
+    config &= ~TIMER16_IER_CMPMIE_M;
+    config |= InterruptEnable << TIMER16_IER_CMPMIE_S;
+    htimer16->Instance->IER = config;
+}
+
+void HAL_Timer16_InterruptInit(Timer16_HandleTypeDef *htimer16)
+{
+    HAL_Timer16_SetInterruptDOWN(htimer16, htimer16->Interrupts.DOWN);
+    HAL_Timer16_SetInterruptUP(htimer16, htimer16->Interrupts.UP);
+    HAL_Timer16_SetInterruptARROK(htimer16, htimer16->Interrupts.ARROK);
+    HAL_Timer16_SetInterruptCMPOK(htimer16, htimer16->Interrupts.CMPOK);
+    HAL_Timer16_SetInterruptEXTTRIG(htimer16, htimer16->Interrupts.EXTTRIG);
+    HAL_Timer16_SetInterruptARRM(htimer16, htimer16->Interrupts.ARRM);
+    HAL_Timer16_SetInterruptCMPM(htimer16, htimer16->Interrupts.CMPM);
+}
+
+uint32_t HAL_Timer16_GetInterruptStatus(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt, uint32_t Mask)
+{
+    uint32_t interrupt_status = htimer16->Instance->ISR;
+
+    if (Mask == TIMER16_IRQ_MASK_ENABLE)
+    {
+        interrupt_status &= htimer16->Instance->IER;
+    }
+    
+    switch (Interrupt)
+    {
+    case TIMER16_DOWN_IRQ:
+        interrupt_status = (interrupt_status & (1 << TIMER16_DOWN_IRQ)) >> TIMER16_DOWN_IRQ;
+        break;
+    case TIMER16_UP_IRQ:
+        interrupt_status = (interrupt_status & (1 << TIMER16_UP_IRQ)) >> TIMER16_UP_IRQ;
+        break;
+
+    case TIMER16_ARROK_IRQ:
+        interrupt_status = (interrupt_status & (1 << TIMER16_ARROK_IRQ)) >> TIMER16_ARROK_IRQ;
+        break;
+
+    case TIMER16_CMPOK_IRQ:
+        interrupt_status = (interrupt_status & (1 << TIMER16_CMPOK_IRQ)) >> TIMER16_CMPOK_IRQ;
+        break;
+
+    case TIMER16_EXTTRIG_IRQ:
+        interrupt_status = (interrupt_status & (1 << TIMER16_EXTTRIG_IRQ)) >> TIMER16_EXTTRIG_IRQ;
+        break;
+
+    case TIMER16_ARRM_IRQ:
+        interrupt_status = (interrupt_status & (1 << TIMER16_ARRM_IRQ)) >> TIMER16_ARRM_IRQ;
+        break;
+
+    case TIMER16_CMPM_IRQ:
+        interrupt_status = (interrupt_status & (1 << TIMER16_CMPM_IRQ)) >> TIMER16_CMPM_IRQ;
+        break;
+    
+    default:
+        break;
+    }
+
+
+    return interrupt_status;
+}
+
+void HAL_Timer16_ClearInterruptFlag(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt)
+{
+    htimer16->Instance->ICR = 1 << Interrupt;
+}
+
+void HAL_Timer16_SetClearInterruptMask(Timer16_HandleTypeDef *htimer16, uint32_t InterruptMask)
+{
+    htimer16->Instance->ICR = InterruptMask;
 }
