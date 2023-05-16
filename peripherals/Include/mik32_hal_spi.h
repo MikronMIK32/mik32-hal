@@ -1,16 +1,21 @@
 #ifndef MIK32_HAL_SPI
 #define MIK32_HAL_SPI
 
+
+#include "stddef.h"
+
 #include "mcu32_memory_map.h"
 #include "power_manager.h"
-
 #include "spi.h"
+#include "mik32_hal_def.h"
 // #include "inttypes.h"
 // #include "stdbool.h"
 
 
 
 /* Title: Макросы */
+
+#define SPI_TIMEOUT_DEFAULT 800000
 
 /*
  * Defines: Выбор ведомых устройств 
@@ -127,6 +132,7 @@
 
 /* Значения по умолчанию */
 #define SPI_THRESHOLD_DEFAULT   1   /* Значение Threshold_of_TX_FIFO по умолчанию*/
+
 
 
 /* Title: Перечисления */
@@ -266,19 +272,22 @@ typedef struct
     */
     uint8_t Decoder;                /* Использование внешнего декодера */
 
-    /*
-    * Variable: DataSize
-    * Длина передаваемой посылки
-    * 
-    * Этот параметр должен быть одним из значений:
-    * 
-    * - <SPI_DATASIZE_8BITS>;
-    * - <SPI_DATASIZE_16BITS>;
-    * - <SPI_DATASIZE_24BITS>;
-    * - <SPI_DATASIZE_32BITS>;
-    *
-    */
-    uint8_t DataSize;               /* Длина передаваемой посылки */
+    // /*
+    // * Variable: DataSize
+    // * Длина передаваемой посылки
+    // * 
+    // * Этот параметр должен быть одним из значений:
+    // * 
+    // * - <SPI_DATASIZE_8BITS>;
+    // * - <SPI_DATASIZE_16BITS>;
+    // * - <SPI_DATASIZE_24BITS>;
+    // * - <SPI_DATASIZE_32BITS>;
+    // *
+    // */
+    // uint8_t DataSize;               /* Длина передаваемой посылки */
+
+    uint8_t ThresholdTX;            /* Уровень при котором регистр TX считается незаполненным и формируется прерывание */
+
 
 } SPI_InitTypeDef;
 
@@ -353,18 +362,6 @@ void HAL_SPI_Enable(SPI_HandleTypeDef *hspi);
  * void
  */
 void HAL_SPI_Disable(SPI_HandleTypeDef *hspi);
-
-/*
- * Function: HAL_SPI_ClearRxBuffer
- * Читать из RX_FIFO до опустошения
- *
- * Parameters:
- * hspi - Указатель на структуру с настройками spi
- *
- * Returns:
- * void
- */
-void HAL_SPI_ClearRxBuffer(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_IntEnable
@@ -500,7 +497,7 @@ uint32_t HAL_SPI_ReadModuleID(SPI_HandleTypeDef *hspi);
  * Returns:
  * void
  */
-void HAL_SPI_Init(SPI_HandleTypeDef *hspi);
+HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_ClearTXFIFO
@@ -528,7 +525,7 @@ void HAL_SPI_ClearRXFIFO(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_ClearError
- * Сбросить состояния ошибок
+ * Сбросить состояния ошибок, очистить буферы
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi
@@ -537,20 +534,6 @@ void HAL_SPI_ClearRXFIFO(SPI_HandleTypeDef *hspi);
  * void
  */
 void HAL_SPI_ClearError(SPI_HandleTypeDef *hspi);
-
-/*
- * Function: HAL_SPI_CheckError
- * Проверить наличие ошибок
- * 
- * Если ошибки были найдены, то их статусы сбрасываются, а RX_FIFO и TX_FIFO очищаются.
- *
- * Parameters:
- * hspi - Указатель на структуру с настройками spi
- *
- * Returns:
- * void
- */
-void HAL_SPI_CheckError(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_WaitTxNotFull
@@ -562,7 +545,7 @@ void HAL_SPI_CheckError(SPI_HandleTypeDef *hspi);
  * Returns:
  * void
  */
-void HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi);
+HAL_StatusTypeDef HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi, uint32_t Timeout);
 
 /*
  * Function: HAL_SPI_WaitRxNotEmpty
@@ -574,7 +557,7 @@ void HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi);
  * Returns:
  * void
  */
-void HAL_SPI_WaitRxNotEmpty(SPI_HandleTypeDef *hspi);
+HAL_StatusTypeDef HAL_SPI_WaitRxNotEmpty(SPI_HandleTypeDef *hspi, uint32_t Timeout);
 
 /*
  * Function: HAL_SPI_CS_Enable
@@ -621,13 +604,13 @@ void HAL_SPI_CS_Disable(SPI_HandleTypeDef *hspi);
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi;
- * transmit_bytes - Массив данных для отправки;
- * receive_bytes - Массив данных для приема;
- * count - количество байт данных
+ * TransmitBytes - Массив данных для отправки;
+ * ReceiveBytes - Массив данных для приема;
+ * Size - количество байт данных
  * 
  * Returns:
  * void
  */
-void HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t transmit_bytes[], uint8_t receive_bytes[], uint32_t count);
+HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size, uint32_t Timeout);
 
 #endif
