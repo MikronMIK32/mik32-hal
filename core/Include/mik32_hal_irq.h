@@ -254,5 +254,37 @@ uint32_t HAL_EPIC_GetStatus();
 uint32_t HAL_EPIC_GetRawStatus();
 
 
+void Timer32_0_IT();
+void UART_0_IT();
+void UART_1_IT();
+void SPI_0_IT();
+void SPI_1_IT();
+void GPIO_IT();
+void I2C_0_IT();
+void I2C_1_IT();
+void WDT_IT();
+void TIMER16_0_IT();
+void TIMER16_1_IT();
+void TIMER16_2_IT();
+void TIMER32_1_IT();
+void TIMER32_2_IT();
+void SPIFI_IT();
+void RTC_IT();
+void EEPROM_IT();
+void WDT_DOM3_IT();
+void WDT_SPIFI_IT();
+void WDT_EEPROM_IT();
+void DMA_GLB_ERR_IT();
+void DMA_CHANNELS_IT();
+void FREQ_MON_IT();
+void PVD_AVCC_UNDER_IT();
+void PVD_AVCC_OVER_IT();
+void PVD_VCC_UNDER_IT();
+void PVD_VCC_OVER_IT();
+void BATTERY_NON_GOOD_IT();
+void BOR_IT();
+void TSENS_IT();
+void ADC_IT();
+
 
 #endif
