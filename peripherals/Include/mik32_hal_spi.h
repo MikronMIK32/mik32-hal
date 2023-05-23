@@ -133,7 +133,25 @@
 /* Значения по умолчанию */
 #define SPI_THRESHOLD_DEFAULT   1   /* Значение Threshold_of_TX_FIFO по умолчанию*/
 
+/* Прерывания */
+#define TX_FIFO_UNDERFLOW   6   /* Регистр TX FIFO опустошен */
+#define RX_FIFO_FULL        5   /* Регистр RX_FIFO заполнен */
+#define RX_FIFO_NOT_EMPTY   4   /* Регистр RX_FIFO не пустой */
+#define TX_FIFO_FULL        3   /* Регистр TX_FIFO заполнен */
+#define TX_FIFO_NOT_FULL    2   /* Регистр TX_FIFO не заполнен */
+#define MODE_FAIL           1   /* Напряжение на выводе n_ss_in не соответствую режиму работы SPI */
+#define RX_OVERFLOW         0   /* Прерывание при переполнении RX_FIFO, значение сбрасывается при чтении */
 
+#define IXR_TXUF        TX_FIFO_UNDERFLOW   /* Регистр TX FIFO опустошен */
+#define IXR_RXFULL      RX_FIFO_FULL        /* Регистр RX_FIFO заполнен */
+#define IXR_RXNEMPTY    RX_FIFO_NOT_EMPTY   /* Регистр RX_FIFO не пустой */
+#define IXR_TXFULL      TX_FIFO_FULL        /* Регистр TX_FIFO заполнен */
+#define IXR_TXOW        TX_FIFO_NOT_FULL    /* Регистр TX_FIFO не заполнен */
+#define IXR_MODF        MODE_FAIL           /* Напряжение на выводе n_ss_in не соответствую режиму работы SPI */
+#define IXR_RXOVR       RX_OVERFLOW         /* Прерывание при переполнении RX_FIFO, значение сбрасывается при чтении */
+
+#define SPI_IRQ_DISABLE        0
+#define SPI_IRQ_ENABLE         1
 
 /* Title: Перечисления */
 
@@ -152,6 +170,13 @@ typedef enum
 
 } HAL_SPI_ModeTypeDef;
 
+typedef enum
+{
+  HAL_SPI_STATE_READY,    /* Готов к передаче */
+  HAL_SPI_STATE_BUSY,    /* Идет передача */
+  HAL_SPI_STATE_END,    /* Передача завершена */
+  HAL_SPI_STATE_ERROR    /* Ошибка при передаче */
+} HAL_SPI_StateTypeDef;
 
 /* Title: Структуры */
 
@@ -288,8 +313,24 @@ typedef struct
 
     uint8_t ThresholdTX;            /* Уровень при котором регистр TX считается незаполненным и формируется прерывание */
 
+    /*
+    * Variable: ChipSelect
+    * Выбранное ведомое устройство
+    * 
+    * Этот параметр должен быть одним из значений:
+    * 
+    * - <SPI_CS_NONE>;
+    * - <SPI_CS_0>;
+    * - <SPI_CS_1>;
+    * - <SPI_CS_2>;
+    * - <SPI_CS_3>.
+    *
+    */
+    uint8_t ChipSelect;
+
 
 } SPI_InitTypeDef;
+
 
 /*
  * Struct: SPI_HandleTypeDef
@@ -319,20 +360,15 @@ typedef struct
     */
     HAL_SPI_ErrorTypeDef Error;
 
-    /*
-    * Variable: ChipSelect
-    * Выбранное ведомое устройство
-    * 
-    * Этот параметр должен быть одним из значений:
-    * 
-    * - <SPI_CS_NONE>;
-    * - <SPI_CS_0>;
-    * - <SPI_CS_1>;
-    * - <SPI_CS_2>;
-    * - <SPI_CS_3>.
-    *
-    */
-    uint8_t ChipSelect;
+    HAL_SPI_StateTypeDef State;
+
+
+    uint32_t TransferSize;
+    uint8_t *pTxBuffPtr;
+    uint32_t TxCount;
+    uint8_t *pRxBuffPtr;
+    uint32_t RxCount;
+
     
 } SPI_HandleTypeDef;
 
@@ -365,29 +401,42 @@ void HAL_SPI_Disable(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_IntEnable
- * Разрешить прерывания в соответсвии с маской int_en 
+ * Разрешить прерывания в соответствии с маской int_en 
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi
- * int_en - Маска прерываний
+ * IntEnMask - Маска прерываний
  *
  * Returns:
  * void
  */
-void HAL_SPI_IntEnable(SPI_HandleTypeDef *hspi, uint32_t int_en);
+void HAL_SPI_InterruptEnable(SPI_HandleTypeDef *hspi, uint32_t IntEnMask);
 
 /*
  * Function: HAL_SPI_IntDisable
- * Запретить прерывания в соответсвии с маской int_dis
+ * Запретить прерывания в соответствии с маской int_dis
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi
- * int_dis - Маска прерываний
+ * IntDisMask - Маска прерываний
  *
  * Returns:
  * void
  */
-void HAL_SPI_IntDisable(SPI_HandleTypeDef *hspi, uint32_t int_dis);
+void HAL_SPI_InterruptDisable(SPI_HandleTypeDef *hspi, uint32_t IntDisMask);
+
+/*
+ * Function: HAL_SPI_IntEnable
+ * Получить состояние прерывания
+ *
+ * Parameters:
+ * hspi - Указатель на структуру с настройками spi
+ * Interrupt - Название прерывания 
+ *
+ * Returns:
+ * (uint8_t ) - Состояние прерывания.
+ */
+uint8_t HAL_SPI_GetInterruptStatus(SPI_HandleTypeDef *hspi, uint32_t Interrupt);
 
 /*
  * Function: HAL_SPI_SetDelayBTWN
@@ -612,5 +661,19 @@ void HAL_SPI_CS_Disable(SPI_HandleTypeDef *hspi);
  * void
  */
 HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size, uint32_t Timeout);
+
+HAL_StatusTypeDef HAL_SPI_Exchange_IT(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size);
+
+
+extern void HAL_SPI_RXOverflow_Callback(SPI_HandleTypeDef *hspi);
+extern void HAL_SPI_ModeFail_Callback(SPI_HandleTypeDef *hspi);
+extern void HAL_SPI_TXFifoNotFull_Callback(SPI_HandleTypeDef *hspi);
+extern void HAL_SPI_TXFifoFull_Callback(SPI_HandleTypeDef *hspi);
+extern void HAL_SPI_RXFifoNotEmpty_Callback(SPI_HandleTypeDef *hspi);
+extern void HAL_SPI_RXFifoFull_Callback(SPI_HandleTypeDef *hspi);
+extern void HAL_SPI_TXFifoUnderflow_Callback(SPI_HandleTypeDef *hspi);
+
+void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi);
+
 
 #endif
