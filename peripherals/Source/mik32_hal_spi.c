@@ -208,34 +208,12 @@ void HAL_SPI_ClearError(SPI_HandleTypeDef *hspi)
     
 }
 
-HAL_StatusTypeDef HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi, uint32_t Timeout)
+inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi, uint32_t Timeout)
 {
     uint32_t status = 0;
     while (Timeout-- != 0)
     {
         status = hspi->Instance->IntStatus;
-        
-        if((status & SPI_RX_OVERFLOW_M) || (status & SPI_MODE_FAIL_M) || (!hspi->Instance->Enable))
-        {
-            
-            if(status & SPI_RX_OVERFLOW_M)
-            {
-                hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
-                #ifdef MIK32_SPI_DEBUG
-                xprintf("TX_OVR\n");
-                #endif
-            }
-
-            if ((status & SPI_MODE_FAIL_M) || (!hspi->Instance->Enable))
-            {
-                hspi->Error.ModeFail = SPI_ERROR_ModeFail_ON;
-                #ifdef MIK32_SPI_DEBUG
-                xprintf("TX_FAIL\n");
-                #endif
-            }
-            
-            return HAL_ERROR;
-        }
 
         if ((status & SPI_TX_FIFO_not_full_M) != 0)
         {
@@ -243,44 +221,64 @@ HAL_StatusTypeDef HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi, uint32_t Timeou
         }
     }
 
+    if((status & (SPI_RX_OVERFLOW_M | SPI_MODE_FAIL_M)) || (!hspi->Instance->Enable))
+    {
+        
+        if(status & SPI_RX_OVERFLOW_M)
+        {
+            hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_OVR\n");
+            #endif
+        }
+        else
+        {
+            hspi->Error.ModeFail = SPI_ERROR_ModeFail_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_FAIL\n");
+            #endif
+        }
+
+        return HAL_ERROR;
+    }
+
     return HAL_TIMEOUT;
     
 }
 
-HAL_StatusTypeDef HAL_SPI_WaitRxNotEmpty(SPI_HandleTypeDef *hspi, uint32_t Timeout)
+inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPI_WaitRxNotEmpty(SPI_HandleTypeDef *hspi, uint32_t Timeout)
 {
     uint32_t status;
     while (Timeout-- != 0)
     {
         status = hspi->Instance->IntStatus;
 
-        if((status & SPI_RX_OVERFLOW_M) || (status & SPI_MODE_FAIL_M) || (!hspi->Instance->Enable))
-        {
-            
-            if(status & SPI_RX_OVERFLOW_M)
-            {
-                hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
-                #ifdef MIK32_SPI_DEBUG
-                xprintf("TX_OVR\n");
-                #endif
-            }
-
-            if ((status & SPI_MODE_FAIL_M) || (!hspi->Instance->Enable))
-            {
-                hspi->Error.ModeFail = SPI_ERROR_ModeFail_ON;
-                #ifdef MIK32_SPI_DEBUG
-                xprintf("TX_FAIL\n");
-                #endif
-            }
-            
-            return HAL_ERROR;
-        }
-
         if ((status & SPI_RX_FIFO_not_empty_M) != 0)
         {
             return HAL_OK;
         }
 
+    }
+
+    if((status & (SPI_RX_OVERFLOW_M | SPI_MODE_FAIL_M)) || (!hspi->Instance->Enable))
+    {
+        
+        if(status & SPI_RX_OVERFLOW_M)
+        {
+            hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_OVR\n");
+            #endif
+        }
+        else
+        {
+            hspi->Error.ModeFail = SPI_ERROR_ModeFail_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_FAIL\n");
+            #endif
+        }
+
+        return HAL_ERROR;
     }
 
     return HAL_TIMEOUT;
