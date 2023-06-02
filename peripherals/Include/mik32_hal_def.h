@@ -1,12 +1,92 @@
 #ifndef MIK32_HAL_DEF
 #define MIK32_HAL_DEF
 
+
+#define HAL_PIN_MASK 	0XFFFF
+#define HAL_PORT_S 		16
+
+
 typedef enum 
 {
-  HAL_OK       = 0x00U,
-  HAL_ERROR    = 0x01U,
-  HAL_BUSY     = 0x02U,
-  HAL_TIMEOUT  = 0x03U
+	PIN0 = 1 << 0,
+	PIN1 = 1 << 1,
+	PIN2 = 1 << 2,
+	PIN3 = 1 << 3,
+	PIN4 = 1 << 4,
+	PIN5 = 1 << 5,
+	PIN6 = 1 << 6,
+	PIN7 = 1 << 7,
+	PIN8 = 1 << 8,
+	PIN9 = 1 << 9,
+	PIN10 = 1 << 10,
+	PIN11 = 1 << 11,
+	PIN12 = 1 << 12,
+	PIN13 = 1 << 13,
+	PIN14 = 1 << 14,
+	PIN15 = 1 << 15
+} HAL_PinTypeDef;
+
+typedef enum 
+{
+	PORT0 = 0b001 << HAL_PORT_S,
+	PORT1 = 0b010 << HAL_PORT_S,
+	PORT2 = 0b100 << HAL_PORT_S
+} HAL_PortTypeDef;
+
+/* Названия выводов */
+typedef enum _HAL_PinMapTypeDef
+{
+	PORT0_0  = PORT0 | PIN0,
+	PORT0_1  = PORT0 | PIN1,
+	PORT0_2  = PORT0 | PIN2,
+	PORT0_3  = PORT0 | PIN3,
+	PORT0_4  = PORT0 | PIN4,
+	PORT0_5  = PORT0 | PIN5,
+	PORT0_6  = PORT0 | PIN6,
+	PORT0_7  = PORT0 | PIN7,
+	PORT0_8  = PORT0 | PIN8,
+	PORT0_9  = PORT0 | PIN9,
+	PORT0_10 = PORT0 | PIN10,
+	PORT0_11 = PORT0 | PIN11,
+	PORT0_12 = PORT0 | PIN12,
+	PORT0_13 = PORT0 | PIN13,
+	PORT0_14 = PORT0 | PIN14,
+	PORT0_15 = PORT0 | PIN15,
+
+	PORT1_0  = PORT1 | PIN0,
+	PORT1_1  = PORT1 | PIN1,
+	PORT1_2  = PORT1 | PIN2,
+	PORT1_3  = PORT1 | PIN3,
+	PORT1_4  = PORT1 | PIN4,
+	PORT1_5  = PORT1 | PIN5,
+	PORT1_6  = PORT1 | PIN6,
+	PORT1_7  = PORT1 | PIN7,
+	PORT1_8  = PORT1 | PIN8,
+	PORT1_9  = PORT1 | PIN9,
+	PORT1_10 = PORT1 | PIN10,
+	PORT1_11 = PORT1 | PIN11,
+	PORT1_12 = PORT1 | PIN12,
+	PORT1_13 = PORT1 | PIN13,
+	PORT1_14 = PORT1 | PIN14,
+	PORT1_15 = PORT1 | PIN15,
+
+	PORT2_0  = PORT2 | PIN0,
+	PORT2_1  = PORT2 | PIN1,
+	PORT2_2  = PORT2 | PIN2,
+	PORT2_3  = PORT2 | PIN3,
+	PORT2_4  = PORT2 | PIN4,
+	PORT2_5  = PORT2 | PIN5,
+	PORT2_6  = PORT2 | PIN6,
+	PORT2_7  = PORT2 | PIN7
+} HAL_PinMapTypeDef;
+
+
+typedef enum 
+{
+	HAL_OK       = 0x00U,
+	HAL_ERROR    = 0x01U,
+	HAL_BUSY     = 0x02U,
+	HAL_TIMEOUT  = 0x03U
 } HAL_StatusTypeDef;
 
 #endif
