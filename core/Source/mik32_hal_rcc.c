@@ -1,9 +1,9 @@
 #include "mik32_hal_rcc.h"
 
 
-void HAL_RCC_OscEnable(uint8_t ocillator)
+void HAL_RCC_OscEnable(uint32_t Oscillator)
 {
-    switch (ocillator)
+    switch (Oscillator)
     {
     case RCC_OSCILLATORTYPE_HSI32M:
         WU->CLOCKS_SYS &= ~(1 << WU_CLOCKS_SYS_HSI32M_PD_S); //Включить HSI32M
@@ -20,29 +20,29 @@ void HAL_RCC_OscEnable(uint8_t ocillator)
     }
 }
 
-void HAL_RCC_OscDisable(uint8_t ocillator)
+void HAL_RCC_OscDisable(uint32_t Oscillator)
 {
-    switch (ocillator)
+    switch (Oscillator)
     {
     case RCC_OSCILLATORTYPE_HSI32M:
-        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_HSI32M_PD_S); //Включить HSI32M
+        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_HSI32M_PD_S); //ВЫключить HSI32M
         break;
     case RCC_OSCILLATORTYPE_OSC32M:
-        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_OSC32M_PD_S); // Включить OSC32M
+        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_OSC32M_PD_S); // Выключить OSC32M
         break;
     case RCC_OSCILLATORTYPE_LSI32K:
-        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_LSI32K_PD_S); // Включить LSI32K
+        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_LSI32K_PD_S); // Выключить LSI32K
         break;
     case RCC_OSCILLATORTYPE_OSC32K:
-        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_OSC32K_PD_S); // Включить OSC32K
+        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_OSC32K_PD_S); // Выключить OSC32K
         break;
     }
 }
 
-void HAL_RCC_SetOscSystem(uint8_t ocillator_system)
+void HAL_RCC_SetOscSystem(uint32_t OscillatorSystem)
 {
     /* Настройка источника тактирования системы */
-    switch (ocillator_system)
+    switch (OscillatorSystem)
     {
     case RCC_OSCILLATORTYPE_HSI32M:
         PM->AHB_CLK_MUX = PM_AHB_CLK_MUX_HSI32M_M;
@@ -59,19 +59,19 @@ void HAL_RCC_SetOscSystem(uint8_t ocillator_system)
     }
 }
 
-void HAL_RCC_DividerAHB(uint8_t divider_AHB)
+void HAL_RCC_DividerAHB(uint32_t DividerAHB)
 {
-    PM->DIV_AHB = divider_AHB;
+    PM->DIV_AHB = DividerAHB;
 }
 
-void HAL_RCC_DividerAPB_M(uint8_t divider_APB_M)
+void HAL_RCC_DividerAPB_M(uint32_t DividerAPB_M)
 {
-    PM->DIV_APB_M = divider_APB_M;
+    PM->DIV_APB_M = DividerAPB_M;
 }
 
-void HAL_RCC_DividerAPB_P(uint8_t divider_APB_P)
+void HAL_RCC_DividerAPB_P(uint32_t DividerAPB_P)
 {
-    PM->DIV_APB_P = divider_APB_P;
+    PM->DIV_APB_P = DividerAPB_P;
 }  
 
 void HAL_RCC_OscConfig(RCC_OscInitTypeDef *RCC_OscInit)
@@ -80,44 +80,44 @@ void HAL_RCC_OscConfig(RCC_OscInitTypeDef *RCC_OscInit)
     /* Внутренний */
     if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_HSI32M)
     {
-        HAL_RCC_OscEnable(RCC_OSCILLATORTYPE_HSI32M); //Включить HSI32M
+        WU->CLOCKS_SYS &= ~(1 << WU_CLOCKS_SYS_HSI32M_PD_S); //Включить HSI32M
         WU->CLOCKS_SYS = WU_CLOCKS_SYS_ADJ_HSI32M(RCC_OscInit->HSI32MCalibrationValue); // Поправочный коэффициент HSI32M
     }
     else
     {
-        HAL_RCC_OscDisable(RCC_OSCILLATORTYPE_HSI32M);  //Выключить HSI32M
+        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_HSI32M_PD_S); //Выключить HSI32M
     }
 
     /* Внешний */
     if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_OSC32M)
     {
-        HAL_RCC_OscEnable(RCC_OSCILLATORTYPE_OSC32M);   // Включить OSC32M
+        WU->CLOCKS_SYS &= ~(1 << WU_CLOCKS_SYS_OSC32M_PD_S); // Включить OSC32M
     }
     else
     {
-        HAL_RCC_OscDisable(RCC_OSCILLATORTYPE_OSC32M);   // Выключить OSC32M
+        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_OSC32M_PD_S); // Выключить OSC32M
     }
 
     /* Источники 32кГц */
     /* Внутренний  */
     if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_LSI32K)
     {
-        HAL_RCC_OscEnable(RCC_OSCILLATORTYPE_LSI32K);   // Включить LSI32K
+        WU->CLOCKS_BU &= ~(1 << WU_CLOCKS_BU_LSI32K_PD_S); // Включить LSI32K
         WU->CLOCKS_BU = WU_CLOCKS_BU_ADJ_LSI32K(RCC_OscInit->LSI32KCalibrationValue); // Поправочный коэффициент LSI32K
     }
     else
     {
-        HAL_RCC_OscDisable(RCC_OSCILLATORTYPE_LSI32K); // Выключить LSI32K
+        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_LSI32K_PD_S); // Выключить LSI32K
     }
 
     /* Внешний */
     if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_OSC32K)
     {
-        HAL_RCC_OscEnable(RCC_OSCILLATORTYPE_OSC32K); // Включить OSC32K
+        WU->CLOCKS_BU &= ~(1 << WU_CLOCKS_BU_OSC32K_PD_S); // Включить OSC32K
     }
     else
     {
-        HAL_RCC_OscDisable(RCC_OSCILLATORTYPE_OSC32K); // Выключить OSC32K
+        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_OSC32K_PD_S); // Выключить OSC32K
     }
     
     /* Делители частоты */
@@ -144,21 +144,69 @@ void HAL_RCC_ClockConfig(RCC_PeriphCLKInitTypeDef *PeriphClkInit)
     PM->CLK_APB_P_CLEAR = ~PeriphClkInit->PMClockAPB_P; // Выключение тактирования необходимых блоков
     PM->CLK_APB_P_SET = PeriphClkInit->PMClockAPB_P; // включение тактирования необходимых блоков
 
+
     /* Выбор источника тактирования RTC */
-    switch (PeriphClkInit->RTCClockSelection)
+    HAL_RCC_RTCClock(PeriphClkInit->RTCClockSelection);
+
+    /* Выбор источника тактирования RTC в составе ядра*/
+    HAL_RCC_CPURTCClock(PeriphClkInit->RTCClockSelection);
+
+}
+
+void HAL_RCC_ClockSet(uint32_t Periphery)
+{
+    uint32_t mask = Periphery & HAL_CLOCK_MASK;
+    Periphery &= ~HAL_CLOCK_MASK; 
+    switch (mask)
     {
-    case RCC_RTCCLKSOURCE_LSI32K:
-        WU->CLOCKS_BU = WU_CLOCKS_BU_RTC_CLK_MUX_LSI32K_M;
+    case HAL_CLOCK_AHB_MASK:
+        PM->CLK_AHB_SET |= Periphery; // включение тактирования необходимых блоков
         break;
-    
-    case RCC_RTCCLKSOURCE_OSC32K:
-        WU->CLOCKS_BU = WU_CLOCKS_BU_RTC_CLK_MUX_OSC32K_M;
+    case HAL_CLOCK_APB_M_MASK:
+        PM->CLK_APB_M_SET |= Periphery; // включение тактирования необходимых блоков
+        break;
+    case HAL_CLOCK_APB_P_MASK:
+        PM->CLK_APB_P_SET |= Periphery; // включение тактирования необходимых блоков
         break;
     }
+}
 
+void HAL_RCC_ClockClear(uint32_t Periphery)
+{
+    uint32_t mask = Periphery & HAL_CLOCK_MASK;
+    Periphery &= ~HAL_CLOCK_MASK;
+    switch (mask)
+    {
+    case HAL_CLOCK_AHB_MASK:
+        PM->CLK_AHB_CLEAR |= Periphery; // включение тактирования необходимых блоков
+        break;
+    case HAL_CLOCK_APB_M_MASK:
+        PM->CLK_APB_M_CLEAR |= Periphery; // включение тактирования необходимых блоков
+        break;
+    case HAL_CLOCK_APB_P_MASK:
+        PM->CLK_APB_P_CLEAR |= Periphery; // включение тактирования необходимых блоков
+        break;
+    }
+}
+
+void HAL_RCC_RTCClock(uint32_t Oscillator)
+{
+    if ((Oscillator != RCC_RTCCLKSOURCE_LSI32K) && (Oscillator != RCC_RTCCLKSOURCE_OSC32K))
+    {
+        return;
+    }
     
+    /* Выбор источника тактирования RTC */
+    uint32_t ClockBUConfig = WU->CLOCKS_BU;
+    ClockBUConfig &= ~(0b11 << WU_CLOCKS_BU_RTC_CLK_MUX_S);
+    ClockBUConfig |= Oscillator;
+    WU->CLOCKS_BU = ClockBUConfig;
+}
+
+void HAL_RCC_CPURTCClock(uint32_t Oscillator)
+{
     /* Выбор источника тактирования RTC в составе ядра*/
-    switch (PeriphClkInit->RTCClockSelection)
+    switch (Oscillator)
     {
     case RCC_RTCCLKCPUSOURCE_LSI32K:
         PM->CPU_RTC_CLK_MUX = PM_CPU_RTC_CLK_MUX_LSI32K;
@@ -166,47 +214,6 @@ void HAL_RCC_ClockConfig(RCC_PeriphCLKInitTypeDef *PeriphClkInit)
     
     case RCC_RTCCLKCPUSOURCE_OSC32K:
         PM->CPU_RTC_CLK_MUX = PM_CPU_RTC_CLK_MUX_OSC32K;
-        break;
-    }
-
-}
-
-void HAL_RCC_ClockEnable(uint32_t periphery)
-{
-    uint32_t mask = 0b11 << 30;
-    switch (periphery & mask)
-    {
-    case HAL_CLOCK_AHB_MASK:
-        periphery &= ~mask;
-        PM->CLK_AHB_SET |= periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_M_MASK:
-        periphery &= ~mask;
-        PM->CLK_APB_M_SET |= periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_P_MASK:
-        periphery &= ~mask;
-        PM->CLK_APB_P_SET |= periphery; // включение тактирования необходимых блоков
-        break;
-    }
-}
-
-void HAL_RCC_ClockDisable(uint32_t periphery)
-{
-    uint32_t mask = 0b11 << 30;
-    switch (periphery & mask)
-    {
-    case HAL_CLOCK_AHB_MASK:
-        periphery &= ~mask;
-        PM->CLK_AHB_CLEAR |= periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_M_MASK:
-        periphery &= ~mask;
-        PM->CLK_APB_M_CLEAR |= periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_P_MASK:
-        periphery &= ~mask;
-        PM->CLK_APB_P_CLEAR |= periphery; // включение тактирования необходимых блоков
         break;
     }
 }
