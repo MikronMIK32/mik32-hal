@@ -66,13 +66,13 @@ HAL_StatusTypeDef HAL_PadConfig_PortMode(HAL_PortTypeDef Port, HAL_PinTypeDef Pi
     }
 }
 
-HAL_StatusTypeDef HAL_PadConfig_PinPull(HAL_PinMapTypeDef PinMask, HAL_PinModeTypeDef PullMode)
+HAL_StatusTypeDef HAL_PadConfig_PinPull(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode)
 {
     uint32_t port = PinMask & ~HAL_PIN_MASK;    /* Номер порта */
     return HAL_PadConfig_PortPull(port, PinMask, PullMode);
 }
 
-HAL_StatusTypeDef HAL_PadConfig_PortPull(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinModeTypeDef PullMode)
+HAL_StatusTypeDef HAL_PadConfig_PortPull(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinPullModeTypeDef PullMode)
 {
     switch (Port)
     {
@@ -92,13 +92,13 @@ HAL_StatusTypeDef HAL_PadConfig_PortPull(HAL_PortTypeDef Port, HAL_PinTypeDef Pi
     }
 }
 
-HAL_StatusTypeDef HAL_PadConfig_PinCurrent(HAL_PinMapTypeDef PinMask, HAL_CurrentModeTypeDef Current)
+HAL_StatusTypeDef HAL_PadConfig_PinCurrent(HAL_PinMapTypeDef PinMask, HAL_PinCurrentModeTypeDef Current)
 {
     uint32_t port = PinMask & ~HAL_PIN_MASK;    /* Номер порта */
     return HAL_PadConfig_PortCurrent(port, PinMask, Current);
 }
 
-HAL_StatusTypeDef HAL_PadConfig_PortCurrent(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_CurrentModeTypeDef Current)
+HAL_StatusTypeDef HAL_PadConfig_PortCurrent(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinCurrentModeTypeDef Current)
 {
     switch (Port)
     {

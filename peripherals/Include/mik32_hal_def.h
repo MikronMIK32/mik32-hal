@@ -2,11 +2,11 @@
 #define MIK32_HAL_DEF
 
 
-#define HAL_PIN_MASK 	0XFFFF
+#define HAL_PIN_MASK 	0xFFFF
 #define HAL_PORT_S 		16
 
 
-typedef enum 
+typedef enum HAL_PinTypeDef
 {
 	PIN0 = 1 << 0,
 	PIN1 = 1 << 1,
@@ -81,7 +81,7 @@ typedef enum _HAL_PinMapTypeDef
 } HAL_PinMapTypeDef;
 
 
-typedef enum 
+typedef enum HAL_StatusTypeDef
 {
 	HAL_OK       = 0x00U,
 	HAL_ERROR    = 0x01U,

@@ -20,18 +20,18 @@ typedef enum
 /* Подтяжка вывода */
 typedef enum
 {
-	PULL_NONE = 0b00,   	/* Регистры подтяжки не подключаются */
-	PULL_UP = 0b01,		/* Подключен регистр подтяжки 50КОм к питанию */
-	PULL_DOWN = 0b10	/* Подключен регистр подтяжки 50КОм к земле */
-} HAL_PullModeTypeDef;
+	PIN_PULL_NONE = 0b00,   	/* Регистры подтяжки не подключаются */
+	PIN_PULL_UP = 0b01,		/* Подключен регистр подтяжки 50КОм к питанию */
+	PIN_PULL_DOWN = 0b10	/* Подключен регистр подтяжки 50КОм к земле */
+} HAL_PinPullModeTypeDef;
 
 /* Нагрузочная способность вывода */
 typedef enum
 {
-	CURRENT_2 = 0b00,   /* Максимальный выходной ток 2мА */
-	CURRENT_4 = 0b01,	/* Максимальный выходной ток 4мА */
-	CURRENT_8 = 0b10 	/* Максимальный выходной ток 8мА */
-} HAL_CurrentModeTypeDef;
+	PIN_CURRENT_2 = 0b00,   /* Максимальный выходной ток 2мА */
+	PIN_CURRENT_4 = 0b01,	/* Максимальный выходной ток 4мА */
+	PIN_CURRENT_8 = 0b10 	/* Максимальный выходной ток 8мА */
+} HAL_PinCurrentModeTypeDef;
 
 
 /* Функция задает выводам порта или режим, или подтяжку, или нагрузочную способность */
@@ -41,13 +41,13 @@ HAL_StatusTypeDef HAL_PadConfig_PinMode(HAL_PinMapTypeDef PinMask, HAL_PinModeTy
 /* Задать режим выводов на одном порте */
 HAL_StatusTypeDef HAL_PadConfig_PortMode(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinModeTypeDef PinMode);
 /* Задать режим подтяжки выводов на одном порте */
-HAL_StatusTypeDef HAL_PadConfig_PinPull(HAL_PinMapTypeDef PinMask, HAL_PinModeTypeDef PullMode);
+HAL_StatusTypeDef HAL_PadConfig_PinPull(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode);
 /* Задать режим подтяжки выводов на одном порте */
-HAL_StatusTypeDef HAL_PadConfig_PortPull(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinModeTypeDef PullMode);
+HAL_StatusTypeDef HAL_PadConfig_PortPull(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinPullModeTypeDef PullMode);
 /* Задать нагрузочную способностью выводов на одном порте */
-HAL_StatusTypeDef HAL_PadConfig_PinCurrent(HAL_PinMapTypeDef PinMask, HAL_CurrentModeTypeDef Current);
+HAL_StatusTypeDef HAL_PadConfig_PinCurrent(HAL_PinMapTypeDef PinMask, HAL_PinCurrentModeTypeDef Current);
 /* Задать нагрузочную способностью выводов на одном порте */
-HAL_StatusTypeDef HAL_PadConfig_PortCurrent(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_CurrentModeTypeDef Current);
+HAL_StatusTypeDef HAL_PadConfig_PortCurrent(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinCurrentModeTypeDef Current);
 
 
 #endif
