@@ -15,7 +15,7 @@ HAL_StatusTypeDef HAL_GPIO_PinFullInit(HAL_PinMapTypeDef PinMask, HAL_PinDirecti
     return status;
 }
 
-HAL_StatusTypeDef HAL_GPIO_InputPinInit(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode)
+HAL_StatusTypeDef HAL_GPIO_PinInputInit(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode)
 {
     if (HAL_PadConfig_PinMode(PinMask, PIN_MODE1) != HAL_OK)
     {
@@ -32,7 +32,7 @@ HAL_StatusTypeDef HAL_GPIO_InputPinInit(HAL_PinMapTypeDef PinMask, HAL_PinPullMo
     return HAL_OK;
 }
 
-HAL_StatusTypeDef HAL_GPIO_OutputPinInit(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel)
+HAL_StatusTypeDef HAL_GPIO_PinOutputInit(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel)
 {
     if (HAL_PadConfig_PinMode(PinMask, PIN_MODE1) != HAL_OK)
     {

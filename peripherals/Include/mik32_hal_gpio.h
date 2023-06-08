@@ -27,8 +27,8 @@ typedef enum HAL_PinLevelTypeDef
 HAL_StatusTypeDef HAL_GPIO_PinFullInit(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection,
                                    HAL_PinLevelTypeDef PinLevel, HAL_PinPullModeTypeDef PullMode,
                                    HAL_PinCurrentModeTypeDef Current);
-HAL_StatusTypeDef HAL_GPIO_InputPinInit(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode);
-HAL_StatusTypeDef HAL_GPIO_OutputPinInit(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel);
+HAL_StatusTypeDef HAL_GPIO_PinInputInit(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode);
+HAL_StatusTypeDef HAL_GPIO_PinOutputInit(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel);
 
 /* Задает направление выводов на одном порте */
 HAL_StatusTypeDef HAL_GPIO_PinDirection(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection);
