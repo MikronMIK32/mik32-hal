@@ -1,9 +1,8 @@
 #include "mik32_hal_gpio.h"
 
-
 HAL_StatusTypeDef HAL_GPIO_PinFullInit(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection,
-                                   HAL_PinLevelTypeDef PinLevel, HAL_PinPullModeTypeDef PullMode,
-                                   HAL_PinCurrentModeTypeDef Current)
+                                       HAL_PinLevelTypeDef PinLevel, HAL_PinPullModeTypeDef PullMode,
+                                       HAL_PinCurrentModeTypeDef Current)
 {
     HAL_StatusTypeDef status = HAL_OK;
     status |= HAL_PadConfig_PinMode(PinMask, PIN_MODE1);
@@ -48,7 +47,6 @@ HAL_StatusTypeDef HAL_GPIO_PinOutputInit(HAL_PinMapTypeDef PinMask, HAL_PinLevel
 
     return HAL_OK;
 }
-
 
 HAL_StatusTypeDef HAL_GPIO_PinDirection(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection)
 {
@@ -191,7 +189,6 @@ uint16_t HAL_GPIO_PortRead(HAL_PortTypeDef Port)
     }
 }
 
-
 HAL_StatusTypeDef HAL_GPIO_PinToggle(HAL_PinMapTypeDef PinMask)
 {
     uint32_t Port = PinMask & ~HAL_PIN_MASK;
@@ -217,4 +214,81 @@ HAL_StatusTypeDef HAL_GPIO_PortToggle(HAL_PortTypeDef Port, HAL_PinTypeDef PinMa
     }
 
     return HAL_OK;
+}
+
+/** Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0
+ *  \note Используется в функциях HAL_GPIO_InitInterruptLine и HAL_GPIO_DeInitInterruptLine
+ */
+uint32_t current_irq_line_mux = 0;
+
+HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line irq_line, HAL_GPIO_Line_Mux mux,
+                            HAL_GPIO_InterruptMode mode)
+{
+    if (irq_line > 7)
+        return HAL_ERROR;
+
+    current_irq_line_mux &= ~(0b1111 << (irq_line << 2));
+    current_irq_line_mux |= (mux << (irq_line << 2));
+    GPIO_IRQ->CFG = current_irq_line_mux;
+
+    if (mode & GPIO_MODE_BIT_LEVEL_M)
+    {
+        GPIO_IRQ->LEVEL_SET = (1 << irq_line);
+    }
+    else
+    {
+        GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line);
+    }
+
+    if (mode & GPIO_MODE_BIT_EDGE_M)
+    {
+        GPIO_IRQ->EDGE |= (1 << irq_line);
+    }
+    else
+    {
+        GPIO_IRQ->EDGE &= ~(1 << irq_line);
+    }
+
+    if (mode & GPIO_MODE_BIT_ANYEDGE_M)
+    {
+        GPIO_IRQ->ANYEDGE_SET = (1 << irq_line);
+    }
+    else
+    {
+        GPIO_IRQ->ANYEDGE_CLEAR = (1 << irq_line);
+    }
+
+    GPIO_IRQ->ENABLE_SET = (1 << irq_line);
+
+    return HAL_OK;
+}
+
+void HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irq_line)
+{
+    if (irq_line > 7)
+        return;
+
+    current_irq_line_mux &= ~(0b1111 << (irq_line << 2));
+    GPIO_IRQ->CFG = current_irq_line_mux;
+
+    GPIO_IRQ->EDGE &= ~(1 << irq_line);
+    GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
+    GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
+
+    GPIO_IRQ->ENABLE_SET &= ~(1 << irq_line);
+}
+
+HAL_PinLevelTypeDef HAL_GPIO_LineInterruptState(HAL_GPIO_Line irq_line)
+{
+    return (GPIO_IRQ->INTERRUPTS & (1 << (irq_line))) != 0;
+}
+
+HAL_PinLevelTypeDef HAL_GPIO_LinePinState(HAL_GPIO_Line irq_line)
+{
+    return GPIO_IRQ->STATE & (1 << (irq_line));
+}
+
+void HAL_GPIO_ClearInterrupts()
+{
+    GPIO_IRQ->CLEAR = 0b11111111;
 }
