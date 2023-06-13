@@ -221,71 +221,77 @@ HAL_StatusTypeDef HAL_GPIO_PortToggle(HAL_PortTypeDef Port, HAL_PinTypeDef PinMa
  */
 uint32_t current_irq_line_mux = 0;
 
-HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line irq_line, HAL_GPIO_Line_Mux mux,
+HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line_Config mux,
                             HAL_GPIO_InterruptMode mode)
 {
-    if (irq_line > 7)
+    int irq_line_num = mux >> GPIO_IRQ_LINE_S;
+
+    if (irq_line_num > 7)
         return HAL_ERROR;
 
-    current_irq_line_mux &= ~(0b1111 << (irq_line << 2));
-    current_irq_line_mux |= (mux << (irq_line << 2));
+    current_irq_line_mux &= ~(0b1111 << (irq_line_num << 2));
+    current_irq_line_mux |= (mux << (irq_line_num << 2));
     GPIO_IRQ->CFG = current_irq_line_mux;
 
     if (mode & GPIO_MODE_BIT_LEVEL_M)
     {
-        GPIO_IRQ->LEVEL_SET = (1 << irq_line);
+        GPIO_IRQ->LEVEL_SET = (1 << irq_line_num);
     }
     else
     {
-        GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line);
+        GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line_num);
     }
 
     if (mode & GPIO_MODE_BIT_EDGE_M)
     {
-        GPIO_IRQ->EDGE |= (1 << irq_line);
+        GPIO_IRQ->EDGE |= (1 << irq_line_num);
     }
     else
     {
-        GPIO_IRQ->EDGE &= ~(1 << irq_line);
+        GPIO_IRQ->EDGE &= ~(1 << irq_line_num);
     }
 
     if (mode & GPIO_MODE_BIT_ANYEDGE_M)
     {
-        GPIO_IRQ->ANYEDGE_SET = (1 << irq_line);
+        GPIO_IRQ->ANYEDGE_SET = (1 << irq_line_num);
     }
     else
     {
-        GPIO_IRQ->ANYEDGE_CLEAR = (1 << irq_line);
+        GPIO_IRQ->ANYEDGE_CLEAR = (1 << irq_line_num);
     }
 
-    GPIO_IRQ->ENABLE_SET = (1 << irq_line);
+    GPIO_IRQ->ENABLE_SET = (1 << irq_line_num);
 
     return HAL_OK;
 }
 
 void HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irq_line)
 {
-    if (irq_line > 7)
+    int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
+
+    if (irq_line_num > 7)
         return;
 
-    current_irq_line_mux &= ~(0b1111 << (irq_line << 2));
+    current_irq_line_mux &= ~(0b1111 << (irq_line_num << 2));
     GPIO_IRQ->CFG = current_irq_line_mux;
 
-    GPIO_IRQ->EDGE &= ~(1 << irq_line);
-    GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line);
-    GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line);
+    GPIO_IRQ->EDGE &= ~(1 << irq_line_num);
+    GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line_num);
+    GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line_num);
 
-    GPIO_IRQ->ENABLE_SET &= ~(1 << irq_line);
+    GPIO_IRQ->ENABLE_SET &= ~(1 << irq_line_num);
 }
 
 HAL_PinLevelTypeDef HAL_GPIO_LineInterruptState(HAL_GPIO_Line irq_line)
 {
-    return (GPIO_IRQ->INTERRUPTS & (1 << (irq_line))) != 0;
+    int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
+    return (GPIO_IRQ->INTERRUPTS & (1 << (irq_line_num))) != 0;
 }
 
 HAL_PinLevelTypeDef HAL_GPIO_LinePinState(HAL_GPIO_Line irq_line)
 {
-    return GPIO_IRQ->STATE & (1 << (irq_line));
+    int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
+    return GPIO_IRQ->STATE & (1 << (irq_line_num));
 }
 
 void HAL_GPIO_ClearInterrupts()
