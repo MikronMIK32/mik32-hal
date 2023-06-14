@@ -1,7 +1,6 @@
 #ifndef MIK32_HAL_GPIO
 #define MIK32_HAL_GPIO
 
-#include "mik32_hal_pad_config.h"
 #include "mik32_hal_def.h"
 #include "pad_config.h"
 #include "gpio.h"
@@ -13,23 +12,17 @@
 /* Направление вывода */
 typedef enum HAL_PinDirectionTypeDef
 {
-	PIN_INPUT = 0,	/* Вход */
-	PIN_OUTPUT = 1, /* Выход */
+	GPIO_PIN_INPUT = 0,	/**< Вход */
+	GPIO_PIN_OUTPUT = 1, /**< Выход */
 } HAL_PinDirectionTypeDef;
 
 /* Логический уровень вывода */
 typedef enum HAL_PinLevelTypeDef
 {
-	PIN_LOW = 0,  /* Низкий уровень */
-	PIN_HIGH = 1, /* Высокий уровень */
+	GPIO_PIN_LOW = 0,  /**< Низкий уровень */
+	GPIO_PIN_HIGH = 1, /**< Высокий уровень */
 } HAL_PinLevelTypeDef;
 
-/* Вспомогательная функция инициализации выводов по заданным настройкам */
-HAL_StatusTypeDef HAL_GPIO_PinFullInit(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection,
-									   HAL_PinLevelTypeDef PinLevel, HAL_PinPullModeTypeDef PullMode,
-									   HAL_PinCurrentModeTypeDef Current);
-HAL_StatusTypeDef HAL_GPIO_PinInputInit(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode);
-HAL_StatusTypeDef HAL_GPIO_PinOutputInit(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel);
 
 /* Задает направление выводов на одном порте */
 HAL_StatusTypeDef HAL_GPIO_PinDirection(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection);

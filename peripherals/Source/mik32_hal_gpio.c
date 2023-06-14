@@ -1,58 +1,12 @@
 #include "mik32_hal_gpio.h"
 
-HAL_StatusTypeDef HAL_GPIO_PinFullInit(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection,
-                                       HAL_PinLevelTypeDef PinLevel, HAL_PinPullModeTypeDef PullMode,
-                                       HAL_PinCurrentModeTypeDef Current)
-{
-    HAL_StatusTypeDef status = HAL_OK;
-    status |= HAL_PadConfig_PinMode(PinMask, PIN_MODE1);
-    status |= HAL_PadConfig_PinPull(PinMask, PullMode);
-    status |= HAL_PadConfig_PinCurrent(PinMask, Current);
-
-    status |= HAL_GPIO_PinDirection(PinMask, PinDirection);
-
-    return status;
-}
-
-HAL_StatusTypeDef HAL_GPIO_PinInputInit(HAL_PinMapTypeDef PinMask, HAL_PinPullModeTypeDef PullMode)
-{
-    if (HAL_PadConfig_PinMode(PinMask, PIN_MODE1) != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
-
-    HAL_PadConfig_PinPull(PinMask, PullMode);
-
-    if (HAL_GPIO_PinDirection(PinMask, PIN_INPUT) != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
-
-    return HAL_OK;
-}
-
-HAL_StatusTypeDef HAL_GPIO_PinOutputInit(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel)
-{
-    if (HAL_PadConfig_PinMode(PinMask, PIN_MODE1) != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
-
-    HAL_PadConfig_PinPull(PinMask, PIN_PULL_NONE);
-
-    if (HAL_GPIO_PinDirection(PinMask, PIN_OUTPUT) != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
-
-    return HAL_OK;
-}
 
 HAL_StatusTypeDef HAL_GPIO_PinDirection(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection)
 {
     uint32_t Port = PinMask & ~HAL_PIN_MASK;
     return HAL_GPIO_PortDirection(Port, PinMask, PinDirection);
 }
+
 
 HAL_StatusTypeDef HAL_GPIO_PortDirection(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection)
 {
@@ -74,11 +28,11 @@ HAL_StatusTypeDef HAL_GPIO_PortDirection(HAL_PortTypeDef Port, HAL_PinTypeDef Pi
         return HAL_ERROR;
     }
 
-    if (PinDirection == PIN_INPUT)
+    if (PinDirection == GPIO_PIN_INPUT)
     {
         port->DIRECTION_IN = PinMask & HAL_PIN_MASK;
     }
-    else if (PinDirection == PIN_OUTPUT)
+    else if (PinDirection == GPIO_PIN_OUTPUT)
     {
         port->DIRECTION_OUT = PinMask & HAL_PIN_MASK;
     }
@@ -89,6 +43,7 @@ HAL_StatusTypeDef HAL_GPIO_PortDirection(HAL_PortTypeDef Port, HAL_PinTypeDef Pi
 
     return HAL_OK;
 }
+
 
 HAL_StatusTypeDef HAL_GPIO_PinWrite(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel)
 {
@@ -111,7 +66,7 @@ HAL_StatusTypeDef HAL_GPIO_PinWrite(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeD
         return HAL_ERROR;
     }
 
-    if (PinLevel == PIN_LOW)
+    if (PinLevel == GPIO_PIN_LOW)
     {
         port->CLEAR = PinMask & HAL_PIN_MASK;
     }
@@ -122,6 +77,7 @@ HAL_StatusTypeDef HAL_GPIO_PinWrite(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeD
 
     return HAL_OK;
 }
+
 
 HAL_StatusTypeDef HAL_GPIO_PortWrite(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinLevelTypeDef PinLevel)
 {
@@ -143,7 +99,7 @@ HAL_StatusTypeDef HAL_GPIO_PortWrite(HAL_PortTypeDef Port, HAL_PinTypeDef PinMas
         return HAL_ERROR;
     }
 
-    if (PinLevel == PIN_LOW)
+    if (PinLevel == GPIO_PIN_LOW)
     {
         port->CLEAR = PinMask & HAL_PIN_MASK;
     }
@@ -154,6 +110,7 @@ HAL_StatusTypeDef HAL_GPIO_PortWrite(HAL_PortTypeDef Port, HAL_PinTypeDef PinMas
 
     return HAL_OK;
 }
+
 
 HAL_PinLevelTypeDef HAL_GPIO_PinRead(HAL_PinMapTypeDef Pin)
 {
@@ -173,6 +130,7 @@ HAL_PinLevelTypeDef HAL_GPIO_PinRead(HAL_PinMapTypeDef Pin)
     }
 }
 
+
 uint16_t HAL_GPIO_PortRead(HAL_PortTypeDef Port)
 {
     switch (Port)
@@ -189,11 +147,13 @@ uint16_t HAL_GPIO_PortRead(HAL_PortTypeDef Port)
     }
 }
 
+
 HAL_StatusTypeDef HAL_GPIO_PinToggle(HAL_PinMapTypeDef PinMask)
 {
     uint32_t Port = PinMask & ~HAL_PIN_MASK;
     return HAL_GPIO_PortToggle(Port, PinMask);
 }
+
 
 HAL_StatusTypeDef HAL_GPIO_PortToggle(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask)
 {
@@ -216,10 +176,12 @@ HAL_StatusTypeDef HAL_GPIO_PortToggle(HAL_PortTypeDef Port, HAL_PinTypeDef PinMa
     return HAL_OK;
 }
 
+
 /** Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0
  *  \note Используется в функциях HAL_GPIO_InitInterruptLine и HAL_GPIO_DeInitInterruptLine
  */
 uint32_t current_irq_line_mux = 0;
+
 
 HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line_Config mux,
                             HAL_GPIO_InterruptMode mode)
@@ -265,6 +227,7 @@ HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line_Config mux,
     return HAL_OK;
 }
 
+
 void HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irq_line)
 {
     int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
@@ -282,17 +245,20 @@ void HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irq_line)
     GPIO_IRQ->ENABLE_SET &= ~(1 << irq_line_num);
 }
 
+
 HAL_PinLevelTypeDef HAL_GPIO_LineInterruptState(HAL_GPIO_Line irq_line)
 {
     int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
     return (GPIO_IRQ->INTERRUPTS & (1 << (irq_line_num))) != 0;
 }
 
+
 HAL_PinLevelTypeDef HAL_GPIO_LinePinState(HAL_GPIO_Line irq_line)
 {
     int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
     return GPIO_IRQ->STATE & (1 << (irq_line_num));
 }
+
 
 void HAL_GPIO_ClearInterrupts()
 {
