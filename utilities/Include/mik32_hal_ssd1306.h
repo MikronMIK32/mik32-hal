@@ -43,12 +43,9 @@
 #define COM 0b10000000
 
 
-void HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness);
-
-void HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c);
-
-void HAL_SSD1306_SetBorder(I2C_HandleTypeDef *hi2c, uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
-
-void HAL_SSD1306_Write(I2C_HandleTypeDef *hi2c, uint8_t symbol);
+HAL_StatusTypeDef HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness);
+HAL_StatusTypeDef HAL_SSD1306_SetBorder(I2C_HandleTypeDef *hi2c, uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
+HAL_StatusTypeDef HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c);
+HAL_StatusTypeDef HAL_SSD1306_Write(I2C_HandleTypeDef *hi2c, uint8_t symbol);
 
 #endif
