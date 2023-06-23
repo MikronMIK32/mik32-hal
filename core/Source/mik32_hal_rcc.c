@@ -76,58 +76,55 @@ void HAL_RCC_DividerAPB_P(uint32_t DividerAPB_P)
 
 void HAL_RCC_OscConfig(RCC_OscInitTypeDef *RCC_OscInit)
 {
-    /* Источники 32МГц */
-    /* Внутренний */
-    if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_HSI32M)
-    {
-        WU->CLOCKS_SYS &= ~(1 << WU_CLOCKS_SYS_HSI32M_PD_S); //Включить HSI32M
-        WU->CLOCKS_SYS = WU_CLOCKS_SYS_ADJ_HSI32M(RCC_OscInit->HSI32MCalibrationValue); // Поправочный коэффициент HSI32M
-    }
-    else
-    {
-        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_HSI32M_PD_S); //Выключить HSI32M
-    }
 
-    /* Внешний */
-    if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_OSC32M)
-    {
-        WU->CLOCKS_SYS &= ~(1 << WU_CLOCKS_SYS_OSC32M_PD_S); // Включить OSC32M
-    }
-    else
-    {
-        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_OSC32M_PD_S); // Выключить OSC32M
-    }
+    /* Включить все источники тактирования */
+    WU->CLOCKS_SYS &= ~(0b11 << WU_CLOCKS_SYS_OSC32M_PD_S); // Включить OSC32M и HSI32M
+    WU->CLOCKS_BU &= ~(0b11 << WU_CLOCKS_BU_OSC32K_PD_S); // Включить OSC32K и LSI32K
 
-    /* Источники 32кГц */
-    /* Внутренний  */
-    if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_LSI32K)
-    {
-        WU->CLOCKS_BU &= ~(1 << WU_CLOCKS_BU_LSI32K_PD_S); // Включить LSI32K
-        WU->CLOCKS_BU = WU_CLOCKS_BU_ADJ_LSI32K(RCC_OscInit->LSI32KCalibrationValue); // Поправочный коэффициент LSI32K
-    }
-    else
-    {
-        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_LSI32K_PD_S); // Выключить LSI32K
-    }
+    WU->CLOCKS_SYS = WU_CLOCKS_SYS_ADJ_HSI32M(RCC_OscInit->HSI32MCalibrationValue); // Поправочный коэффициент HSI32M
+    WU->CLOCKS_BU = WU_CLOCKS_BU_ADJ_LSI32K(RCC_OscInit->LSI32KCalibrationValue); // Поправочный коэффициент LSI32K
 
-    /* Внешний */
-    if(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_OSC32K)
-    {
-        WU->CLOCKS_BU &= ~(1 << WU_CLOCKS_BU_OSC32K_PD_S); // Включить OSC32K
-    }
-    else
-    {
-        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_OSC32K_PD_S); // Выключить OSC32K
-    }
-    
+    /* Настройка источника тактирования системы */
+    HAL_RCC_SetOscSystem(RCC_OscInit->OscillatorSystem);
+
     /* Делители частоты */
     HAL_RCC_DividerAHB(RCC_OscInit->AHBDivider);
     HAL_RCC_DividerAPB_M(RCC_OscInit->APBMDivider);
     HAL_RCC_DividerAPB_P(RCC_OscInit->APBPDivider);
 
-    /* Настройка источника тактирования системы */
-    HAL_RCC_SetOscSystem(RCC_OscInit->OscillatorSystem);
-    
+    /* Выбор источника тактирования RTC */
+    HAL_RCC_RTCClock(RCC_OscInit->RTCClockSelection);
+
+    /* Выбор источника тактирования RTC в составе ядра*/
+    HAL_RCC_CPURTCClock(RCC_OscInit->RTCClockCPUSelection);
+
+    /* Отключение неиспользуемых источников тактирования */
+    /* Источники 32МГц */
+    /* Внутренний */
+    if(!(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_HSI32M))
+    {
+        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_HSI32M_PD_S); //Выключить HSI32M
+    }
+
+    // /* Внешний */
+    if(!(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_OSC32M))
+    {
+        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_OSC32M_PD_S); //Выключить OSC32M
+    }
+
+    /* Источники 32кГц */
+    /* Внутренний  */
+    if(!(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_LSI32K))
+    {
+        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_LSI32K_PD_S); // Выключить LSI32K
+    }
+
+    /* Внешний */
+    if(!(RCC_OscInit->OscillatorEnable & RCC_OSCILLATORTYPE_OSC32K))
+    {
+        WU->CLOCKS_BU |= (1 << WU_CLOCKS_BU_OSC32K_PD_S); // Выключить OSC32K
+    }
+
 }
 
 void HAL_RCC_ClockConfig(RCC_PeriphCLKInitTypeDef *PeriphClkInit)
@@ -143,14 +140,6 @@ void HAL_RCC_ClockConfig(RCC_PeriphCLKInitTypeDef *PeriphClkInit)
     /* Управление тактированием устройств на шине APB_P */
     PM->CLK_APB_P_CLEAR = ~PeriphClkInit->PMClockAPB_P; // Выключение тактирования необходимых блоков
     PM->CLK_APB_P_SET = PeriphClkInit->PMClockAPB_P; // включение тактирования необходимых блоков
-
-
-    /* Выбор источника тактирования RTC */
-    HAL_RCC_RTCClock(PeriphClkInit->RTCClockSelection);
-
-    /* Выбор источника тактирования RTC в составе ядра*/
-    HAL_RCC_CPURTCClock(PeriphClkInit->RTCClockSelection);
-
 }
 
 void HAL_RCC_ClockSet(uint32_t Periphery)
@@ -195,12 +184,15 @@ void HAL_RCC_RTCClock(uint32_t Oscillator)
     {
         return;
     }
-    
+
     /* Выбор источника тактирования RTC */
     uint32_t ClockBUConfig = WU->CLOCKS_BU;
-    ClockBUConfig &= ~(0b11 << WU_CLOCKS_BU_RTC_CLK_MUX_S);
-    ClockBUConfig |= Oscillator;
+    ClockBUConfig &= ~WU_CLOCKS_BU_RTC_CLK_MUX_M;
+    ClockBUConfig |= Oscillator << WU_CLOCKS_BU_RTC_CLK_MUX_S;
     WU->CLOCKS_BU = ClockBUConfig;
+
+    WU->RTC_CONRTOL = WU_RTC_RESET_CLEAR_M;
+
 }
 
 void HAL_RCC_CPURTCClock(uint32_t Oscillator)

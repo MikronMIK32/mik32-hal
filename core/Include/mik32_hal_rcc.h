@@ -96,6 +96,10 @@ typedef struct
     uint8_t LSI32KCalibrationValue;     /*  Поправочный коэффициент LSI32K.
                                             Этот параметр должен быть числом между Min = 0 и Max = 15 */
 
+    uint32_t RTCClockSelection;         /*  Источник тактирования RTC. */
+
+    uint32_t RTCClockCPUSelection;      /*  Источник тактирования RTC в составе ядра. */
+
 } RCC_OscInitTypeDef;
 
 
@@ -106,10 +110,6 @@ typedef struct
     uint32_t PMClockAPB_M;              /*  Выбор тактирования устройств на шине APB_M. */
 
     uint32_t PMClockAPB_P;              /*  Выбор тактирования устройств на шине APB_P. */
-
-    uint32_t RTCClockSelection;         /*  Источник тактирования RTC. */
-
-    uint32_t RTCClockCPUSelection;      /*  Источник тактирования RTC в составе ядра. */
 
 } RCC_PeriphCLKInitTypeDef;
 
