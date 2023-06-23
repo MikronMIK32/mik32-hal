@@ -345,6 +345,21 @@ void HAL_I2C_Master_SlaveAddress(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress)
     
 }
 
+HAL_StatusTypeDef HAL_I2C_WaitBusy(I2C_HandleTypeDef *hi2c, uint32_t Timeout)
+{
+    /* Ожидание совпадения адреса */
+    while (hi2c->Instance->ISR & I2C_ISR_BUSY_M)
+    {
+        if (Timeout-- == 0)
+        {
+            hi2c->ErrorCode = I2C_ERROR_TIMEOUT;
+            return HAL_TIMEOUT;
+        }
+    }
+
+    return HAL_OK;
+}
+
 HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize, uint32_t Timeout)
 {
     HAL_StatusTypeDef error_code = HAL_OK;
@@ -396,6 +411,17 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t Slav
         if (DataSize == 0)
         {
             /* Все данные отправлены */
+            if (hi2c->Instance->CR2 & I2C_CR2_AUTOEND_M)
+            {
+                /* BUSY */
+                error_code =  HAL_I2C_WaitBusy(hi2c, Timeout); /* Ожидание сигнала STOP */
+            }
+            else
+            {
+                /* TC */
+                error_code = HAL_I2C_Master_WaitTC(hi2c, Timeout); /* Ожидание сигнала конца передачи. STOP не отправляется */
+            }
+            
             break;
         }
 
@@ -480,7 +506,18 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t Slave
 
         if (DataSize == 0)
         {
-            /* Все данные отправлены */
+            /* Все данные прочитаны */
+            if (hi2c->Instance->CR2 & I2C_CR2_AUTOEND_M)
+            {
+                /* BUSY */
+                error_code =  HAL_I2C_WaitBusy(hi2c, Timeout); /* Ожидание сигнала STOP */
+            }
+            else
+            {
+                /* TC */
+                error_code = HAL_I2C_Master_WaitTC(hi2c, Timeout); /* Ожидание сигнала конца передачи. STOP не отправляется */
+            }
+
             break;
         }
 
@@ -514,21 +551,6 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t Slave
     }
     
     return error_code;
-}
-
-HAL_StatusTypeDef HAL_I2C_Slave_WaitBusy(I2C_HandleTypeDef *hi2c, uint32_t Timeout)
-{
-    /* Ожидание совпадения адреса */
-    while (hi2c->Instance->ISR & I2C_ISR_BUSY_M)
-    {
-        if (Timeout-- == 0)
-        {
-            hi2c->ErrorCode = I2C_ERROR_TIMEOUT;
-            return HAL_TIMEOUT;
-        }
-    }
-
-    return HAL_OK;
 }
 
 HAL_StatusTypeDef HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c, uint32_t Timeout)
@@ -755,7 +777,7 @@ HAL_StatusTypeDef HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *hi2c, uint8_t *pData
         hi2c->Instance->TXDR = pData[tx_count];
     }
 
-    if ((error_code = HAL_I2C_Slave_WaitBusy(hi2c, Timeout)) != HAL_OK)
+    if ((error_code = HAL_I2C_WaitBusy(hi2c, Timeout)) != HAL_OK)
     {
         return error_code;
     }
@@ -801,7 +823,7 @@ HAL_StatusTypeDef HAL_I2C_Slave_Receive(I2C_HandleTypeDef *hi2c, uint8_t *pData,
         pData[rx_count] = hi2c->Instance->RXDR;
     } 
 
-    if ((error_code = HAL_I2C_Slave_WaitBusy(hi2c, Timeout)) != HAL_OK)
+    if ((error_code = HAL_I2C_WaitBusy(hi2c, Timeout)) != HAL_OK)
     {
         return error_code;
     }
@@ -894,7 +916,7 @@ HAL_StatusTypeDef HAL_I2C_Slave_ReceiveSBC(I2C_HandleTypeDef *hi2c, uint8_t *pDa
     }
 
 
-    if ((error_code = HAL_I2C_Slave_WaitBusy(hi2c, Timeout)) != HAL_OK)
+    if ((error_code = HAL_I2C_WaitBusy(hi2c, Timeout)) != HAL_OK)
     {
         return error_code;
     }

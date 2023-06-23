@@ -365,6 +365,7 @@ void HAL_I2C_AutoEnd(I2C_HandleTypeDef *hi2c, HAL_I2C_AutoEndModeTypeDef AutoEnd
 HAL_StatusTypeDef HAL_I2C_Master_WaitTXIS(I2C_HandleTypeDef *hi2c, uint32_t Timeout);
 HAL_StatusTypeDef HAL_I2C_Master_WaitRXNE(I2C_HandleTypeDef *hi2c, uint32_t Timeout);
 void HAL_I2C_Master_SlaveAddress(I2C_HandleTypeDef *hi2h, uint16_t SlaveAddress);
+HAL_StatusTypeDef HAL_I2C_WaitBusy(I2C_HandleTypeDef *hi2c, uint32_t Timeout);
 HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize, uint32_t Timeout);
 HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize, uint32_t Timeout);
 HAL_StatusTypeDef HAL_I2C_Slave_WaitADDR(I2C_HandleTypeDef *hi2c, uint32_t Timeout);
