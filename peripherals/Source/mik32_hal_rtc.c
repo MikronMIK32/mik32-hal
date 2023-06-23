@@ -4,13 +4,16 @@
 void HAL_RTC_WaitFlag(RTC_HandleTypeDef *hrtc)
 {
     uint32_t retry_limit = 10000;
-    for (uint32_t i = 0; i < retry_limit; i++)
-    {
-        if ((hrtc->Instance->CTRL & RTC_CTRL_FLAG_M) == 0)
-        {
-            return;
-        }
-    }
+    // for (uint32_t i = 0; i < retry_limit; i++)
+    // {
+    //     if ((hrtc->Instance->CTRL & RTC_CTRL_FLAG_M) == 0)
+    //     {
+    //         return;
+    //     }
+    // }
+
+    while (hrtc->Instance->CTRL & RTC_CTRL_FLAG_M);
+    
     
     #ifdef MIK32_RTC_DEBUG
     xprintf("Ожидание установки CTRL.FLAG в 0 превышено\n");
