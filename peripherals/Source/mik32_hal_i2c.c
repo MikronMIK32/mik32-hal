@@ -927,3 +927,146 @@ HAL_StatusTypeDef HAL_I2C_Slave_ReceiveSBC(I2C_HandleTypeDef *hi2c, uint8_t *pDa
     return error_code;
 }
 
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+
+    /* Подготовка перед отправкой */
+    if (DataSize <= I2C_NBYTE_MAX)
+    {
+        hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
+        hi2c->Instance->CR2 |= I2C_CR2_NBYTES(DataSize);
+
+        HAL_I2C_AutoEnd(hi2c, hi2c->Init.AutoEnd);
+    }
+    else /* DataSize > 255 */
+    {
+        return HAL_ERROR;
+    }
+    /* Задать адрес и режим адресации */
+    HAL_I2C_Master_SlaveAddress(hi2c, SlaveAddress);
+    /* Задать направление передачи - запись */
+    hi2c->Instance->CR2 &= ~I2C_CR2_RD_WRN_M;
+
+    /* Разрешение поддержки DMA при передаче */
+    hi2c->Instance->CR1 |= I2C_CR1_TXDMAEN_M;
+
+    /* Настройка и включение канала DMA */
+    HAL_DMA_Start(hi2c->hdmatx, pData, (void*)&hi2c->Instance->TXDR, DataSize - 1);
+
+    /* Старт */
+    hi2c->Instance->CR2 |= I2C_CR2_START_M;
+
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+
+    /* Подготовка перед приемом */
+    if (DataSize <= I2C_NBYTE_MAX)
+    {
+        hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
+        hi2c->Instance->CR2 |= I2C_CR2_NBYTES(DataSize);
+
+        HAL_I2C_AutoEnd(hi2c, hi2c->Init.AutoEnd);
+    }
+    else /* DataSize > 255 */
+    {
+        return HAL_ERROR;
+    }
+    /* Задать адрес и режим адресации */
+    HAL_I2C_Master_SlaveAddress(hi2c, SlaveAddress);
+    /* Задать направление передачи - чтение */
+    hi2c->Instance->CR2 |= I2C_CR2_RD_WRN_M;
+
+    /* Разрешение поддержки DMA при передаче */
+    hi2c->Instance->CR1 |= I2C_CR1_RXDMAEN_M;
+
+    /* Настройка и включение канала DMA */
+    HAL_DMA_Start(hi2c->hdmarx, (void*)&hi2c->Instance->RXDR, pData, DataSize - 1);
+
+    /* Старт */
+    hi2c->Instance->CR2 |= I2C_CR2_START_M;
+
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Slave_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize, uint32_t Timeout)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+
+    // /* Первая запись делается заранее */
+    // hi2c->Instance->TXDR = pData[0];
+
+    /* Разрешение поддержки DMA при передаче */
+    hi2c->Instance->CR1 |= I2C_CR1_TXDMAEN_M;
+
+    /* Настройка и включение канала DMA */
+    HAL_DMA_Start(hi2c->hdmatx, pData, (void*)&hi2c->Instance->TXDR, DataSize - 1);
+
+    hi2c->Instance->CR2 &= ~I2C_CR2_RELOAD_M;
+    
+    if (!(hi2c->Instance->CR1 & I2C_CR1_NOSTRETCH_M)) /* NOSTRETCH = 0 */
+    {
+        /* Ожидание вызова адреса */
+        if ((error_code = HAL_I2C_Slave_WaitADDR(hi2c, Timeout)) != HAL_OK)
+        {
+            return error_code;
+        }
+        /* Сброс флага ADDR */
+        hi2c->Instance->ICR |= I2C_ICR_ADDRCF_M;
+
+        if(hi2c->Instance->OAR1 & I2C_OAR1_OA1MODE_M)
+        {
+            /* Ожидание вызова адреса */
+            if ((error_code = HAL_I2C_Slave_WaitADDR(hi2c, Timeout)) != HAL_OK)
+            {
+                return error_code;
+            }
+        }
+
+        /* Сброс содержимого TXDR */
+        hi2c->Instance->ISR |= I2C_ISR_TXE_M;
+
+        /* Сброс флага ADDR */
+        hi2c->Instance->ICR |= I2C_ICR_ADDRCF_M;
+
+    }
+
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Slave_Receive_DMA(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize, uint32_t Timeout)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+
+    /* Разрешение поддержки DMA при передаче */
+    hi2c->Instance->CR1 |= I2C_CR1_RXDMAEN_M;
+
+    /* Настройка и включение канала DMA */
+    HAL_DMA_Start(hi2c->hdmarx, (void*)&hi2c->Instance->RXDR, pData, DataSize - 1);
+
+    hi2c->Instance->CR2 &= ~I2C_CR2_RELOAD_M;
+
+    if (!(hi2c->Instance->CR1 & I2C_CR1_NOSTRETCH_M)) /* NOSTRETCH = 0 - с растягиванием SCL*/
+    {
+        /* Ожидание вызова адреса */
+        if ((error_code = HAL_I2C_Slave_WaitADDR(hi2c, Timeout)) != HAL_OK)
+        {
+            return error_code;
+        }
+
+        /* Сброс флага ADDR */
+        hi2c->Instance->ICR |= I2C_ICR_ADDRCF_M;
+    }
+    else if (hi2c->Instance->CR1 & I2C_CR1_SBC_M) /* Режим SBC несовместим с режимом NOSTRETCH */
+    {
+        return HAL_ERROR;
+    }
+
+
+    return error_code;
+}
+

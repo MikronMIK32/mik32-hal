@@ -5,6 +5,7 @@
 #include "mik32_hal_def.h"
 #include "i2c.h"
 #include "mcu32_memory_map.h"
+#include "mik32_hal_dma.h"
 
 
 /*
@@ -195,7 +196,7 @@ typedef struct
 	* Variable: NoStretchMode
 	* Растягивания тактового сигнала в режиме "ведомый".
 	*
-	* Не совместим с режимом NOSTRETCH
+	* Не совместим с режимом SBC
 	*
 	* В режиме ведущий значение всегда I2C_NOSTRETCH_DISABLE
 	* 
@@ -315,33 +316,45 @@ typedef struct
 
 typedef struct
 {
-/*
- * Variable: Instance
- * Базовый адрес регистров I2C
- *
- */
-  I2C_TypeDef *Instance;
+	/*
+	* Variable: Instance
+	* Базовый адрес регистров I2C
+	*
+	*/
+	I2C_TypeDef *Instance;
 
-/*
- * Variable: Init
- * Параметры инициализации I2C
- *
- */
-  I2C_InitTypeDef Init;
-  
-/*
- * Variable: Clock
- * Параметры частоты I2C
- *
- */
-  I2C_ClockTypeDef Clock;
+	/*
+	* Variable: Init
+	* Параметры инициализации I2C
+	*
+	*/
+	I2C_InitTypeDef Init;
 
-/*
- * Variable: ErrorCode
- * Код ошибки I2C
- *
- */
-  HAL_I2C_ErrorTypeDef ErrorCode;
+	/*
+	* Variable: Clock
+	* Параметры частоты I2C
+	*
+	*/
+	I2C_ClockTypeDef Clock;
+
+	/*
+	* Variable: ErrorCode
+	* Код ошибки I2C
+	*
+	*/
+	HAL_I2C_ErrorTypeDef ErrorCode;
+
+	/*
+	* Variable: hdmatx
+	* Канала DMA для отправки данных
+	*/
+	DMA_ChannelHandleTypeDef *hdmatx;
+
+	/*
+	* Variable: hdmarx
+	* Канала DMA для приема данных
+	*/
+	DMA_ChannelHandleTypeDef *hdmarx;
 
 } I2C_HandleTypeDef;
 
@@ -378,4 +391,8 @@ void HAL_I2C_Slave_ACK(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_Slave_NACK(I2C_HandleTypeDef *hi2c);
 extern HAL_StatusTypeDef HAL_I2C_Slave_SBC(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize, uint32_t ByteCount);
 HAL_StatusTypeDef HAL_I2C_Slave_ReceiveSBC(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize, uint32_t Timeout);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize);
+HAL_StatusTypeDef HAL_I2C_Slave_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize, uint32_t Timeout);
+HAL_StatusTypeDef HAL_I2C_Slave_Receive_DMA(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize, uint32_t Timeout);
 #endif
