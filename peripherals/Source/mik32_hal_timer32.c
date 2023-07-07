@@ -1,51 +1,64 @@
 #include "mik32_hal_timer32.h"
 
-void HAL_Timer32_Stop(TIMER32_TypeDef *timer)
+void HAL_Timer32_Init(Timer32_HandleTypeDef *timer)
 {
-    timer->Enable = TIMER32_DISABLE_M;
-    timer->IntClear = 0xFFFFFFFF;
-}
-
-void HAL_Timer32_Init(TIMER32_TypeDef *timer, uint32_t top, uint32_t prescaler, uint32_t control, uint32_t intmask)
-{
-    HAL_Timer32_Stop(timer);
-
-    timer->Top = top;
-    timer->Prescaler = prescaler;
-    timer->Control = control;
-    timer->IntMask = intmask;
-}
-
-void HAL_Timer32_DeInit(TIMER32_TypeDef *timer)
-{
-    // timer->Enable = TIMER32_RESET_VALUE_M | TIMER32_ENABLE_M;
-    timer->IntMask = 0;
-    timer->Prescaler = 0;
-    timer->IntClear = 0xFFFFFFFF;
-    timer->Enable = TIMER32_RESET_VALUE_M;
-}
-
-void HAL_Timer32_Start(TIMER32_TypeDef *timer)
-{
-    timer->Enable = TIMER32_ENABLE_M | TIMER32_RESET_VALUE_M;
-}
-
-void HAL_Timer32_Delay(TIMER32_TypeDef *timer, uint32_t delay_ms)
-{
-    HAL_Timer32_Init(timer, delay_ms * 32000, 0, TIMER32_CONTROL_MODE_UP_M, 1);
-    HAL_Timer32_Start(timer);
-    while ((timer->IntFlags && 1) == 0)
-    {
-    }
     HAL_Timer32_DeInit(timer);
+
+    HAL_Timer32_Top_Set(timer, timer->Top);
+    HAL_Timer32_Clock_Set(timer, timer->Clock);
+    HAL_Timer32_InterruptMask_Set(timer, timer->InterruptMask);
+    HAL_Timer32_CountMode_Set(timer, timer->CountMode);
+    HAL_Timer32_InterruptFlags_Clean(timer);
 }
 
-void HAL_Timer32_DelayUs(TIMER32_TypeDef *timer, uint32_t delay_us)
+void HAL_Timer32_DeInit(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_Enable(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_Disable(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_Stop(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_Start(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_Top_Set(Timer32_HandleTypeDef *timer, uint32_t top);
+
+void HAL_Timer32_Clock_Set(Timer32_HandleTypeDef *timer, Timer32_ClockConfigTypeDef clockConfig);
+
+void HAL_Timer32_InterruptMask_Set(Timer32_HandleTypeDef *timer, uint32_t intMask);
+
+void HAL_Timer32_CountMode_Set(Timer32_HandleTypeDef *timer, uint8_t countMode);
+
+uint32_t HAL_Timer32_Value_Get(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_Value_Clean(Timer32_HandleTypeDef *timer);
+
+uint32_t HAL_Timer32_InterruptFlags_Get(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_InterruptFlags_Clean(Timer32_HandleTypeDef *timer);
+
+void HAL_Timer32_Channel_Init(Timer32_Channel_HandleTypeDef *timer)
 {
-    HAL_Timer32_Init(timer, delay_us * 32, 0, TIMER32_CONTROL_MODE_UP_M, 1);
-    HAL_Timer32_Start(timer);
-    while ((timer->IntFlags && 1) == 0)
-    {
-    }
-    HAL_Timer32_DeInit(timer);
+    HAL_Timer32_Channel_DeInit(timer);
+
+    HAL_Timer32_Channel_PWM_Invert_Set(timer, timer->PWM_Invert);
+    HAL_Timer32_Channel_Mode_Set(timer, timer->Mode);
+    HAL_Timer32_Channel_Edge_Set(timer, timer->Edge);
+    HAL_Timer32_Channel_OCR_Set(timer, timer->OCR);
+    HAL_Timer32_Channel_ICR_Set(timer, timer->ICR);
+    HAL_Timer32_Channel_Noise_Set(timer, timer->Noise);
 }
+
+void HAL_Timer32_Channel_DeInit(Timer32_Channel_HandleTypeDef *timer);
+
+void HAL_Timer32_Channel_PWM_Invert_Set(Timer32_Channel_HandleTypeDef *timer, uint8_t PWM_Invert);
+
+void HAL_Timer32_Channel_Mode_Set(Timer32_Channel_HandleTypeDef *timer, uint8_t mode);
+
+void HAL_Timer32_Channel_Edge_Set(Timer32_Channel_HandleTypeDef *timer, uint8_t edge);
+
+void HAL_Timer32_Channel_OCR_Set(Timer32_Channel_HandleTypeDef *timer, uint32_t OCR);
+
+void HAL_Timer32_Channel_ICR_Set(Timer32_Channel_HandleTypeDef *timer, uint32_t ICR);
+
+void HAL_Timer32_Channel_Noise_Set(Timer32_Channel_HandleTypeDef *timer, uint8_t noise);
