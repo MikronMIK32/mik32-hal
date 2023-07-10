@@ -41,8 +41,6 @@ typedef struct
     uint8_t Edge;
 
     uint32_t OCR;
-
-    uint32_t ICR;
     
     uint8_t Noise;
 
@@ -89,7 +87,11 @@ void HAL_Timer32_Channel_Edge_Set(Timer32_Channel_HandleTypeDef *timer, uint8_t 
 
 void HAL_Timer32_Channel_OCR_Set(Timer32_Channel_HandleTypeDef *timer, uint32_t OCR);
 
-void HAL_Timer32_Channel_ICR_Set(Timer32_Channel_HandleTypeDef *timer, uint32_t ICR);
+void HAL_Timer32_Channel_ICR_Set(Timer32_Channel_HandleTypeDef *timerChannel, uint32_t ICR);
+
+void HAL_Timer32_Channel_ICR_Clear(Timer32_Channel_HandleTypeDef *timerChannel);
+
+void HAL_Timer32_Channel_ICR_Get(Timer32_Channel_HandleTypeDef *timerChannel);
 
 void HAL_Timer32_Channel_Noise_Set(Timer32_Channel_HandleTypeDef *timer, uint8_t noise);
 
