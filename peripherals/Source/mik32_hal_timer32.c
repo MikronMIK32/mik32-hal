@@ -95,7 +95,13 @@ void HAL_Timer32_Channel_Init(Timer32_Channel_HandleTypeDef *timerChannel)
 
 void HAL_Timer32_Channel_DeInit(Timer32_Channel_HandleTypeDef *timerChannel)
 {
-
+    HAL_Timer32_Channel_Disable(timerChannel);
+    HAL_Timer32_Channel_Edge_Set(timerChannel, 0);
+    HAL_Timer32_Channel_ICR_Clear(timerChannel);
+    HAL_Timer32_Channel_Mode_Set(timerChannel, 0);
+    HAL_Timer32_Channel_Noise_Set(timerChannel, 0);
+    HAL_Timer32_Channel_OCR_Set(timerChannel, 0);
+    HAL_Timer32_Channel_PWM_Invert_Set(timerChannel, 0);
 }
 
 void HAL_Timer32_Channel_Enable(Timer32_Channel_HandleTypeDef *timerChannel)
