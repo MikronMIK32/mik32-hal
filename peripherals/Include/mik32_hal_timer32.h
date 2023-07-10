@@ -69,11 +69,11 @@ void HAL_Timer32_CountMode_Set(Timer32_HandleTypeDef *timer, uint8_t countMode);
 
 uint32_t HAL_Timer32_Value_Get(Timer32_HandleTypeDef *timer);
 
-void HAL_Timer32_Value_Clean(Timer32_HandleTypeDef *timer);
+void HAL_Timer32_Value_Clear(Timer32_HandleTypeDef *timer);
 
 uint32_t HAL_Timer32_InterruptFlags_Get(Timer32_HandleTypeDef *timer);
 
-void HAL_Timer32_InterruptFlags_Clean(Timer32_HandleTypeDef *timer);
+void HAL_Timer32_InterruptFlags_Clear(Timer32_HandleTypeDef *timer);
 
 void HAL_Timer32_Channel_Init(Timer32_Channel_HandleTypeDef *timer);
 

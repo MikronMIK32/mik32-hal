@@ -2,13 +2,13 @@
 
 void HAL_Timer32_Init(Timer32_HandleTypeDef *timer)
 {
-    HAL_Timer32_DeInit(timer);
+    // HAL_Timer32_DeInit(timer);
 
     HAL_Timer32_Top_Set(timer, timer->Top);
     HAL_Timer32_Clock_Set(timer, timer->Clock);
     HAL_Timer32_InterruptMask_Set(timer, timer->InterruptMask);
     HAL_Timer32_CountMode_Set(timer, timer->CountMode);
-    HAL_Timer32_InterruptFlags_Clean(timer);
+    HAL_Timer32_InterruptFlags_Clear(timer);
 }
 
 void HAL_Timer32_DeInit(Timer32_HandleTypeDef *timer)
@@ -16,12 +16,12 @@ void HAL_Timer32_DeInit(Timer32_HandleTypeDef *timer)
     HAL_Timer32_InterruptMask_Set(timer, 0);
     Timer32_ClockConfigTypeDef default_clock_config = {0, 0};
     HAL_Timer32_Clock_Set(timer, default_clock_config);
-    HAL_Timer32_InterruptFlags_Clean(timer);
+    HAL_Timer32_InterruptFlags_Clear(timer);
     HAL_Timer32_CountMode_Set(timer, 0);
     HAL_Timer32_Top_Set(timer, 0);
 
     HAL_Timer32_Stop(timer);
-    HAL_Timer32_Value_Clean(timer);
+    HAL_Timer32_Value_Clear(timer);
 }
 
 void HAL_Timer32_Stop(Timer32_HandleTypeDef *timer)
@@ -66,7 +66,7 @@ uint32_t HAL_Timer32_Value_Get(Timer32_HandleTypeDef *timer)
     return timer->Instance->Value;
 }
 
-void HAL_Timer32_Value_Clean(Timer32_HandleTypeDef *timer)
+void HAL_Timer32_Value_Clear(Timer32_HandleTypeDef *timer)
 {
     timer->Instance->Enable = (timer->Instance->Enable & TIMER32_ENABLE_M) | TIMER32_RESET_VALUE_M;
 }
@@ -76,14 +76,14 @@ uint32_t HAL_Timer32_InterruptFlags_Get(Timer32_HandleTypeDef *timer)
     return timer->Instance->IntFlags;
 }
 
-void HAL_Timer32_InterruptFlags_Clean(Timer32_HandleTypeDef *timer)
+void HAL_Timer32_InterruptFlags_Clear(Timer32_HandleTypeDef *timer)
 {
     timer->Instance->IntClear = 0xFFFFFFFF;
 }
 
 void HAL_Timer32_Channel_Init(Timer32_Channel_HandleTypeDef *timerChannel)
 {
-    HAL_Timer32_Channel_DeInit(timerChannel);
+    // HAL_Timer32_Channel_DeInit(timerChannel);
 
     HAL_Timer32_Channel_PWM_Invert_Set(timerChannel, timerChannel->PWM_Invert);
     HAL_Timer32_Channel_Mode_Set(timerChannel, timerChannel->Mode);
