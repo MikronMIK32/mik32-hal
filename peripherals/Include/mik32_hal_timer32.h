@@ -1,30 +1,53 @@
 #ifndef MIK32_HAL_TIMER32
 #define MIK32_HAL_TIMER32
 
+#include <mcu32_memory_map.h>
 #include <timer32.h>
 
+#define TIMER32_INTERRUPT_CLEAR_MASK 0x3FF
+
+typedef enum
+{
+    TIMER32_SOURCE_PRESCALER = 0b00,
+    TIMER32_SOURCE_TIM1 = 0b01,
+    TIMER32_SOURCE_TX_PAD = 0b10,
+    TIMER32_SOURCE_TIM2 = 0b11
+} HAL_TIMER32_SourceTypeDef;
 
 typedef struct
 {
-    uint8_t Source;         
-    
-    uint8_t Prescaler;      
+    HAL_TIMER32_SourceTypeDef Source;
+
+    uint32_t Prescaler;
 
 } Timer32_ClockConfigTypeDef;
+
+typedef enum
+{
+    TIMER32_COUNTMODE_FORWARD = 0b00,
+    TIMER32_COUNTMODE_REVERSE = 0b01,
+    TIMER32_COUNTMODE_BIDIRECTIONAL = 0b10
+} HAL_TIMER32_CountModeTypeDef;
+
+typedef enum
+{
+    TIMER32_STATE_DISABLE = 0b00,
+    TIMER32_STATE_ENABLE = 0b01
+} HAL_TIMER32_StateTypeDef;
 
 typedef struct
 {
     uint32_t Top;
 
-    TIMER32_TypeDef *Instance;
+    HAL_TIMER32_StateTypeDef State;
 
-    uint8_t Enable;
+    TIMER32_TypeDef *Instance;
 
     Timer32_ClockConfigTypeDef Clock;
 
     uint32_t InterruptMask;
 
-    uint8_t CountMode;
+    HAL_TIMER32_CountModeTypeDef CountMode;
 
 } Timer32_HandleTypeDef;
 
@@ -41,19 +64,14 @@ typedef struct
     uint8_t Edge;
 
     uint32_t OCR;
-    
+
     uint8_t Noise;
 
 } Timer32_Channel_HandleTypeDef;
 
-
 void HAL_Timer32_Init(Timer32_HandleTypeDef *timer);
 
-void HAL_Timer32_DeInit(Timer32_HandleTypeDef *timer);
-
-void HAL_Timer32_Enable(Timer32_HandleTypeDef *timer);
-
-void HAL_Timer32_Disable(Timer32_HandleTypeDef *timer);
+void HAL_Timer32_State_Set(Timer32_HandleTypeDef *timer, HAL_TIMER32_StateTypeDef state);
 
 void HAL_Timer32_Stop(Timer32_HandleTypeDef *timer);
 
@@ -73,11 +91,11 @@ void HAL_Timer32_Value_Clear(Timer32_HandleTypeDef *timer);
 
 uint32_t HAL_Timer32_InterruptFlags_Get(Timer32_HandleTypeDef *timer);
 
+void HAL_Timer32_InterruptFlags_ClearMask(Timer32_HandleTypeDef *timer, uint32_t clearMask);
+
 void HAL_Timer32_InterruptFlags_Clear(Timer32_HandleTypeDef *timer);
 
 void HAL_Timer32_Channel_Init(Timer32_Channel_HandleTypeDef *timer);
-
-void HAL_Timer32_Channel_DeInit(Timer32_Channel_HandleTypeDef *timer);
 
 void HAL_Timer32_Channel_PWM_Invert_Set(Timer32_Channel_HandleTypeDef *timer, uint8_t PWM_Invert);
 

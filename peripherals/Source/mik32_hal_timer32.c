@@ -2,37 +2,40 @@
 
 void HAL_Timer32_Init(Timer32_HandleTypeDef *timer)
 {
-    // HAL_Timer32_DeInit(timer);
-
+    if (timer->Instance != TIMER32_0 || timer->Instance != TIMER32_1 || timer->Instance != TIMER32_2)
+    {
+        return;
+    }
     HAL_Timer32_Top_Set(timer, timer->Top);
     HAL_Timer32_Clock_Set(timer, timer->Clock);
     HAL_Timer32_InterruptMask_Set(timer, timer->InterruptMask);
     HAL_Timer32_CountMode_Set(timer, timer->CountMode);
     HAL_Timer32_InterruptFlags_Clear(timer);
+    HAL_Timer32_State_Set(timer, timer->State);
 }
 
-void HAL_Timer32_DeInit(Timer32_HandleTypeDef *timer)
+void HAL_Timer32_State_Set(Timer32_HandleTypeDef *timer, HAL_TIMER32_StateTypeDef state)
 {
-    HAL_Timer32_InterruptMask_Set(timer, 0);
-    Timer32_ClockConfigTypeDef default_clock_config = {0, 0};
-    HAL_Timer32_Clock_Set(timer, default_clock_config);
-    HAL_Timer32_InterruptFlags_Clear(timer);
-    HAL_Timer32_CountMode_Set(timer, 0);
-    HAL_Timer32_Top_Set(timer, 0);
-
-    HAL_Timer32_Stop(timer);
-    HAL_Timer32_Value_Clear(timer);
+    timer->State = state;
+    if (state == TIMER32_STATE_DISABLE)
+    {
+        timer->Instance->Enable &= ~TIMER32_ENABLE_M;
+    }
+    else
+    {
+        timer->Instance->Enable |= TIMER32_ENABLE_M;
+    }
 }
 
 void HAL_Timer32_Stop(Timer32_HandleTypeDef *timer)
 {
-    timer->Enable = 0;
+    timer->State = TIMER32_STATE_DISABLE;
     timer->Instance->Enable &= ~TIMER32_ENABLE_M;
 }
 
 void HAL_Timer32_Start(Timer32_HandleTypeDef *timer)
 {
-    timer->Enable = 1;
+    timer->State = TIMER32_STATE_ENABLE;
     timer->Instance->Enable |= TIMER32_ENABLE_M;
 }
 
@@ -76,15 +79,18 @@ uint32_t HAL_Timer32_InterruptFlags_Get(Timer32_HandleTypeDef *timer)
     return timer->Instance->IntFlags;
 }
 
+void HAL_Timer32_InterruptFlags_ClearMask(Timer32_HandleTypeDef *timer, uint32_t clearMask)
+{
+    timer->Instance->IntClear = clearMask;
+}
+
 void HAL_Timer32_InterruptFlags_Clear(Timer32_HandleTypeDef *timer)
 {
-    timer->Instance->IntClear = 0xFFFFFFFF;
+    timer->Instance->IntClear = TIMER32_INTERRUPT_CLEAR_MASK;
 }
 
 void HAL_Timer32_Channel_Init(Timer32_Channel_HandleTypeDef *timerChannel)
 {
-    // HAL_Timer32_Channel_DeInit(timerChannel);
-
     HAL_Timer32_Channel_PWM_Invert_Set(timerChannel, timerChannel->PWM_Invert);
     HAL_Timer32_Channel_Mode_Set(timerChannel, timerChannel->Mode);
     HAL_Timer32_Channel_Edge_Set(timerChannel, timerChannel->Edge);
