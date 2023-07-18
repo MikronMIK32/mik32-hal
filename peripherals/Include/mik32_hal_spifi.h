@@ -14,8 +14,8 @@ typedef enum
 {
     SPIFI_FIELDFORM_ALL_SERIAL = 0,
     SPIFI_FIELDFORM_DATA_PARALLEL = 1,
-    SPIFI_FIELDFORM_COMMAND_SERIAL = 1,
-    SPIFI_FIELDFORM_ALL_PARALLEL = 1
+    SPIFI_FIELDFORM_COMMAND_SERIAL = 2,
+    SPIFI_FIELDFORM_ALL_PARALLEL = 3
 } HAL_SPIFI_FieldFormTypeDef;
 
 typedef enum
@@ -37,6 +37,8 @@ typedef enum
 
 typedef struct
 {
+    uint32_t InterimData;
+    
     uint8_t InterimLength;
 
     HAL_SPIFI_FieldFormTypeDef FieldForm;
@@ -85,7 +87,7 @@ void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi);
 
 void HAL_SPIFI_SendCommand(
     SPIFI_HandleTypeDef *spifi,
-    SPIFI_CommandTypeDef cmd,
+    SPIFI_CommandTypeDef *cmd,
     uint32_t address,
     uint16_t dataLength,
     uint8_t *dataBytes);

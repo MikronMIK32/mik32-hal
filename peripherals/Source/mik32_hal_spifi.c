@@ -28,27 +28,27 @@ void SPIFI_WaitIntrqTimeout()
 
 void HAL_SPIFI_SendCommand(
     SPIFI_HandleTypeDef *spifi,
-    SPIFI_CommandTypeDef cmd,
+    SPIFI_CommandTypeDef *cmd,
     uint32_t address,
     uint16_t dataLength,
     uint8_t *dataBytes)
 {
-    spifi->Instance->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
+    // spifi->Instance->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
     spifi->Instance->ADDR = address;
-    spifi->Instance->CMD = ((cmd.OpCode << SPIFI_CONFIG_CMD_OPCODE_S) |
-                            (cmd.FrameForm << SPIFI_CONFIG_CMD_FRAMEFORM_S) |
-                            (cmd.FieldForm << SPIFI_CONFIG_CMD_FIELDFORM_S) |
+    spifi->Instance->CMD = ((cmd->OpCode << SPIFI_CONFIG_CMD_OPCODE_S) |
+                            (cmd->FrameForm << SPIFI_CONFIG_CMD_FRAMEFORM_S) |
+                            (cmd->FieldForm << SPIFI_CONFIG_CMD_FIELDFORM_S) |
                             (dataLength << SPIFI_CONFIG_CMD_DATALEN_S) |
-                            (cmd.InterimLength << SPIFI_CONFIG_CMD_INTLEN_S) |
-                            (cmd.Direction << SPIFI_CONFIG_CMD_DOUT_S));
+                            (cmd->InterimLength << SPIFI_CONFIG_CMD_INTLEN_S) |
+                            (cmd->Direction << SPIFI_CONFIG_CMD_DOUT_S));
     
     // SPIFI_WaitIntrqTimeout();
 
-    if (cmd.Direction == SPIFI_DIRECTION_INPUT)
+    if (cmd->Direction == SPIFI_DIRECTION_INPUT)
     {
         for (int i = 0; i < dataLength; i++)
         {
-            dataBytes[i] = (uint8_t)spifi->Instance->DATA32;
+            dataBytes[i] = (uint8_t)spifi->Instance->DATA8;
         }
     }
     else
@@ -56,6 +56,8 @@ void HAL_SPIFI_SendCommand(
         for (int i = 0; i < dataLength; i++)
         {
             spifi->Instance->DATA8 = dataBytes[i];
+            // spifi->Instance->DATA8 = 0;
+            xprintf("0x%02x\n", dataBytes[i]);
         }
     }
 }
