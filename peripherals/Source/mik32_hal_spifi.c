@@ -53,11 +53,15 @@ void HAL_SPIFI_SendCommand(
     }
     else
     {
+        if ((dataBytes == 0) && (dataLength > 0))
+        {
+            xprintf("dataByte zero pointer\n");
+            //Сделать возврат ошибки
+            return;
+        }
         for (int i = 0; i < dataLength; i++)
         {
             spifi->Instance->DATA8 = dataBytes[i];
-            // spifi->Instance->DATA8 = 0;
-            xprintf("0x%02x\n", dataBytes[i]);
         }
     }
 }
