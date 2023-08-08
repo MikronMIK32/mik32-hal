@@ -1124,8 +1124,21 @@ void HAL_Timer16_SetInterruptEXTTRIG(Timer16_HandleTypeDef *htimer16, uint32_t I
 void HAL_Timer16_SetInterruptARRM(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
 void HAL_Timer16_SetInterruptCMPM(Timer16_HandleTypeDef *htimer16, uint32_t InterruptEnable);
 void HAL_Timer16_InterruptInit(Timer16_HandleTypeDef *htimer16);
-uint32_t HAL_Timer16_GetInterruptStatus(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt, uint32_t Mask);
-void HAL_Timer16_ClearInterruptFlag(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt);
-void HAL_Timer16_SetClearInterruptMask(Timer16_HandleTypeDef *htimer16, uint32_t InterruptMask);
 
+static inline __attribute__((always_inline)) uint32_t HAL_Timer16_GetInterruptStatus(Timer16_HandleTypeDef *htimer16)
+{
+    uint32_t interrupt_status = htimer16->Instance->ISR & htimer16->Instance->IER;
+
+    return interrupt_status;
+}
+
+static inline __attribute__((always_inline)) void HAL_Timer16_ClearInterruptFlag(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt)
+{
+    htimer16->Instance->ICR = 1 << Interrupt;
+}
+
+static inline __attribute__((always_inline)) void HAL_Timer16_SetClearInterruptMask(Timer16_HandleTypeDef *htimer16, uint32_t InterruptMask)
+{
+    htimer16->Instance->ICR = InterruptMask;
+}
 #endif
