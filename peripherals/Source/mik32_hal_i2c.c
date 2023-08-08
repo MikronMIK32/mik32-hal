@@ -213,7 +213,7 @@ HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c)
         break;
     }
     
-
+    hi2c->State = HAL_I2C_STATE_READY;
     return HAL_OK;
 }
 
@@ -358,6 +358,27 @@ HAL_StatusTypeDef HAL_I2C_WaitBusy(I2C_HandleTypeDef *hi2c, uint32_t Timeout)
     }
 
     return HAL_OK;
+}
+
+void HAL_I2C_Master_NBYTES(I2C_HandleTypeDef *hi2c)
+{
+    hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
+    /* Подготовка перед отправкой */
+    
+    if ((hi2c->TransferSize - hi2c->TransferCount) <= I2C_NBYTE_MAX)
+    {
+        hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
+        hi2c->Instance->CR2 |= I2C_CR2_NBYTES(hi2c->TransferSize - hi2c->TransferCount);
+        hi2c->Instance->CR2 &= ~I2C_CR2_RELOAD_M;
+        HAL_I2C_AutoEnd(hi2c, hi2c->Init.AutoEnd);
+    }
+    else /* DataSize > 255 */
+    {
+        hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
+        hi2c->Instance->CR2 |= I2C_CR2_NBYTES(I2C_NBYTE_MAX);
+        /* При RELOAD = 1 AUTOEND игнорируется */
+        hi2c->Instance->CR2 |= I2C_CR2_RELOAD_M;
+    }
 }
 
 HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize, uint32_t Timeout)
@@ -767,7 +788,7 @@ HAL_StatusTypeDef HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *hi2c, uint8_t *pData
         {
             /* Сброс содержимого TXDR */
             hi2c->Instance->ISR |= I2C_ISR_TXE_M;
-            // hi2c->Instance->ISR |= I2C_ISR_TXIS_M; /* Опционально */
+            // hi2c->Instance->ICR |= I2C_ICR_TXIS_M;
 
             /* Сброс флага детектирования STOP на шине */
             hi2c->Instance->ICR |= I2C_ICR_STOPCF_M;
@@ -783,8 +804,13 @@ HAL_StatusTypeDef HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *hi2c, uint8_t *pData
     }
     
     
+    /* Сброс содержимого TXDR */
+    hi2c->Instance->ISR |= I2C_ISR_TXE_M;
+    // hi2c->Instance->ICR |= I2C_ICR_TXIS_M;
+
     /* Сброс флага детектирования STOP на шине */
     hi2c->Instance->ICR |= I2C_ICR_STOPCF_M;
+    
 
     return error_code;
     
@@ -1069,4 +1095,269 @@ HAL_StatusTypeDef HAL_I2C_Slave_Receive_DMA(I2C_HandleTypeDef *hi2c, uint8_t *pD
 
     return error_code;
 }
+
+
+void HAL_I2C_InterruptDisable(I2C_HandleTypeDef *hi2c, uint32_t IntDisMask)
+{
+    IntDisMask &= I2C_INTMASK;
+    hi2c->Instance->CR1 &= ~IntDisMask;
+}
+
+void HAL_I2C_InterruptEnable(I2C_HandleTypeDef *hi2c, uint32_t IntEnMask)
+{
+    IntEnMask &= I2C_INTMASK;
+    hi2c->Instance->CR1 |= IntEnMask;
+}
+
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+    hi2c->State = HAL_I2C_STATE_BUSY;
+    hi2c->pBuffPtr = pData;
+	hi2c->TransferSize = DataSize;
+    hi2c->TransferCount = 0;
+
+    HAL_I2C_Master_NBYTES(hi2c);
+
+    /* Задать адрес и режим адресации */
+    HAL_I2C_Master_SlaveAddress(hi2c, SlaveAddress);
+    /* Задать направление передачи - запись */
+    hi2c->Instance->CR2 &= ~I2C_CR2_RD_WRN_M;
+
+    /* Выключить все прерывания I2C */
+    HAL_I2C_InterruptDisable(hi2c, I2C_INTMASK);
+    /* Включение прерываний */
+    HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
+                                    | I2C_CR1_TCIE_M
+                                    | I2C_CR1_NACKIE_M
+                                    | I2C_CR1_TXIE_M
+                                    );
+
+    /* Старт */
+    hi2c->Instance->CR2 |= I2C_CR2_START_M;
+
+    return error_code;
+
+}
+
+HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef *hi2c, uint16_t SlaveAddress, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+    hi2c->State = HAL_I2C_STATE_BUSY;
+    hi2c->pBuffPtr = pData;
+	hi2c->TransferSize = DataSize;
+    hi2c->TransferCount = 0;
+
+    HAL_I2C_Master_NBYTES(hi2c);
+
+    /* Задать адрес и режим адресации */
+    HAL_I2C_Master_SlaveAddress(hi2c, SlaveAddress);
+    /* Задать направление передачи - чтение */
+    hi2c->Instance->CR2 |= I2C_CR2_RD_WRN_M;
+    HAL_I2C_InterruptDisable(hi2c, I2C_INTMASK);
+    HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
+                                    | I2C_CR1_TCIE_M
+                                    | I2C_CR1_ADDRIE_M
+                                    | I2C_CR1_RXIE_M
+                                    );
+    /* Старт */
+    hi2c->Instance->CR2 |= I2C_CR2_START_M;
+ 
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Slave_Transmit_IT(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+    hi2c->State = HAL_I2C_STATE_BUSY;
+    hi2c->pBuffPtr = pData;
+	hi2c->TransferSize = DataSize;
+    hi2c->TransferCount = 0;
+
+    hi2c->Instance->CR2 &= ~I2C_CR2_RELOAD_M;
+
+    if ((hi2c->Instance->CR1 & I2C_CR1_SBC_M) && (hi2c->Instance->CR1 & I2C_CR1_NOSTRETCH_M)) /* Режим SBC несовместим с режимом NOSTRETCH */
+    {
+        return HAL_ERROR;
+    }
+
+    // /* Сброс содержимого TXDR */
+    // hi2c->Instance->ISR |= I2C_ISR_TXE_M;
+
+    /* Первая запись делается заранее */
+    hi2c->Instance->TXDR = pData[hi2c->TransferCount++];
+    hi2c->pBuffPtr++;
+
+    HAL_I2C_InterruptDisable(hi2c, I2C_INTMASK);
+    HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
+                                    | I2C_CR1_STOPIE_M
+                                   | I2C_CR1_ADDRIE_M
+                                    | I2C_CR1_TXIE_M
+                                    );
+
+
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Slave_Transmit_NOSTRETCH_IT(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+    hi2c->State = HAL_I2C_STATE_BUSY;
+    hi2c->pBuffPtr = pData;
+	hi2c->TransferSize = DataSize;
+    hi2c->TransferCount = 0;
+
+    hi2c->Instance->CR2 &= ~I2C_CR2_RELOAD_M;
+
+    if ((hi2c->Instance->CR1 & I2C_CR1_SBC_M) && (hi2c->Instance->CR1 & I2C_CR1_NOSTRETCH_M)) /* Режим SBC несовместим с режимом NOSTRETCH */
+    {
+        return HAL_ERROR;
+    }
+
+    // /* Сброс содержимого TXDR */
+    // hi2c->Instance->ISR |= I2C_ISR_TXE_M;
+
+    /* Первая запись делается заранее */
+    hi2c->Instance->TXDR = pData[hi2c->TransferCount++];
+    hi2c->pBuffPtr++;
+
+    HAL_I2C_InterruptDisable(hi2c, I2C_INTMASK);
+    HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
+                                    | I2C_CR1_STOPIE_M
+                                    | I2C_CR1_TXIE_M
+                                    );
+
+
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Slave_Receive_IT(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+    hi2c->State = HAL_I2C_STATE_BUSY;
+    hi2c->pBuffPtr = pData;
+	hi2c->TransferSize = DataSize;
+    hi2c->TransferCount = 0;
+
+    hi2c->Instance->CR2 &= ~I2C_CR2_RELOAD_M;
+
+    if ((hi2c->Instance->CR1 & I2C_CR1_SBC_M) && (hi2c->Instance->CR1 & I2C_CR1_NOSTRETCH_M)) /* Режим SBC несовместим с режимом NOSTRETCH */
+    {
+        return HAL_ERROR;
+    }
+    
+
+    HAL_I2C_InterruptDisable(hi2c, I2C_INTMASK);
+    HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
+                                    | I2C_CR1_STOPIE_M
+                                    | I2C_CR1_ADDRIE_M
+                                    | I2C_CR1_RXIE_M
+                                    );
+
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Slave_Receive_NOSTRETCH_IT(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+    hi2c->State = HAL_I2C_STATE_BUSY;
+    hi2c->pBuffPtr = pData;
+	hi2c->TransferSize = DataSize;
+    hi2c->TransferCount = 0;
+
+    hi2c->Instance->CR2 &= ~I2C_CR2_RELOAD_M;
+
+    if ((hi2c->Instance->CR1 & I2C_CR1_SBC_M) && (hi2c->Instance->CR1 & I2C_CR1_NOSTRETCH_M)) /* Режим SBC несовместим с режимом NOSTRETCH */
+    {
+        return HAL_ERROR;
+    }
+    
+
+    HAL_I2C_InterruptDisable(hi2c, I2C_INTMASK);
+    HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
+                                    | I2C_CR1_STOPIE_M
+                                    | I2C_CR1_RXIE_M
+                                    );
+
+    return error_code;
+}
+
+HAL_StatusTypeDef HAL_I2C_Slave_ReceiveSBC_IT(I2C_HandleTypeDef *hi2c, uint8_t *pData, uint16_t DataSize)
+{
+    HAL_StatusTypeDef error_code = HAL_OK;
+    hi2c->State = HAL_I2C_STATE_BUSY;
+    hi2c->pBuffPtr = pData;
+	hi2c->TransferSize = DataSize;
+    hi2c->TransferCount = 0;
+
+    if (!(hi2c->Instance->CR1 & I2C_CR1_SBC_M))
+    {
+        return HAL_ERROR;
+    }
+    else if (hi2c->Instance->CR1 & I2C_CR1_NOSTRETCH_M)
+    {
+        /* Режим SBC несовместим с режимом NOSTRETCH */
+        return HAL_ERROR;
+    }
+
+    hi2c->Instance->CR2 |= I2C_CR2_RELOAD_M;
+
+    HAL_I2C_InterruptDisable(hi2c, I2C_INTMASK);
+    HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
+                                    | I2C_CR1_STOPIE_M
+                                    | I2C_CR1_ADDRIE_M
+                                    | I2C_CR1_RXIE_M
+                                    );
+
+
+    return error_code;
+}
+
+
+// void HAL_I2C_IRQHandler(I2C_HandleTypeDef *hi2c)
+// {
+//     uint32_t int_mask = hi2c->Instance->CR1 & I2C_INTMASK; /* разрешенные прерывания  */
+//     uint32_t interrupt_status = hi2c->Instance->ISR; /* Флаги */
+
+//     if ((interrupt_status & I2C_ISR_ADDR_M) && (int_mask & I2C_CR1_ADDRIE_M))
+//     {
+//         HAL_I2C_ADDR_Callback(hi2c);
+//     }
+
+//     if ((interrupt_status & (I2C_ISR_BERR_M | I2C_ISR_ARLO_M | I2C_ISR_OVR_M)) && (int_mask & I2C_CR1_ERRIE_M))
+//     {
+//         HAL_I2C_ERR_Callback(hi2c);
+//     }
+
+//     if ((interrupt_status & I2C_ISR_NACKF_M) && (int_mask & I2C_CR1_NACKIE_M))
+//     {
+//         HAL_I2C_NACK_Callback(hi2c);
+//     }
+
+//     if ((interrupt_status & I2C_ISR_STOPF_M) && (int_mask & I2C_CR1_STOPIE_M))
+//     {
+//         HAL_I2C_STOP_Callback(hi2c);
+//     }
+
+//     if ((interrupt_status & I2C_ISR_TXIS_M) && (int_mask & I2C_CR1_TXIE_M))
+//     {
+//         HAL_I2C_TXIS_Callback(hi2c);
+//     }
+
+//     if ((interrupt_status & I2C_ISR_RXNE_M) && (int_mask & I2C_CR1_RXIE_M))
+//     {
+//         HAL_I2C_RXNE_Callback(hi2c);
+//     }
+
+//     if ((interrupt_status & I2C_ISR_TCR_M) && (int_mask & I2C_CR1_TCIE_M))
+//     {
+//         HAL_I2C_TCR_Callback(hi2c);
+//     }
+
+//     if ((interrupt_status & I2C_ISR_TC_M) && (int_mask & I2C_CR1_TCIE_M))
+//     {
+//         HAL_I2C_TC_Callback(hi2c);
+//     }
+
+// }
 
