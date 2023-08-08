@@ -35,6 +35,8 @@ void HAL_SCR1_Timer_Disable(SCR1_TIMER_HandleTypeDef *hscr1_timer);
 void HAL_SCR1_Timer_SetClockSource(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint8_t ClockSource);
 void HAL_SCR1_Timer_SetDivider(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint16_t Divider);
 void HAL_SCR1_Timer_Init(SCR1_TIMER_HandleTypeDef *hscr1_timer);
+void HAL_SCR1_Timer_Start(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds);
+int HAL_SCR1_Timer_GetFlagCMP(SCR1_TIMER_HandleTypeDef *hscr1_timer);
 
 /* Время задержки должено быть не больше 134217 мс */ 
 void HAL_DelayMs(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds);
