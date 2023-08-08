@@ -15,7 +15,7 @@
 
 /* Title: Макросы */
 
-#define SPI_TIMEOUT_DEFAULT 800000
+#define SPI_TIMEOUT_DEFAULT 1000000
 
 /*
  * Defines: Выбор ведомых устройств 
@@ -665,15 +665,162 @@ HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitByte
 HAL_StatusTypeDef HAL_SPI_Exchange_IT(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size);
 
 
-extern void HAL_SPI_RXOverflow_Callback(SPI_HandleTypeDef *hspi);
-extern void HAL_SPI_ModeFail_Callback(SPI_HandleTypeDef *hspi);
-extern void HAL_SPI_TXFifoNotFull_Callback(SPI_HandleTypeDef *hspi);
-extern void HAL_SPI_TXFifoFull_Callback(SPI_HandleTypeDef *hspi);
-extern void HAL_SPI_RXFifoNotEmpty_Callback(SPI_HandleTypeDef *hspi);
-extern void HAL_SPI_RXFifoFull_Callback(SPI_HandleTypeDef *hspi);
-extern void HAL_SPI_TXFifoUnderflow_Callback(SPI_HandleTypeDef *hspi);
+static inline __attribute__((always_inline)) void HAL_SPI_RXOverflow_IRQ(SPI_HandleTypeDef *hspi)
+{
+    hspi->State = HAL_SPI_STATE_ERROR;
+    hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
+    HAL_SPI_InterruptDisable(hspi,   SPI_RX_OVERFLOW_M       | 
+                                SPI_MODE_FAIL_M         | 
+                                SPI_TX_FIFO_not_full_M  | 
+                                SPI_TX_FIFO_full_M      | 
+                                SPI_RX_FIFO_not_empty_M | 
+                                SPI_RX_FIFO_full_M      | 
+                                SPI_TX_FIFO_underflow_M
+                                );
+}
 
-void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi);
+static inline __attribute__((always_inline)) void HAL_SPI_ModeFail_IRQ(SPI_HandleTypeDef *hspi)
+{
+    hspi->State = HAL_SPI_STATE_ERROR;
+    hspi->Error.ModeFail = SPI_ERROR_ModeFail_ON;
+    HAL_SPI_InterruptDisable(hspi,   SPI_RX_OVERFLOW_M       | 
+                                SPI_MODE_FAIL_M         | 
+                                SPI_TX_FIFO_not_full_M  | 
+                                SPI_TX_FIFO_full_M      | 
+                                SPI_RX_FIFO_not_empty_M | 
+                                SPI_RX_FIFO_full_M      | 
+                                SPI_TX_FIFO_underflow_M
+                                );
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_TXFifoNotFull_IRQ(SPI_HandleTypeDef *hspi)
+{
+    if (hspi->TxCount < hspi->TransferSize)
+    {
+        
+        hspi->State = HAL_SPI_STATE_BUSY;
+
+        for (int i = 0; i < hspi->Init.ThresholdTX && (hspi->TxCount < hspi->TransferSize); i++)
+        {
+            hspi->Instance->TxData = *((uint8_t *)hspi->pTxBuffPtr);
+            hspi->pTxBuffPtr++;
+            hspi->TxCount++;
+        }
+        
+        HAL_SPI_InterruptDisable(hspi, SPI_TX_FIFO_not_full_M);
+        HAL_SPI_InterruptEnable(hspi, SPI_RX_FIFO_not_empty_M);
+
+    }
+
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_TXFifoFull_IRQ(SPI_HandleTypeDef *hspi)
+{
+    /* code */
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_RXFifoNotEmpty_IRQ(SPI_HandleTypeDef *hspi)
+{
+    if (hspi->RxCount < hspi->TransferSize)
+    {
+        hspi->State = HAL_SPI_STATE_BUSY;
+
+        *((uint8_t *)hspi->pRxBuffPtr) = (uint8_t)hspi->Instance->RxData;
+        hspi->pRxBuffPtr++;
+        hspi->RxCount++;
+
+        // for (int i = 0; i < hspi->Init.ThresholdTX && (hspi->RxCount < hspi->TransferSize); i++)
+        // {
+        //     *((uint8_t *)hspi->pRxBuffPtr) = (uint8_t)hspi->Instance->RxData;
+        //     hspi->pRxBuffPtr++;
+        //     hspi->RxCount++;
+        //     // for (volatile int i = 0; i < 10; i++);
+        // }
+
+        if (hspi->RxCount % hspi->Init.ThresholdTX == 0)
+        {
+            HAL_SPI_InterruptDisable(hspi, SPI_RX_FIFO_not_empty_M);
+            HAL_SPI_InterruptEnable(hspi, SPI_TX_FIFO_not_full_M);
+        }
+        
+
+    }
+
+
+    if ((hspi->RxCount >= hspi->TransferSize) && (hspi->TxCount >= hspi->TransferSize))
+    {
+        HAL_SPI_InterruptDisable(hspi,   SPI_RX_OVERFLOW_M       | 
+                                        SPI_MODE_FAIL_M         | 
+                                        SPI_TX_FIFO_not_full_M  | 
+                                        SPI_TX_FIFO_full_M      | 
+                                        SPI_RX_FIFO_not_empty_M | 
+                                        SPI_RX_FIFO_full_M      | 
+                                        SPI_TX_FIFO_underflow_M
+                                        );
+        
+        /* Конец передачи. Не выключать SPI в ручном режиме управления CS */
+        if(hspi->Init.ManualCS != SPI_MANUALCS_ON)
+        {
+            HAL_SPI_Disable(hspi);
+        }
+        
+        
+
+        hspi->State = HAL_SPI_STATE_END;
+
+    }
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_RXFifoFull_IRQ(SPI_HandleTypeDef *hspi)
+{
+    /* code */
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_TXFifoUnderflow_IRQ(SPI_HandleTypeDef *hspi)
+{
+    /* code */
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
+{
+    uint32_t interrupt_status = hspi->Instance->IntStatus & hspi->Instance->IntMask;
+
+    if (interrupt_status & SPI_TX_FIFO_not_full_M)
+    {
+        HAL_SPI_TXFifoNotFull_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_TX_FIFO_full_M)
+    {
+        HAL_SPI_TXFifoFull_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_RX_FIFO_not_empty_M)
+    {
+        HAL_SPI_RXFifoNotEmpty_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_RX_FIFO_full_M)
+    {
+        HAL_SPI_RXFifoFull_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_TX_FIFO_underflow_M)
+    {
+        HAL_SPI_TXFifoUnderflow_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_RX_OVERFLOW_M)
+    {
+        HAL_SPI_RXOverflow_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_MODE_FAIL_M)
+    {
+        HAL_SPI_ModeFail_IRQ(hspi);
+    }
+
+}
 
 
 #endif
