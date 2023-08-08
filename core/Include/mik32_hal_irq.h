@@ -79,76 +79,79 @@
 #define HAL_EPIC_ADC_MASK               ( 1 << EPIC_ADC_INDEX )
 
 
-/* Title: Функции */
 
 /*
- * functions: Обработчики прерываний 
+ * macros: Проверка флагов линий прерываний в EPIC
  *
  * 
- * Timer32_0_IRQHandler           - Функция обработчик прерывания Timer32_0
- * UART_0_IRQHandler              - Функция обработчик прерывания USART_0
- * UART_1_IRQHandler              - Функция обработчик прерывания USART_1
- * SPI_0_IRQHandler               - Функция обработчик прерывания SPI_0
- * SPI_1_IRQHandler               - Функция обработчик прерывания SPI_1
- * GPIO_IRQHandler                - Функция обработчик прерывания GPIO
- * I2C_0_IRQHandler               - Функция обработчик прерывания I2C_0
- * I2C_1_IRQHandler               - Функция обработчик прерывания I2C_1
- * WDT_IRQHandler                 - Функция обработчик прерывания Сторожевой таймер
- * TIMER16_0_IRQHandler           - Функция обработчик прерывания Timer16_0
- * TIMER16_1_IRQHandler           - Функция обработчик прерывания Timer16_1
- * TIMER16_2_IRQHandler           - Функция обработчик прерывания Timer16_2
- * TIMER32_1_IRQHandler           - Функция обработчик прерывания Timer32_1
- * TIMER32_2_IRQHandler           - Функция обработчик прерывания Timer32_2
- * SPIFI_IRQHandler               - Функция обработчик прерывания SPIFI
- * RTC_IRQHandler                 - Функция обработчик прерывания RTC
- * EEPROM_IRQHandler              - Функция обработчик прерывания EEPROM
- * WDT_DOM3_IRQHandler            - Функция обработчик прерывания Сторожевой таймер шины (периферийные устройства)
- * WDT_SPIFI_IRQHandler           - Функция обработчик прерывания Сторожевой таймер шины (SPIFI)
- * WDT_EEPROM_IRQHandler          - Функция обработчик прерывания Сторожевой таймер шины (EEPROM)
- * DMA_GLB_ERR_IRQHandler         - Функция обработчик прерывания ПДП глобальное прерывание
- * DMA_CHANNELS_IRQHandler        - Функция обработчик прерывания ПДП локальное прерывание 
- * FREQ_MON_IRQHandler            - Функция обработчик прерывания Монитор частоты 
- * PVD_AVCC_UNDER_IRQHandler      - Функция обработчик прерывания Монитор напряжения AVCC (ниже порога)
- * PVD_AVCC_OVER_IRQHandler       - Функция обработчик прерывания Монитор напряжения AVCC (выше порога) 
- * PVD_VCC_UNDER_IRQHandler       - Функция обработчик прерывания Монитор напряжения VCC (ниже порога) 
- * PVD_VCC_OVER_IRQHandler        - Функция обработчик прерывания Монитор напряжения VCC (выше порога) 
- * BATTERY_NON_GOOD_IRQHandler    - Функция обработчик прерывания Недостаточное напряжение батареи
- * BOR_IRQHandler                 - Функция обработчик прерывания BrouwnOut детектор 
- * TSENS_IRQHandler               - Функция обработчик прерывания Монитор температуры
- * ADC_IRQHandler                 - Функция обработчик прерывания АЦП
+ * EPIC_CHECK_Timer32_0            - Проверка флага Timer32_0
+ * EPIC_CHECK_UART_0               - Проверка флага USART_0
+ * EPIC_CHECK_UART_1               - Проверка флага USART_1
+ * EPIC_CHECK_SPI_0                - Проверка флага SPI_0
+ * EPIC_CHECK_SPI_1                - Проверка флага SPI_1
+ * EPIC_CHECK_GPIO                 - Проверка флага GPIO
+ * EPIC_CHECK_I2C_0                - Проверка флага I2C_0
+ * EPIC_CHECK_I2C_1                - Проверка флага I2C_1
+ * EPIC_CHECK_WDT                  - Проверка флага Сторожевой таймер
+ * EPIC_CHECK_TIMER16_0            - Проверка флага Timer16_0
+ * EPIC_CHECK_TIMER16_1            - Проверка флага Timer16_1
+ * EPIC_CHECK_TIMER16_2            - Проверка флага Timer16_2
+ * EPIC_CHECK_TIMER32_1            - Проверка флага Timer32_1
+ * EPIC_CHECK_TIMER32_2            - Проверка флага Timer32_2
+ * EPIC_CHECK_SPIFI                - Проверка флага SPIFI
+ * EPIC_CHECK_RTC                  - Проверка флага RTC
+ * EPIC_CHECK_EEPROM               - Проверка флага EEPROM
+ * EPIC_CHECK_WDT_DOM3             - Проверка флага Сторожевой таймер шины (периферийные устройства)
+ * EPIC_CHECK_WDT_SPIFI            - Проверка флага Сторожевой таймер шины (SPIFI)
+ * EPIC_CHECK_WDT_EEPROM           - Проверка флага Сторожевой таймер шины (EEPROM)
+ * EPIC_CHECK_DMA_GLB_ERR          - Проверка флага ПДП глобальное прерывание
+ * EPIC_CHECK_DMA_CHANNELS         - Проверка флага ПДП локальное прерывание 
+ * EPIC_CHECK_FREQ_MON             - Проверка флага Монитор частоты 
+ * EPIC_CHECK_PVD_AVCC_UNDER       - Проверка флага Монитор напряжения AVCC (ниже порога)
+ * EPIC_CHECK_PVD_AVCC_OVER        - Проверка флага Монитор напряжения AVCC (выше порога) 
+ * EPIC_CHECK_PVD_VCC_UNDER        - Проверка флага Монитор напряжения VCC (ниже порога) 
+ * EPIC_CHECK_PVD_VCC_OVER         - Проверка флага Монитор напряжения VCC (выше порога) 
+ * EPIC_CHECK_BATTERY_NON_GOOD     - Проверка флага Недостаточное напряжение батареи
+ * EPIC_CHECK_BOR                  - Проверка флага BrouwnOut детектор 
+ * EPIC_CHECK_TSENS                - Проверка флага Монитор температуры
+ * EPIC_CHECK_ADC                  - Проверка флага АЦП
  *
  */
-extern void Timer32_0_IRQHandler();
-extern void UART_0_IRQHandler();
-extern void UART_1_IRQHandler();
-extern void SPI_0_IRQHandler();
-extern void SPI_1_IRQHandler();
-extern void GPIO_IRQHandler();
-extern void I2C_0_IRQHandler();
-extern void I2C_1_IRQHandler();
-extern void WDT_IRQHandler();
-extern void TIMER16_0_IRQHandler();
-extern void TIMER16_1_IRQHandler();
-extern void TIMER16_2_IRQHandler();
-extern void TIMER32_1_IRQHandler();
-extern void TIMER32_2_IRQHandler();
-extern void SPIFI_IRQHandler();
-extern void RTC_IRQHandler();
-extern void EEPROM_IRQHandler();
-extern void WDT_DOM3_IRQHandler();
-extern void WDT_SPIFI_IRQHandler();
-extern void WDT_EEPROM_IRQHandler();
-extern void DMA_GLB_ERR_IRQHandler();
-extern void DMA_CHANNELS_IRQHandler();
-extern void FREQ_MON_IRQHandler();
-extern void PVD_AVCC_UNDER_IRQHandler();
-extern void PVD_AVCC_OVER_IRQHandler();
-extern void PVD_VCC_UNDER_IRQHandler();
-extern void PVD_VCC_OVER_IRQHandler();
-extern void BATTERY_NON_GOOD_IRQHandler();
-extern void BOR_IRQHandler();
-extern void TSENS_IRQHandler();
-extern void ADC_IRQHandler();
+#define EPIC_CHECK_TIMER32_0() (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_0_INDEX))
+#define EPIC_CHECK_UART_0() (EPIC->RAW_STATUS & (1 << EPIC_UART_0_INDEX))
+#define EPIC_CHECK_UART_1() (EPIC->RAW_STATUS & (1 << EPIC_UART_1_INDEX))
+#define EPIC_CHECK_SPI_0() (EPIC->RAW_STATUS & (1 << EPIC_SPI_0_INDEX))
+#define EPIC_CHECK_SPI_1() (EPIC->RAW_STATUS & (1 << EPIC_SPI_1_INDEX))
+#define EPIC_CHECK_GPIO_IRQ() (EPIC->RAW_STATUS & (1 << EPIC_GPIO_IRQ_INDEX))
+#define EPIC_CHECK_I2C_0() (EPIC->RAW_STATUS & (1 << EPIC_I2C_0_INDEX))
+#define EPIC_CHECK_I2C_1() (EPIC->RAW_STATUS & (1 << EPIC_I2C_1_INDEX))
+#define EPIC_CHECK_WDT() (EPIC->STATUS & (1 << EPIC_WDT_INDEX))
+#define EPIC_CHECK_TIMER16_0() (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_0_INDEX))
+#define EPIC_CHECK_TIMER16_1() (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_1_INDEX))
+#define EPIC_CHECK_TIMER16_2() (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_2_INDEX))
+#define EPIC_CHECK_TIMER32_1() (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_1_INDEX))
+#define EPIC_CHECK_TIMER32_2() (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_2_INDEX))
+#define EPIC_CHECK_SPIFI() (EPIC->RAW_STATUS & (1 << EPIC_SPIFI_INDEX))
+#define EPIC_CHECK_RTC() (EPIC->RAW_STATUS & (1 << EPIC_RTC_INDEX))
+#define EPIC_CHECK_EEPROM() (EPIC->RAW_STATUS & (1 << EPIC_EEPROM_INDEX))
+#define EPIC_CHECK_WDT_DOM3() (EPIC->RAW_STATUS & (1 << EPIC_WDT_DOM3_INDEX))
+#define EPIC_CHECK_WDT_SPIFI() (EPIC->RAW_STATUS & (1 << EPIC_WDT_SPIFI_INDEX))
+#define EPIC_CHECK_WDT_EEPROM() (EPIC->RAW_STATUS & (1 << EPIC_WDT_EEPROM_INDEX))
+#define EPIC_CHECK_DMA_GLB_ERR() (EPIC->RAW_STATUS & (1 << EPIC_DMA_GLB_ERR_INDEX))
+#define EPIC_CHECK_DMA_CHANNELS() (EPIC->RAW_STATUS & (1 << EPIC_DMA_CHANNELS_INDEX))
+#define EPIC_CHECK_FREQ_MON() (EPIC->STATUS & (1 << EPIC_FREQ_MON_INDEX))
+#define EPIC_CHECK_PVD_AVCC_UNDER() (EPIC->STATUS & (1 << EPIC_PVD_AVCC_UNDER))
+#define EPIC_CHECK_PVD_AVCC_OVER() (EPIC->STATUS & (1 << EPIC_PVD_AVCC_OVER))
+#define EPIC_CHECK_PVD_VCC_UNDER() (EPIC->STATUS & (1 << EPIC_PVD_VCC_UNDER))
+#define EPIC_CHECK_PVD_VCC_OVER() (EPIC->STATUS & (1 << EPIC_PVD_VCC_OVER))
+#define EPIC_CHECK_BATTERY_NON_GOOD() (EPIC->STATUS & (1 << EPIC_BATTERY_NON_GOOD))
+#define EPIC_CHECK_BOR() (EPIC->STATUS & (1 << EPIC_BOR_INDEX))
+#define EPIC_CHECK_TSENS() (EPIC->RAW_STATUS & (1 << EPIC_TSENS_INDEX))
+#define EPIC_CHECK_ADC() (EPIC->STATUS & (1 << EPIC_ADC_INDEX))
+
+
+
+
 
 /*
  * Function: HAL_IRQ_EnableInterrupts
@@ -231,7 +234,10 @@ void HAL_EPIC_MaskLevelClear(uint32_t InterruptMask);
  * Returns:
  * void.
  */
-void HAL_EPIC_Clear(uint32_t InterruptMask);
+static inline __attribute__((always_inline)) void HAL_EPIC_Clear(uint32_t InterruptMask)
+{
+    EPIC->CLEAR = InterruptMask;
+}
 
 /*
  * Function: HAL_EPIC_GetStatus
@@ -254,37 +260,8 @@ uint32_t HAL_EPIC_GetStatus();
 uint32_t HAL_EPIC_GetRawStatus();
 
 
-void Timer32_0_IT();
-void UART_0_IT();
-void UART_1_IT();
-void SPI_0_IT();
-void SPI_1_IT();
-void GPIO_IT();
-void I2C_0_IT();
-void I2C_1_IT();
-void WDT_IT();
-void TIMER16_0_IT();
-void TIMER16_1_IT();
-void TIMER16_2_IT();
-void TIMER32_1_IT();
-void TIMER32_2_IT();
-void SPIFI_IT();
-void RTC_IT();
-void EEPROM_IT();
-void WDT_DOM3_IT();
-void WDT_SPIFI_IT();
-void WDT_EEPROM_IT();
-void DMA_GLB_ERR_IT();
-void DMA_CHANNELS_IT();
-void FREQ_MON_IT();
-void PVD_AVCC_UNDER_IT();
-void PVD_AVCC_OVER_IT();
-void PVD_VCC_UNDER_IT();
-void PVD_VCC_OVER_IT();
-void BATTERY_NON_GOOD_IT();
-void BOR_IT();
-void TSENS_IT();
-void ADC_IT();
+
+
 
 
 #endif
