@@ -237,7 +237,7 @@ void HAL_CRC_WaitBusy(CRC_HandleTypeDef *hcrc);
  * Returns:
  * void
  */
-void HAL_RTC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t message_length);
+void HAL_CRC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t message_length);
 
 /*
  * Function: HAL_RTC_WriteData32
@@ -251,7 +251,7 @@ void HAL_RTC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t mess
  * Returns:
  * void
  */
-void HAL_RTC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t message_length);
+void HAL_CRC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t message_length);
 
 /*
  * Function: HAL_RTC_ReadCRC
@@ -264,7 +264,7 @@ void HAL_RTC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t m
  * (uint32_t ) - Значение CRC.
  *
  */
-uint32_t HAL_RTC_ReadCRC(CRC_HandleTypeDef *hcrc);
+uint32_t HAL_CRC_ReadCRC(CRC_HandleTypeDef *hcrc);
 
 #endif
 

@@ -62,7 +62,7 @@ void HAL_CRC_WaitBusy(CRC_HandleTypeDef *hcrc)
     while (hcrc->Instance->CTRL & CRC_CTRL_BUSY_M);
 }
 
-void HAL_RTC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t message_length)
+void HAL_CRC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t message_length)
 {
     if(message_length > CRC_MAX_BYTES)
     {
@@ -101,7 +101,7 @@ void HAL_RTC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t mess
     }
 }
 
-void HAL_RTC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t message_length)
+void HAL_CRC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t message_length)
 {
     if(message_length > CRC_MAX_WORDS)
     {
@@ -124,7 +124,7 @@ void HAL_RTC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t m
     }
 }
 
-uint32_t HAL_RTC_ReadCRC(CRC_HandleTypeDef *hcrc)
+uint32_t HAL_CRC_ReadCRC(CRC_HandleTypeDef *hcrc)
 {
     uint32_t CRCValue;
     /* Ожидание завершения вычисления CRC */
