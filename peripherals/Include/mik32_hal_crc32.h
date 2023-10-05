@@ -1,13 +1,11 @@
 #ifndef MIK32_HAL_CRC32
 #define MIK32_HAL_CRC32
 
-#include "def_list.h"
-#include "mcu32_memory_map.h"
+#include "mik32_hal_pcc.h"
 #include "crc.h"
+#include "mcu32_memory_map.h"
 
-#ifdef MIK32_CRC_DEBUG
-#include "common.h"
-#endif
+
  
 /* Title: Макросы */
 
@@ -157,6 +155,8 @@ typedef struct
 
 /* Title: Функции */
 
+void HAL_CRC32_MspInit(CRC_HandleTypeDef* hcrc);
+
 /*
  * Function: HAL_CRC_SetInputReverse
  * Задать перестановка битов/байтов входных данных в соответствии со значением <CRC_HandleTypeDef.InputReverse> (RefIn).
@@ -241,7 +241,7 @@ void HAL_CRC_WaitBusy(CRC_HandleTypeDef *hcrc);
  * Returns:
  * void
  */
-void HAL_RTC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t message_length);
+void HAL_CRC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t message_length);
 
 /*
  * Function: HAL_RTC_WriteData32
@@ -255,7 +255,7 @@ void HAL_RTC_WriteData(CRC_HandleTypeDef *hcrc, uint8_t message[], uint32_t mess
  * Returns:
  * void
  */
-void HAL_RTC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t message_length);
+void HAL_CRC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t message_length);
 
 /*
  * Function: HAL_RTC_ReadCRC
@@ -268,7 +268,7 @@ void HAL_RTC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t m
  * (uint32_t ) - Значение CRC.
  *
  */
-uint32_t HAL_RTC_ReadCRC(CRC_HandleTypeDef *hcrc);
+uint32_t HAL_CRC_ReadCRC(CRC_HandleTypeDef *hcrc);
 
 #endif
 

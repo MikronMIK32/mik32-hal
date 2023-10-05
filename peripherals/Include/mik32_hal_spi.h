@@ -1,17 +1,22 @@
-#ifndef MIK32_HAL_I2C
-#define MIK32_HAL_I2C
+#ifndef MIK32_HAL_SPI
+#define MIK32_HAL_SPI
 
-#include "def_list.h"
-#include "mcu32_memory_map.h"
+
+#include "stddef.h"
+#include "mik32_hal_pcc.h"
+#include "mik32_hal_gpio.h"
+#include "power_manager.h"
 #include "spi.h"
-#include "stdbool.h"
+#include "mik32_hal_def.h"
+#include "mcu32_memory_map.h"
+// #include "inttypes.h"
+// #include "stdbool.h"
 
-#ifdef MIK32_SPI_DEBUG
-#include "common.h"
-#endif
 
 
 /* Title: Макросы */
+
+#define SPI_TIMEOUT_DEFAULT 1000000
 
 /*
  * Defines: Выбор ведомых устройств 
@@ -24,11 +29,11 @@
  *
  */
 /* SPI_CS - Выбор ведомых устройств */
-#define SPI_CS_NONE   0xF      /* Ведомое устройство не выбрано */
-#define SPI_CS_0      0xE      /* Ведомое устройство 1 */
-#define SPI_CS_1      0xD      /* Ведомое устройство 2 */
-#define SPI_CS_2      0xB      /* Ведомое устройство 3 */
-#define SPI_CS_3      0x7      /* Ведомое устройство 4 */
+#define SPI_CS_NONE   0b1111     /* Ведомое устройство не выбрано */
+#define SPI_CS_0      0b1110     /* Ведомое устройство 1 */
+#define SPI_CS_1      0b1101     /* Ведомое устройство 2 */
+#define SPI_CS_2      0b1011     /* Ведомое устройство 3 */
+#define SPI_CS_3      0b0111     /* Ведомое устройство 4 */
 
 /*
  * Defines: Делитель частоты
@@ -114,7 +119,7 @@
  * SPI_DATASIZE_32BITS - Длина передаваемой посылки 32 бит.
  *
  */
-/* SPI_DataSizey - Длина передаваемой посылки */
+/* SPI_DataSize - Длина передаваемой посылки */
 #define SPI_DATASIZE_8BITS      0   /* Длина передаваемой посылки - 8 бит */
 #define SPI_DATASIZE_16BITS     1   /* Длина передаваемой посылки - 16 бит */
 #define SPI_DATASIZE_24BITS     2   /* Длина передаваемой посылки - 24 бит */
@@ -123,12 +128,31 @@
 /* SPI_Error - Ошибки SPI */
 #define SPI_ERROR_RXOVR_OFF         (uint8_t)0
 #define SPI_ERROR_RXOVR_ON          (uint8_t)1
-#define SPI_ERROR_ModeFail_OFF      (uint8_t)0
-#define SPI_ERROR_ModeFail_ON       (uint8_t)1
+#define SPI_ERROR_MODEFAIL_OFF      (uint8_t)0
+#define SPI_ERROR_MODEFAIL_ON       (uint8_t)1
 
 /* Значения по умолчанию */
 #define SPI_THRESHOLD_DEFAULT   1   /* Значение Threshold_of_TX_FIFO по умолчанию*/
 
+/* Прерывания */
+#define TX_FIFO_UNDERFLOW   6   /* Регистр TX FIFO опустошен */
+#define RX_FIFO_FULL        5   /* Регистр RX_FIFO заполнен */
+#define RX_FIFO_NOT_EMPTY   4   /* Регистр RX_FIFO не пустой */
+#define TX_FIFO_FULL        3   /* Регистр TX_FIFO заполнен */
+#define TX_FIFO_NOT_FULL    2   /* Регистр TX_FIFO не заполнен */
+#define MODE_FAIL           1   /* Напряжение на выводе n_ss_in не соответствую режиму работы SPI */
+#define RX_OVERFLOW         0   /* Прерывание при переполнении RX_FIFO, значение сбрасывается при чтении */
+
+#define IXR_TXUF        TX_FIFO_UNDERFLOW   /* Регистр TX FIFO опустошен */
+#define IXR_RXFULL      RX_FIFO_FULL        /* Регистр RX_FIFO заполнен */
+#define IXR_RXNEMPTY    RX_FIFO_NOT_EMPTY   /* Регистр RX_FIFO не пустой */
+#define IXR_TXFULL      TX_FIFO_FULL        /* Регистр TX_FIFO заполнен */
+#define IXR_TXOW        TX_FIFO_NOT_FULL    /* Регистр TX_FIFO не заполнен */
+#define IXR_MODF        MODE_FAIL           /* Напряжение на выводе n_ss_in не соответствую режиму работы SPI */
+#define IXR_RXOVR       RX_OVERFLOW         /* Прерывание при переполнении RX_FIFO, значение сбрасывается при чтении */
+
+#define SPI_IRQ_DISABLE        0
+#define SPI_IRQ_ENABLE         1
 
 /* Title: Перечисления */
 
@@ -147,6 +171,13 @@ typedef enum
 
 } HAL_SPI_ModeTypeDef;
 
+typedef enum
+{
+  HAL_SPI_STATE_READY,    /* Готов к передаче */
+  HAL_SPI_STATE_BUSY,    /* Идет передача */
+  HAL_SPI_STATE_END,    /* Передача завершена */
+  HAL_SPI_STATE_ERROR    /* Ошибка при передаче */
+} HAL_SPI_StateTypeDef;
 
 /* Title: Структуры */
 
@@ -176,7 +207,7 @@ typedef struct
     * Этот параметр должен быть одним из значений:
     * 
     * - <SPI_ERROR_ModeFail_OFF>;
-    * - <SPI_ERROR_ModeFail_ON>. 
+    * - <SPI_ERROR_MODEFAIL_ON>. 
     *
     */
     uint8_t ModeFail;
@@ -267,25 +298,44 @@ typedef struct
     */
     uint8_t Decoder;                /* Использование внешнего декодера */
 
+    // /*
+    // * Variable: DataSize
+    // * Длина передаваемой посылки
+    // * 
+    // * Этот параметр должен быть одним из значений:
+    // * 
+    // * - <SPI_DATASIZE_8BITS>;
+    // * - <SPI_DATASIZE_16BITS>;
+    // * - <SPI_DATASIZE_24BITS>;
+    // * - <SPI_DATASIZE_32BITS>;
+    // *
+    // */
+    // uint8_t DataSize;               /* Длина передаваемой посылки */
+
+    uint8_t ThresholdTX;            /* Уровень при котором регистр TX считается незаполненным и формируется прерывание */
+
     /*
-    * Variable: DataSize
-    * Длина передаваемой посылки
+    * Variable: ChipSelect
+    * Выбранное ведомое устройство
     * 
     * Этот параметр должен быть одним из значений:
     * 
-    * - <SPI_DATASIZE_8BITS>;
-    * - <SPI_DATASIZE_16BITS>;
-    * - <SPI_DATASIZE_24BITS>;
-    * - <SPI_DATASIZE_32BITS>;
+    * - <SPI_CS_NONE>;
+    * - <SPI_CS_0>;
+    * - <SPI_CS_1>;
+    * - <SPI_CS_2>;
+    * - <SPI_CS_3>.
     *
     */
-    uint8_t DataSize;               /* Длина передаваемой посылки */
+    uint8_t ChipSelect;
+
 
 } SPI_InitTypeDef;
 
+
 /*
  * Struct: SPI_HandleTypeDef
- * Настройки инициализации SPI
+ * Настройки SPI
  * 
  */
 typedef struct
@@ -311,25 +361,22 @@ typedef struct
     */
     HAL_SPI_ErrorTypeDef Error;
 
-    /*
-    * Variable: ChipSelect
-    * Выбранное ведомое устройство
-    * 
-    * Этот параметр должен быть одним из значений:
-    * 
-    * - <SPI_CS_NONE>;
-    * - <SPI_CS_0>;
-    * - <SPI_CS_1>;
-    * - <SPI_CS_2>;
-    * - <SPI_CS_3>.
-    *
-    */
-    uint8_t ChipSelect;
+    HAL_SPI_StateTypeDef State;
+
+
+    uint32_t TransferSize;
+    uint8_t *pTxBuffPtr;
+    uint32_t TxCount;
+    uint8_t *pRxBuffPtr;
+    uint32_t RxCount;
+
     
 } SPI_HandleTypeDef;
 
 
 /* Title: Функции */
+
+void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi);
 
 /*
  * Function: HAL_SPI_Enable
@@ -356,42 +403,88 @@ void HAL_SPI_Enable(SPI_HandleTypeDef *hspi);
 void HAL_SPI_Disable(SPI_HandleTypeDef *hspi);
 
 /*
- * Function: HAL_SPI_ClearRxBuffer
- * Читать из RX_FIFO до опустошения
- *
- * Parameters:
- * hspi - Указатель на структуру с настройками spi
- *
- * Returns:
- * void
- */
-void HAL_SPI_ClearRxBuffer(SPI_HandleTypeDef *hspi);
-
-/*
  * Function: HAL_SPI_IntEnable
- * Разрешить прерывания в соответсвии с маской int_en 
+ * Разрешить прерывания в соответствии с маской int_en 
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi
- * int_en - Маска прерываний
+ * IntEnMask - Маска прерываний
  *
  * Returns:
  * void
  */
-void HAL_SPI_IntEnable(SPI_HandleTypeDef *hspi, uint32_t int_en);
+static inline __attribute__((always_inline)) void HAL_SPI_InterruptEnable(SPI_HandleTypeDef *hspi, uint32_t IntEnMask)
+{
+    hspi->Instance->INT_ENABLE |= IntEnMask;
+}
 
 /*
  * Function: HAL_SPI_IntDisable
- * Запретить прерывания в соответсвии с маской int_dis
+ * Запретить прерывания в соответствии с маской int_dis
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi
- * int_dis - Маска прерываний
+ * IntDisMask - Маска прерываний
  *
  * Returns:
  * void
  */
-void HAL_SPI_IntDisable(SPI_HandleTypeDef *hspi, uint32_t int_dis);
+static inline __attribute__((always_inline)) void HAL_SPI_InterruptDisable(SPI_HandleTypeDef *hspi, uint32_t IntDisMask)
+{
+    hspi->Instance->INT_DISABLE |= IntDisMask;
+}
+
+/*
+ * Function: HAL_SPI_IntEnable
+ * Получить состояние прерывания
+ *
+ * Parameters:
+ * hspi - Указатель на структуру с настройками spi
+ * Interrupt - Название прерывания 
+ *
+ * Returns:
+ * (uint8_t ) - Состояние прерывания.
+ */
+static inline __attribute__((always_inline)) uint8_t HAL_SPI_GetInterruptStatus(SPI_HandleTypeDef *hspi, uint32_t Interrupt)
+{
+    uint32_t interrupt_status = hspi->Instance->INT_STATUS & hspi->Instance->INT_MASK;
+
+    switch (Interrupt)
+    {
+    case TX_FIFO_UNDERFLOW:
+        interrupt_status = (interrupt_status & SPI_INT_STATUS_TX_FIFO_UNDERFLOW_M) >> SPI_INT_STATUS_TX_FIFO_UNDERFLOW_S;
+        break;
+    case RX_FIFO_FULL:
+        interrupt_status = (interrupt_status & SPI_INT_STATUS_RX_FIFO_FULL_M) >> SPI_INT_STATUS_RX_FIFO_FULL_S;
+        break;
+
+    case RX_FIFO_NOT_EMPTY:
+        interrupt_status = (interrupt_status & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M) >> SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_S;
+        break;
+
+    case TX_FIFO_FULL:
+        interrupt_status = (interrupt_status & SPI_INT_STATUS_TX_FIFO_FULL_M) >> SPI_INT_STATUS_TX_FIFO_FULL_S;
+        break;
+
+    case TX_FIFO_NOT_FULL:
+        interrupt_status = (interrupt_status & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M) >> SPI_INT_STATUS_TX_FIFO_NOT_FULL_S;
+        break;
+
+    case MODE_FAIL:
+        interrupt_status = (interrupt_status & SPI_INT_STATUS_MODE_FAIL_M) >> SPI_INT_STATUS_MODE_FAIL_S;
+        break;
+
+    case RX_OVERFLOW:
+        interrupt_status = (interrupt_status & SPI_INT_STATUS_RX_OVERFLOW_M) >> SPI_INT_STATUS_RX_OVERFLOW_S;
+        break;
+    
+    default:
+        break;
+    }
+
+
+    return interrupt_status;
+}
 
 /*
  * Function: HAL_SPI_SetDelayBTWN
@@ -501,7 +594,7 @@ uint32_t HAL_SPI_ReadModuleID(SPI_HandleTypeDef *hspi);
  * Returns:
  * void
  */
-void HAL_SPI_Init(SPI_HandleTypeDef *hspi);
+HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_ClearTXFIFO
@@ -529,7 +622,7 @@ void HAL_SPI_ClearRXFIFO(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_ClearError
- * Сбросить состояния ошибок
+ * Сбросить состояния ошибок, очистить буферы
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi
@@ -538,20 +631,6 @@ void HAL_SPI_ClearRXFIFO(SPI_HandleTypeDef *hspi);
  * void
  */
 void HAL_SPI_ClearError(SPI_HandleTypeDef *hspi);
-
-/*
- * Function: HAL_SPI_CheckError
- * Проверить наличие ошибок
- * 
- * Если ошибки были найдены, то их статусы сбрасываются, а RX_FIFO и TX_FIFO очищаются.
- *
- * Parameters:
- * hspi - Указатель на структуру с настройками spi
- *
- * Returns:
- * void
- */
-void HAL_SPI_CheckError(SPI_HandleTypeDef *hspi);
 
 /*
  * Function: HAL_SPI_WaitTxNotFull
@@ -563,7 +642,43 @@ void HAL_SPI_CheckError(SPI_HandleTypeDef *hspi);
  * Returns:
  * void
  */
-void HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi);
+static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi, uint32_t Timeout)
+{
+    uint32_t status = 0;
+    while (Timeout-- != 0)
+    {
+        status = hspi->Instance->INT_STATUS;
+
+        if ((status & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M) != 0)
+        {
+            return HAL_OK;
+        }
+    }
+
+    if((status & (SPI_INT_STATUS_RX_OVERFLOW_M | SPI_INT_STATUS_MODE_FAIL_M)) || (!hspi->Instance->ENABLE))
+    {
+        
+        if(status & SPI_INT_STATUS_RX_OVERFLOW_M)
+        {
+            hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_OVR\n");
+            #endif
+        }
+        else
+        {
+            hspi->Error.ModeFail = SPI_ERROR_MODEFAIL_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_FAIL\n");
+            #endif
+        }
+
+        return HAL_ERROR;
+    }
+
+    return HAL_TIMEOUT;
+    
+}
 
 /*
  * Function: HAL_SPI_WaitRxNotEmpty
@@ -575,7 +690,43 @@ void HAL_SPI_WaitTxNotFull(SPI_HandleTypeDef *hspi);
  * Returns:
  * void
  */
-void HAL_SPI_WaitRxNotEmpty(SPI_HandleTypeDef *hspi);
+static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPI_WaitRxNotEmpty(SPI_HandleTypeDef *hspi, uint32_t Timeout)
+{
+    uint32_t status = 0;
+    while (Timeout-- != 0)
+    {
+        status = hspi->Instance->INT_STATUS;
+
+        if ((status & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M) != 0)
+        {
+            return HAL_OK;
+        }
+
+    }
+
+    if((status & (SPI_INT_STATUS_RX_OVERFLOW_M | SPI_INT_STATUS_MODE_FAIL_M)) || (!hspi->Instance->ENABLE))
+    {
+        
+        if(status & SPI_INT_STATUS_RX_OVERFLOW_M)
+        {
+            hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_OVR\n");
+            #endif
+        }
+        else
+        {
+            hspi->Error.ModeFail = SPI_ERROR_MODEFAIL_ON;
+            #ifdef MIK32_SPI_DEBUG
+            xprintf("TX_FAIL\n");
+            #endif
+        }
+
+        return HAL_ERROR;
+    }
+
+    return HAL_TIMEOUT;
+}
 
 /*
  * Function: HAL_SPI_CS_Enable
@@ -622,13 +773,174 @@ void HAL_SPI_CS_Disable(SPI_HandleTypeDef *hspi);
  *
  * Parameters:
  * hspi - Указатель на структуру с настройками spi;
- * transmit_bytes - Массив данных для отправки;
- * receive_bytes - Массив данных для приема;
- * count - количество байт данных
+ * TransmitBytes - Массив данных для отправки;
+ * ReceiveBytes - Массив данных для приема;
+ * Size - количество байт данных
  * 
  * Returns:
  * void
  */
-void HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t transmit_bytes[], uint8_t receive_bytes[], uint32_t count);
+HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size, uint32_t Timeout);
+
+HAL_StatusTypeDef HAL_SPI_Exchange_IT(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size);
+
+
+static inline __attribute__((always_inline)) void HAL_SPI_RXOverflow_IRQ(SPI_HandleTypeDef *hspi)
+{
+    hspi->State = HAL_SPI_STATE_ERROR;
+    hspi->Error.RXOVR = SPI_ERROR_RXOVR_ON;
+    HAL_SPI_InterruptDisable(hspi,   SPI_INT_STATUS_RX_OVERFLOW_M       | 
+                                SPI_INT_STATUS_MODE_FAIL_M         | 
+                                SPI_INT_STATUS_TX_FIFO_NOT_FULL_M  | 
+                                SPI_INT_STATUS_TX_FIFO_FULL_M      | 
+                                SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M | 
+                                SPI_INT_STATUS_RX_FIFO_FULL_M      | 
+                                SPI_INT_STATUS_TX_FIFO_UNDERFLOW_M
+                                );
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_ModeFail_IRQ(SPI_HandleTypeDef *hspi)
+{
+    hspi->State = HAL_SPI_STATE_ERROR;
+    hspi->Error.ModeFail = SPI_ERROR_MODEFAIL_ON;
+    HAL_SPI_InterruptDisable(hspi,   SPI_INT_STATUS_RX_OVERFLOW_M       | 
+                                SPI_INT_STATUS_MODE_FAIL_M         | 
+                                SPI_INT_STATUS_TX_FIFO_NOT_FULL_M  | 
+                                SPI_INT_STATUS_TX_FIFO_FULL_M      | 
+                                SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M | 
+                                SPI_INT_STATUS_RX_FIFO_FULL_M      | 
+                                SPI_INT_STATUS_TX_FIFO_UNDERFLOW_M
+                                );
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_TXFifoNotFull_IRQ(SPI_HandleTypeDef *hspi)
+{
+    if (hspi->TxCount < hspi->TransferSize)
+    {
+        
+        hspi->State = HAL_SPI_STATE_BUSY;
+
+        for (int i = 0; i < hspi->Init.ThresholdTX && (hspi->TxCount < hspi->TransferSize); i++)
+        {
+            hspi->Instance->TXDATA = *((uint8_t *)hspi->pTxBuffPtr);
+            hspi->pTxBuffPtr++;
+            hspi->TxCount++;
+        }
+        
+        HAL_SPI_InterruptDisable(hspi, SPI_INT_STATUS_TX_FIFO_NOT_FULL_M);
+        HAL_SPI_InterruptEnable(hspi, SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M);
+
+    }
+
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_TXFifoFull_IRQ(SPI_HandleTypeDef *hspi)
+{
+    /* code */
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_RXFifoNotEmpty_IRQ(SPI_HandleTypeDef *hspi)
+{
+    if (hspi->RxCount < hspi->TransferSize)
+    {
+        hspi->State = HAL_SPI_STATE_BUSY;
+
+        *((uint8_t *)hspi->pRxBuffPtr) = (uint8_t)hspi->Instance->RXDATA;
+        hspi->pRxBuffPtr++;
+        hspi->RxCount++;
+
+        // for (int i = 0; i < hspi->Init.ThresholdTX && (hspi->RxCount < hspi->TransferSize); i++)
+        // {
+        //     *((uint8_t *)hspi->pRxBuffPtr) = (uint8_t)hspi->Instance->RXDATA;
+        //     hspi->pRxBuffPtr++;
+        //     hspi->RxCount++;
+        //     // for (volatile int i = 0; i < 10; i++);
+        // }
+
+        if (hspi->RxCount % hspi->Init.ThresholdTX == 0)
+        {
+            HAL_SPI_InterruptDisable(hspi, SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M);
+            HAL_SPI_InterruptEnable(hspi, SPI_INT_STATUS_TX_FIFO_NOT_FULL_M);
+        }
+        
+
+    }
+
+
+    if ((hspi->RxCount >= hspi->TransferSize) && (hspi->TxCount >= hspi->TransferSize))
+    {
+        HAL_SPI_InterruptDisable(hspi,   SPI_INT_STATUS_RX_OVERFLOW_M       | 
+                                        SPI_INT_STATUS_MODE_FAIL_M         | 
+                                        SPI_INT_STATUS_TX_FIFO_NOT_FULL_M  | 
+                                        SPI_INT_STATUS_TX_FIFO_FULL_M      | 
+                                        SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M | 
+                                        SPI_INT_STATUS_RX_FIFO_FULL_M      | 
+                                        SPI_INT_STATUS_TX_FIFO_UNDERFLOW_M
+                                        );
+        
+        /* Конец передачи. Не выключать SPI в ручном режиме управления CS */
+        if(hspi->Init.ManualCS != SPI_MANUALCS_ON)
+        {
+            HAL_SPI_Disable(hspi);
+        }
+        
+        
+
+        hspi->State = HAL_SPI_STATE_END;
+
+    }
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_RXFifoFull_IRQ(SPI_HandleTypeDef *hspi)
+{
+    /* code */
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_TXFifoUnderflow_IRQ(SPI_HandleTypeDef *hspi)
+{
+    /* code */
+}
+
+static inline __attribute__((always_inline)) void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
+{
+    uint32_t interrupt_status = hspi->Instance->INT_STATUS & hspi->Instance->INT_MASK;
+
+    if (interrupt_status & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)
+    {
+        HAL_SPI_TXFifoNotFull_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_INT_STATUS_TX_FIFO_FULL_M)
+    {
+        HAL_SPI_TXFifoFull_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)
+    {
+        HAL_SPI_RXFifoNotEmpty_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_INT_STATUS_RX_FIFO_FULL_M)
+    {
+        HAL_SPI_RXFifoFull_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_INT_STATUS_TX_FIFO_UNDERFLOW_M)
+    {
+        HAL_SPI_TXFifoUnderflow_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_INT_STATUS_RX_OVERFLOW_M)
+    {
+        HAL_SPI_RXOverflow_IRQ(hspi);
+    }
+
+    if (interrupt_status & SPI_INT_STATUS_MODE_FAIL_M)
+    {
+        HAL_SPI_ModeFail_IRQ(hspi);
+    }
+
+}
+
 
 #endif

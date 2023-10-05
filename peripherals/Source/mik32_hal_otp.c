@@ -1,5 +1,9 @@
 #include "mik32_hal_otp.h"
 
+__attribute__((weak)) void HAL_OTP_MspInit(OTP_HandleTypeDef* hotp)
+{
+    __HAL_PCC_OTP_CONTROLLER_CLK_ENABLE();
+}
 
 void HAL_OTP_PowerOff(OTP_HandleTypeDef *hotp, uint8_t PowerOff)
 {
@@ -38,7 +42,7 @@ void HAL_OPT_TimeInit(OTP_HandleTypeDef *hotp)
 {
     uint8_t APBMDivider = PM->DIV_APB_M;
     uint8_t AHBDivider = PM->DIV_AHB;
-    uint32_t OscillatorSystem = PM->AHB_CLK_MUX; 
+    uint32_t OscillatorSystem = PM->AHB_CLK_MUX & PM_AHB_CLK_MUX_M;  
     
     uint32_t OtpadjConfig = hotp->Instance->OTPADJ;
     uint32_t otpwt1_config = hotp->Instance->OTPWT1;
@@ -67,6 +71,7 @@ void HAL_OPT_TimeInit(OTP_HandleTypeDef *hotp)
     {
         recommended_value = (40 * 32) / (((APBMDivider + 1) * (AHBDivider + 1)) * Div) + 1;
     }
+
 
     /* Рекомендуемое значение N_W = 50 000 000 нс / Pclk, где Pclk – период тактового сигнала в нс */
     uint32_t recommended_N_W = 0; 
@@ -117,10 +122,13 @@ void HAL_OPT_SetReadMode(OTP_HandleTypeDef *hotp, uint8_t ReadMode)
 
 void HAL_OTP_Init(OTP_HandleTypeDef *hotp)
 {
-    /* Настройка временных ограничений */
+    
+    HAL_OTP_MspInit(hotp);
+    
+    // /* Настройка временных ограничений */
     HAL_OPT_TimeInit(hotp);
 
-    /* Выбор напряжения на UPP матрицы */
+    // /* Выбор напряжения на UPP матрицы */
     HAL_OTP_SetUppRead(hotp, OTP_UPP_READ_2_5V);
 
     /* Режим чтения */
@@ -195,7 +203,7 @@ void HAL_OTP_ReadTestColumn(OTP_HandleTypeDef *hotp, uint8_t Address, uint32_t D
         /* OTPA[4:3] = 10b - тестовый столбец OTP */
         uint8_t address_column = 0b10000 + (Address & 0b111); 
         hotp->Instance->OTPA = address_column;
-        volatile uint32_t dummy = hotp->Instance->OTPDAT;
+        DataRead[0] = hotp->Instance->OTPDAT;
         
         for (uint32_t i = 0; i < DataLength; i++)
         {
@@ -219,7 +227,7 @@ uint32_t HAL_OTP_ReadTestRow(OTP_HandleTypeDef *hotp)
     }
     else
     {
-        volatile uint32_t dummy = hotp->Instance->OTPDAT;
+        DataRead = hotp->Instance->OTPDAT;
     }
     
     DataRead = hotp->Instance->OTPDAT;
@@ -240,7 +248,7 @@ uint32_t HAL_OTP_ReadTestBit(OTP_HandleTypeDef *hotp)
     }
     else
     {
-        volatile uint32_t dummy = hotp->Instance->OTPDAT;
+        DataRead = hotp->Instance->OTPDAT;
     }
 
     DataRead = hotp->Instance->OTPDAT;
@@ -266,7 +274,7 @@ void HAL_OTP_Read(OTP_HandleTypeDef *hotp, uint8_t Address, uint32_t DataRead[],
     {
         /* OTPA[4:3] = 00b - основной массив OTP */
         hotp->Instance->OTPA = 0b00000 + (Address & 0b111); 
-        volatile uint32_t dummy = hotp->Instance->OTPDAT;
+        DataRead[0] = hotp->Instance->OTPDAT;
         
         for (uint32_t i = 0; i < DataLength; i++)
         {

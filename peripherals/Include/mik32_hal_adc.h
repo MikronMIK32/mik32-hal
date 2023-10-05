@@ -1,15 +1,13 @@
 #ifndef MIK32_HAL_ADC
 #define MIK32_HAL_ADC
 
-#include "def_list.h"
-#include "mcu32_memory_map.h"
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
+#include "mik32_hal_pcc.h"
+#include "mik32_hal_gpio.h"
+#include "mcu32_memory_map.h"
 
-#ifdef MIK32_ADC_DEBUG
-#include "common.h"
-#endif
 
 /* Title: Макросы */
 
@@ -166,6 +164,25 @@ typedef struct
 } ADC_HandleTypeDef;
 
 
+/* Сменить канал АЦП */
+#ifdef MIK32V0
+    #define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SEL_M)) | ((channel_selection) << ADC_CONFIG_SEL_S)))
+#endif
+
+#ifdef MIK32V2
+#define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) & (~ADC_CONFIG_SEL_M)) | (((adc_instance)->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) | ((channel_selection) << ADC_CONFIG_SEL_S))
+#endif
+
+/* Запустить однократное преобразование */
+#define HAL_ADC_SINGLE(adc_instance) ((adc_instance)->ADC_SINGLE = 1) 
+
+#define HAL_ADC_SINGLE_AND_SET_CH(adc_instance, adc_channel)    ({(adc_instance)->ADC_SINGLE = 1; ADC_SEL_CHANNEL((adc_instance), (adc_channel));}) /* Запустить однократное преобразование */
+
+
+/* Title: Функции */
+
+void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc);
+
 /*
  * Включить калибруемый ИОН
  */
@@ -185,8 +202,6 @@ void HAL_ADC_VCLBSet(ADC_HandleTypeDef *hadc, uint8_t v_coef);
  * Задать коэфициент настройки опорного источника тока
  */
 void HAL_ADC_ICLBSet(ADC_HandleTypeDef *hadc, uint8_t i_coef);
-
-/* Title: Функции */
 
 /*
  * Function: HAL_ADC_ResetEnable

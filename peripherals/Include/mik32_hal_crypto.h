@@ -1,14 +1,10 @@
 #ifndef MIK32_HAL_CRYPTO
 #define MIK32_HAL_CRYPTO
 
-#include "def_list.h"
-#include "mcu32_memory_map.h"
+#include "mik32_hal_pcc.h"
 #include "crypto.h"
 #include "pad_config.h"
-
-#ifdef MIK32_CRYPTO_DEBUG
-#include "common.h"
-#endif
+#include "mcu32_memory_map.h"
 
 
 /* Title: Макросы */
@@ -183,6 +179,8 @@ typedef struct
 } Crypto_HandleTypeDef;
 
 /* Title: Функции */
+
+void HAL_CRYPTO_MspInit(Crypto_HandleTypeDef* hcrypto);
 
 /*
  * Function: HAL_Crypto_CounterReset

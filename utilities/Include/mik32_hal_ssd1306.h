@@ -1,7 +1,6 @@
 #ifndef MIK32_HAL_SSD130
 #define MIK32_HAL_SSD130
 
-
 #ifndef SSD1306_128x64
 #define SSD1306_128x32
 #endif
@@ -28,13 +27,13 @@
 /* Десятые минут */
 #define START_COLUMN_TM         75
 #define END_COLUMN_TM           99
-/* Еденицы минут */
+/* Единицы минут */
 #define START_COLUMN_M          100
 #define END_COLUMN_M            124
 
 #define SYMBOL_COLON            58
+#define SYMBOL_SMILE            13
 
-#include "def_list.h"
 #include <stdint.h>
 #include "mik32_hal_i2c.h"
 
@@ -44,12 +43,9 @@
 #define COM 0b10000000
 
 
-void HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness);
-
-void HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c);
-
-void HAL_SSD1306_SetBorder(I2C_HandleTypeDef *hi2c, uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
-
-void HAL_SSD1306_Write(I2C_HandleTypeDef *hi2c, uint8_t symbol);
+HAL_StatusTypeDef HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness);
+HAL_StatusTypeDef HAL_SSD1306_SetBorder(I2C_HandleTypeDef *hi2c, uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
+HAL_StatusTypeDef HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c);
+HAL_StatusTypeDef HAL_SSD1306_Write(I2C_HandleTypeDef *hi2c, uint8_t symbol);
 
 #endif

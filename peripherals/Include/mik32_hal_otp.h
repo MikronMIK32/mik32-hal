@@ -1,16 +1,13 @@
 #ifndef MIK32_HAL_OTP
 #define MIK32_HAL_OTP
 
-#include "def_list.h"
-#include "mcu32_memory_map.h"
+#include "mik32_hal_pcc.h"
+#include "mik32_hal_gpio.h"
 #include "power_manager.h"
 #include "otp.h"
 #include "pad_config.h"
 #include "stdbool.h"
-
-#ifdef MIK32_OTP_DEBUG
-#include "common.h"
-#endif
+#include "mcu32_memory_map.h"
 
 
 /* Выбор напряжения на UPP матрицы */
@@ -81,6 +78,8 @@ typedef struct
 } OTP_HandleTypeDef;
 
 /* Title: Функции */
+
+void HAL_OTP_MspInit(OTP_HandleTypeDef* hotp);
 
 /*
  * Function: HAL_OTP_PowerOff

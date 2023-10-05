@@ -1,16 +1,19 @@
 #include "mik32_hal_scr1_timer.h"
 
-void HAL_SCR1_Timer_Enable(OTP_HandleTypeDef *hscr1_timer)
+void HAL_SCR1_Timer_Enable(SCR1_TIMER_HandleTypeDef *hscr1_timer)
 {
     hscr1_timer->Instance->TIMER_CTRL |= SCR1_TIMER_ENABLE_M;
 }
 
-void HAL_SCR1_Timer_Disable(OTP_HandleTypeDef *hscr1_timer)
+void HAL_SCR1_Timer_Disable(SCR1_TIMER_HandleTypeDef *hscr1_timer)
 {
     hscr1_timer->Instance->TIMER_CTRL &= ~SCR1_TIMER_ENABLE_M;
+
+    hscr1_timer->Instance->MTIME = 0;
+    hscr1_timer->Instance->MTIMEH = 0;
 }
 
-void HAL_SCR1_Timer_SetClockSource(OTP_HandleTypeDef *hscr1_timer, uint8_t ClockSource)
+void HAL_SCR1_Timer_SetClockSource(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint8_t ClockSource)
 {
     hscr1_timer->ClockSource = ClockSource;
 
@@ -26,7 +29,7 @@ void HAL_SCR1_Timer_SetClockSource(OTP_HandleTypeDef *hscr1_timer, uint8_t Clock
     }
 }
 
-void HAL_SCR1_Timer_SetDivider(OTP_HandleTypeDef *hscr1_timer, uint16_t Divider)
+void HAL_SCR1_Timer_SetDivider(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint16_t Divider)
 {
     /* Divider 10-битное число */
     if(Divider > 1023)
@@ -37,7 +40,7 @@ void HAL_SCR1_Timer_SetDivider(OTP_HandleTypeDef *hscr1_timer, uint16_t Divider)
     hscr1_timer->Instance->TIMER_DIV = Divider;
 }
 
-void HAL_SCR1_Timer_Init(OTP_HandleTypeDef *hscr1_timer)
+void HAL_SCR1_Timer_Init(SCR1_TIMER_HandleTypeDef *hscr1_timer)
 {
     hscr1_timer->Instance->TIMER_CTRL = 0;
 
@@ -49,9 +52,8 @@ void HAL_SCR1_Timer_Init(OTP_HandleTypeDef *hscr1_timer)
 
 }
 
-void HAL_DelayMs(OTP_HandleTypeDef *hscr1_timer, uint32_t Milliseconds)
+void HAL_SCR1_Timer_Start(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds)
 {
-
     uint8_t AHBMDivider = PM->DIV_AHB;          /* Делитель частоты */
     uint32_t Milliseconds_max_32bit = 134217;   /* 134217 - максимальное число миллисекунд для того чтобы при расчете количества тактов не превысить 32 бита */
 
@@ -77,13 +79,36 @@ void HAL_DelayMs(OTP_HandleTypeDef *hscr1_timer, uint32_t Milliseconds)
     hscr1_timer->Instance->MTIMECMPH = 0;
 
     HAL_SCR1_Timer_Enable(hscr1_timer);
+}
 
-    while ((hscr1_timer->Instance->MTIME) < Ticks);
+
+int HAL_SCR1_Timer_GetFlagCMP(SCR1_TIMER_HandleTypeDef *hscr1_timer)
+{
+    uint32_t MTIME = hscr1_timer->Instance->MTIME;
+    uint32_t MTIMEH = hscr1_timer->Instance->MTIMEH;
+    uint32_t MTIMECMP = hscr1_timer->Instance->MTIMECMP;
+    uint32_t MTIMECMPH = hscr1_timer->Instance->MTIMECMPH;
+
+    if( ((MTIMEH == MTIMECMPH) && (MTIME > MTIMECMP)) || (MTIMEH > MTIMECMPH) )
+    {
+        HAL_SCR1_Timer_Disable(hscr1_timer);
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+void HAL_DelayMs(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds)
+{
+
+    HAL_SCR1_Timer_Start(hscr1_timer, Milliseconds);
+
+    while (HAL_SCR1_Timer_GetFlagCMP(hscr1_timer) == 0);
 
     HAL_SCR1_Timer_Disable(hscr1_timer);
-
-    hscr1_timer->Instance->MTIME = 0;
-    hscr1_timer->Instance->MTIMEH = 0;
     
 }
 

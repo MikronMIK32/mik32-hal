@@ -1,7 +1,7 @@
 #include "mik32_hal_ssd1306.h"
 
 // Адрес ведомого
-uint16_t slave_address = 0b00111100; //0x36 0x3FF 0x7F
+uint16_t slave_address = 0b00111100;
 
 
 uint8_t data_test[] = {
@@ -13,6 +13,15 @@ uint8_t data_test[] = {
 };
 
 /*Символы для SSD1306 128x32*/
+
+/* Символ ":)" */
+uint8_t data_symbol_smile[] = {
+    DATS,
+    0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
+    0xF0, 0xE0, 0xC0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xC0, 0xE0, 0xF0,
+    0x00, 0x01, 0x02, 0x07, 0x0F, 0x1E, 0x3C, 0x38, 0x38, 0x78, 0x70, 0x70, 0x70, 0x70, 0x70, 0x78, 0x38, 0x38, 0x3C, 0x1E, 0x0F, 0x07, 0x02, 0x01, 0x00
+};
 
 /* Символ ":" */
 uint8_t data_symbol_colon[] = {
@@ -114,8 +123,9 @@ uint8_t data_symbol_nine[] = {
 };
 
 
-void HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness)
+HAL_StatusTypeDef HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness)
 {   
+    // for (volatile int i = 0; i < 1000; i++);
     uint8_t Set_MUX_Ratio, Set_COM_Pins;
     #ifdef SSD1306_128x64
     Set_MUX_Ratio = 0x3F;
@@ -144,15 +154,27 @@ void HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness)
     };
 
     /* Oled_init - инициализация экрана в стандартном режиме */
-    // HAL_I2C_Master_Write(hi2c, slave_address, data_init, sizeof(data_init));
-    // HAL_I2C_CheckError(hi2c);
-    HAL_I2C_Master_Write(hi2c, slave_address, data_init, sizeof(data_init));
+    return HAL_I2C_Master_Transmit(hi2c, slave_address, data_init, sizeof(data_init), I2C_TIMEOUT_DEFAULT);
 }
 
-void HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c)
+HAL_StatusTypeDef HAL_SSD1306_SetBorder(I2C_HandleTypeDef *hi2c, uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page)
 {
-    HAL_SSD1306_SetBorder(hi2c, START_COLUMN, END_COLUMN, START_PAGE, END_PAGE);
-    
+    uint8_t data_SetBorder[] = {
+        COM, 0x21, // установка адреса колонок
+        COM, start_col, // номер стартовой колонки
+        COM, end_col, // номер конечной колонки
+
+        COM, 0x22, // установка адреса страницы
+        COM, start_page, // номер стартовой страницы
+        COM, end_page, // номер конечной страницы
+    };
+
+    /* set_border - установка границ вывода на дисплей */
+    return HAL_I2C_Master_Transmit(hi2c, slave_address, data_SetBorder, sizeof(data_SetBorder), I2C_TIMEOUT_DEFAULT);
+}
+
+HAL_StatusTypeDef HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c)
+{  
     uint8_t data_CLR_SCR[517] =   {COM, 0x20, COM, 0x00, // Horizontal Addressing Mode
                                     DATS};
     int counter = 5;
@@ -166,68 +188,54 @@ void HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c)
     }
 
     /* CLR_SCR - очищение всего экрана в горизонтальном режиме*/
-    // HAL_I2C_Master_Write(hi2c, slave_address, data_CLR_SCR, sizeof(data_CLR_SCR));
-    // HAL_I2C_CheckError(hi2c);
-    HAL_I2C_Master_Write(hi2c, slave_address, data_CLR_SCR, sizeof(data_CLR_SCR));
+    return HAL_I2C_Master_Transmit(hi2c, slave_address, data_CLR_SCR, sizeof(data_CLR_SCR), I2C_TIMEOUT_DEFAULT);
+
 }
 
-void HAL_SSD1306_SetBorder(I2C_HandleTypeDef *hi2c, uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page)
+HAL_StatusTypeDef HAL_SSD1306_Write(I2C_HandleTypeDef *hi2c, uint8_t symbol)
 {
-    uint8_t data_SetBorder[] = {
-        COM, 0x21, // установка адреса колонок
-        COM, start_col, // номер стартовой колонки
-        COM, end_col, // номер конечной колонки
-
-        COM, 0x22, // установка адреса страницы
-        COM, start_page, // номер стартовой страницы
-        COM, end_page, // номер конечной страницы
-    };
-
-    /* set_border - установка границ вывода на дисплей */
-    // HAL_I2C_Master_Write(hi2c, slave_address, data_SetBorder, sizeof(data_SetBorder));
-    // HAL_I2C_CheckError(hi2c);
-    HAL_I2C_Master_Write(hi2c, slave_address, data_SetBorder, sizeof(data_SetBorder));
-}
-
-void HAL_SSD1306_Write(I2C_HandleTypeDef *hi2c, uint8_t symbol)
-{
+    // for (volatile int i = 0; i < 1000; i++);
+    HAL_StatusTypeDef error_code = HAL_OK;
     switch (symbol)
     {
     case 0:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_null, sizeof(data_symbol_null));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_null, sizeof(data_symbol_null), I2C_TIMEOUT_DEFAULT);
         break;
     case 1:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_one, sizeof(data_symbol_one));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_one, sizeof(data_symbol_one), I2C_TIMEOUT_DEFAULT);
         break;
     case 2:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_two, sizeof(data_symbol_two));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_two, sizeof(data_symbol_two), I2C_TIMEOUT_DEFAULT);
         break;
     case 3:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_three, sizeof(data_symbol_three));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_three, sizeof(data_symbol_three), I2C_TIMEOUT_DEFAULT);
         break;
     case 4:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_four, sizeof(data_symbol_four));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_four, sizeof(data_symbol_four), I2C_TIMEOUT_DEFAULT);
         break;
     case 5:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_five, sizeof(data_symbol_five));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_five, sizeof(data_symbol_five), I2C_TIMEOUT_DEFAULT);
         break;
     case 6:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_six, sizeof(data_symbol_six));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_six, sizeof(data_symbol_six), I2C_TIMEOUT_DEFAULT);
         break;
     case 7:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_seven, sizeof(data_symbol_seven));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_seven, sizeof(data_symbol_seven), I2C_TIMEOUT_DEFAULT);
         break;
     case 8:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_eight, sizeof(data_symbol_eight));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_eight, sizeof(data_symbol_eight), I2C_TIMEOUT_DEFAULT);
         break;
     case 9:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_nine, sizeof(data_symbol_nine));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_nine, sizeof(data_symbol_nine), I2C_TIMEOUT_DEFAULT);
+        break;
+    case SYMBOL_SMILE:
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_smile, sizeof(data_symbol_smile), I2C_TIMEOUT_DEFAULT);
         break;
     default:
-        HAL_I2C_Master_WriteNBYTE(hi2c, slave_address, data_symbol_colon, sizeof(data_symbol_colon));
+        error_code = HAL_I2C_Master_Transmit(hi2c, slave_address, data_symbol_colon, sizeof(data_symbol_colon), I2C_TIMEOUT_DEFAULT);
         break;
     }
 
-    HAL_I2C_CheckError(hi2c);
+    return error_code;
 
 }

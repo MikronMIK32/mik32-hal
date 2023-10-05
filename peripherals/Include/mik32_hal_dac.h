@@ -1,15 +1,12 @@
 #ifndef MIK32_HAL_DAC
 #define MIK32_HAL_DAC
 
-#include "def_list.h"
-#include "mcu32_memory_map.h"
+#include "mik32_hal_pcc.h"
+#include "mik32_hal_gpio.h"
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
-
-#ifdef MIK32_DAC_DEBUG
-#include "common.h"
-#endif
+#include "mcu32_memory_map.h"
 
 /* Title: Макросы */
 
@@ -142,13 +139,13 @@ typedef struct
     
 } DAC_HandleTypeDef;
 
+/* Title: Функции */
 
+void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac);
 void HAL_DAC_CLBEnable(DAC_HandleTypeDef *hdac);
 void HAL_DAC_CLBDisable(DAC_HandleTypeDef *hdac);
 void HAL_DAC_VCLBSet(DAC_HandleTypeDef *hdac, uint8_t v_coef);
 void HAL_DAC_ICLBSet(DAC_HandleTypeDef *hdac, uint8_t i_coef);
-
-/* Title: Функции */
 
 /*
  * Function: HAL_DAC_SetDiv

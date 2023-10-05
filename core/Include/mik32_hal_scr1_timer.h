@@ -1,17 +1,14 @@
 #ifndef MIK32_HAL_SCR1_TIMER
 #define MIK32_HAL_SCR1_TIMER
 
-#include "def_list.h"
 #include "mcu32_memory_map.h"
 #include "power_manager.h"
+#include "inttypes.h"
 
-#include "csr.h"
-#include "scr1_csr_encoding.h"
+// #include "csr.h"
+// #include "scr1_csr_encoding.h"
 #include "scr1_timer.h"
 
-#ifdef MIK32_SCR1_TIMER_DEBUG
-#include "common.h"
-#endif
 
 
 #define MIK32_FREQ          32000000      /* Входная частота, Гц */
@@ -25,22 +22,24 @@
 
 typedef struct
 {
-    SCR1_TIMER_TypeDef *Instance;       /* Базоый адрес регистров OTP */
+    SCR1_TIMER_TypeDef *Instance;       /* Базовый адрес регистров SCR1_TIMER */
 
     uint8_t ClockSource;    /* Источник тактирования */
-    uint16_t Divider;       /* Делтитель частоты 10-битное число */
+    uint16_t Divider;       /* Делитель частоты 10-битное число */
     
-} OTP_HandleTypeDef;
+} SCR1_TIMER_HandleTypeDef;
 
 
-void HAL_SCR1_Timer_Enable(OTP_HandleTypeDef *hscr1_timer);
-void HAL_SCR1_Timer_Disable(OTP_HandleTypeDef *hscr1_timer);
-void HAL_SCR1_Timer_SetClockSource(OTP_HandleTypeDef *hscr1_timer, uint8_t ClockSource);
-void HAL_SCR1_Timer_SetDivider(OTP_HandleTypeDef *hscr1_timer, uint16_t Divider);
-void HAL_SCR1_Timer_Init(OTP_HandleTypeDef *hscr1_timer);
+void HAL_SCR1_Timer_Enable(SCR1_TIMER_HandleTypeDef *hscr1_timer);
+void HAL_SCR1_Timer_Disable(SCR1_TIMER_HandleTypeDef *hscr1_timer);
+void HAL_SCR1_Timer_SetClockSource(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint8_t ClockSource);
+void HAL_SCR1_Timer_SetDivider(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint16_t Divider);
+void HAL_SCR1_Timer_Init(SCR1_TIMER_HandleTypeDef *hscr1_timer);
+void HAL_SCR1_Timer_Start(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds);
+int HAL_SCR1_Timer_GetFlagCMP(SCR1_TIMER_HandleTypeDef *hscr1_timer);
 
 /* Время задержки должено быть не больше 134217 мс */ 
-void HAL_DelayMs(OTP_HandleTypeDef *hscr1_timer, uint32_t Milliseconds);
+void HAL_DelayMs(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds);
 
 #endif
 
