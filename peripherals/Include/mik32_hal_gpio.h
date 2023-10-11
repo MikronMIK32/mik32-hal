@@ -15,53 +15,60 @@
 #define GPIO_MODE_BIT_ANYEDGE_M (1 << GPIO_MODE_BIT_ANYEDGE_S)
 #define GPIO_IRQ_LINE_S 4 // Позиция номера канала в HAL_GPIO_Line_Config
 
+
+#define PORT0	0
+#define PORT1	1
+#define PORT2	2
+#define PORT_INDEX_S 	30
+#define PORT_INDEX_M 	(0b11 << PORT_INDEX_S)   
+
 typedef enum
 {
-	PORT0_0 = 1 << 0,
-	PORT0_1 = 1 << 1,
-	PORT0_2 = 1 << 2,
-	PORT0_3 = 1 << 3,
-	PORT0_4 = 1 << 4,
-	PORT0_5 = 1 << 5,
-	PORT0_6 = 1 << 6,
-	PORT0_7 = 1 << 7,
-	PORT0_8 = 1 << 8,
-	PORT0_9 = 1 << 9,
-	PORT0_10 = 1 << 10,
-	PORT0_11 = 1 << 11,
-	PORT0_12 = 1 << 12,
-	PORT0_13 = 1 << 13,
-	PORT0_14 = 1 << 14,
-	PORT0_15 = 1 << 15,
-	PORT0_ALL = 0xFFFF,
+	PORT0_0 = (PORT0 << PORT_INDEX_S) | (1 << 0),
+	PORT0_1 = (PORT0 << PORT_INDEX_S) | (1 << 1),
+	PORT0_2 = (PORT0 << PORT_INDEX_S) | (1 << 2),
+	PORT0_3 = (PORT0 << PORT_INDEX_S) | (1 << 3),
+	PORT0_4 = (PORT0 << PORT_INDEX_S) | (1 << 4),
+	PORT0_5 = (PORT0 << PORT_INDEX_S) | (1 << 5),
+	PORT0_6 = (PORT0 << PORT_INDEX_S) | (1 << 6),
+	PORT0_7 = (PORT0 << PORT_INDEX_S) | (1 << 7),
+	PORT0_8 = (PORT0 << PORT_INDEX_S) | (1 << 8),
+	PORT0_9 = (PORT0 << PORT_INDEX_S) | (1 << 9),
+	PORT0_10 = (PORT0 << PORT_INDEX_S) | (1 << 10),
+	PORT0_11 = (PORT0 << PORT_INDEX_S) | (1 << 11),
+	PORT0_12 = (PORT0 << PORT_INDEX_S) | (1 << 12),
+	PORT0_13 = (PORT0 << PORT_INDEX_S) | (1 << 13),
+	PORT0_14 = (PORT0 << PORT_INDEX_S) | (1 << 14),
+	PORT0_15 = (PORT0 << PORT_INDEX_S) | (1 << 15),
+	PORT0_ALL = (PORT0 << PORT_INDEX_S) | 0xFFFF,
 
-	PORT1_0 = 1 << 0,
-	PORT1_1 = 1 << 1,
-	PORT1_2 = 1 << 2,
-	PORT1_3 = 1 << 3,
-	PORT1_4 = 1 << 4,
-	PORT1_5 = 1 << 5,
-	PORT1_6 = 1 << 6,
-	PORT1_7 = 1 << 7,
-	PORT1_8 = 1 << 8,
-	PORT1_9 = 1 << 9,
-	PORT1_10 = 1 << 10,
-	PORT1_11 = 1 << 11,
-	PORT1_12 = 1 << 12,
-	PORT1_13 = 1 << 13,
-	PORT1_14 = 1 << 14,
-	PORT1_15 = 1 << 15,
-	PORT1_ALL = 0xFFFF,
+	PORT1_0 = (PORT1 << PORT_INDEX_S) | (1 << 0),
+	PORT1_1 = (PORT1 << PORT_INDEX_S) | (1 << 1),
+	PORT1_2 = (PORT1 << PORT_INDEX_S) | (1 << 2),
+	PORT1_3 = (PORT1 << PORT_INDEX_S) | (1 << 3),
+	PORT1_4 = (PORT1 << PORT_INDEX_S) | (1 << 4),
+	PORT1_5 = (PORT1 << PORT_INDEX_S) | (1 << 5),
+	PORT1_6 = (PORT1 << PORT_INDEX_S) | (1 << 6),
+	PORT1_7 = (PORT1 << PORT_INDEX_S) | (1 << 7),
+	PORT1_8 = (PORT1 << PORT_INDEX_S) | (1 << 8),
+	PORT1_9 = (PORT1 << PORT_INDEX_S) | (1 << 9),
+	PORT1_10 = (PORT1 << PORT_INDEX_S) | (1 << 10),
+	PORT1_11 = (PORT1 << PORT_INDEX_S) | (1 << 11),
+	PORT1_12 = (PORT1 << PORT_INDEX_S) | (1 << 12),
+	PORT1_13 = (PORT1 << PORT_INDEX_S) | (1 << 13),
+	PORT1_14 = (PORT1 << PORT_INDEX_S) | (1 << 14),
+	PORT1_15 = (PORT1 << PORT_INDEX_S) | (1 << 15),
+	PORT1_ALL = (PORT1 << PORT_INDEX_S) | 0xFFFF,
 
-	PORT2_0 = 1 << 0,
-	PORT2_1 = 1 << 1,
-	PORT2_2 = 1 << 2,
-	PORT2_3 = 1 << 3,
-	PORT2_4 = 1 << 4,
-	PORT2_5 = 1 << 5,
-	PORT2_6 = 1 << 6,
-	PORT2_7 = 1 << 7,
-	PORT2_ALL = 0xFF
+	PORT2_0 = (PORT2 << PORT_INDEX_S) | 1 << 0,
+	PORT2_1 = (PORT2 << PORT_INDEX_S) | 1 << 1,
+	PORT2_2 = (PORT2 << PORT_INDEX_S) | 1 << 2,
+	PORT2_3 = (PORT2 << PORT_INDEX_S) | 1 << 3,
+	PORT2_4 = (PORT2 << PORT_INDEX_S) | 1 << 4,
+	PORT2_5 = (PORT2 << PORT_INDEX_S) | 1 << 5,
+	PORT2_6 = (PORT2 << PORT_INDEX_S) | 1 << 6,
+	PORT2_7 = (PORT2 << PORT_INDEX_S) | 1 << 7,
+	PORT2_ALL = (PORT2 << PORT_INDEX_S) | 0xFF
 } HAL_PinMapNewTypeDef;
 
 typedef enum

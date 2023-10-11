@@ -9,6 +9,8 @@ HAL_StatusTypeDef HAL_GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *GPIO_Init
     uint32_t position = 0;
     uint32_t current_pin = 0;
 
+    GPIO_Init->Pin &= ~PORT_INDEX_M;
+
     switch ((uint32_t)GPIOx)
     {
     case (uint32_t)GPIO_0:
@@ -65,6 +67,8 @@ HAL_StatusTypeDef HAL_GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *GPIO_Init
 GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef *GPIOx, HAL_PinMapNewTypeDef GPIO_Pin)
 {
     GPIO_PinState bitstatus;
+
+    GPIO_Pin &= ~PORT_INDEX_M;
 
     if ((GPIOx->SET & GPIO_Pin) != (uint32_t)GPIO_PIN_LOW)
     {
