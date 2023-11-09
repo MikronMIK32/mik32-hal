@@ -101,7 +101,7 @@ void HAL_GPIO_TogglePin(GPIO_TypeDef *GPIOx, HAL_PinMapNewTypeDef GPIO_Pin)
 /** Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0
  *  \note Используется в функциях HAL_GPIO_InitInterruptLine и HAL_GPIO_DeInitInterruptLine
  */
-uint32_t current_irq_line_mux = 0;
+volatile uint32_t current_irq_line_mux = 0;
 
 HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line_Config mux, HAL_GPIO_InterruptMode mode)
 {
@@ -153,14 +153,14 @@ HAL_StatusTypeDef HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irq_line)
     if (irq_line_num > 7)
         return HAL_ERROR;
 
+    GPIO_IRQ->ENABLE_CLEAR = (1 << irq_line_num);
+
     current_irq_line_mux &= ~GPIO_IRQ_LINE_MUX_M(irq_line_num);
     GPIO_IRQ->LINE_MUX = current_irq_line_mux;
 
     GPIO_IRQ->LEVEL = (1 << irq_line_num);
     GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line_num);
     GPIO_IRQ->ANY_EDGE_CLEAR = (1 << irq_line_num);
-
-    GPIO_IRQ->ENABLE_CLEAR = (1 << irq_line_num);
 
     return HAL_OK;
 }
