@@ -475,6 +475,18 @@
 #define TIMER16_IRQ_MASK_DISABLE          0
 #define TIMER16_IRQ_MASK_ENABLE           1
 
+typedef enum __HAL_Timer16_WaveformGenTypeDef
+{
+	TIMER16_WAVEFORM_GENERATION_ENABLE = 0,    /* Выключить генерацию волновой формы */
+	TIMER16_WAVEFORM_GENERATION_DISABLE = 1    /* Включить генерацию волновой формы */ 
+} HAL_Timer16_WaveformGenTypeDef;
+
+typedef enum __HAL_Timer16_WaveformPolarityTypeDef
+{
+	TIMER16_WAVEFORM_POLARITY_NONINVERTED = 0,  /* Неинвертированная полярность волновой формы  */
+	TIMER16_WAVEFORM_POLARITY_INVERTED = TIMER16_CFGR_WAVPOL_M    /* Инвертированная полярность волновой формы */ 
+} HAL_Timer16_WaveformPolarityTypeDef;
+
 
 /* Title: Структуры */
 /*
@@ -482,7 +494,7 @@
  * Настройки источника тактирования
  * 
  */
-typedef struct
+typedef struct __Timer16_ClockConfigTypeDef
 {
     /*
     * Variable: Source
@@ -500,13 +512,18 @@ typedef struct
 
 } Timer16_ClockConfigTypeDef;
 
+typedef struct __Timer16_WaveformConfigTypeDef
+{
+    HAL_Timer16_WaveformGenTypeDef Enable;         
+    HAL_Timer16_WaveformPolarityTypeDef Polarity;      
 
+} Timer16_WaveformConfigTypeDef;
 /*
  * Struct: Timer16_TriggerConfigTypeDef
  * Настройки триггера
  * 
  */
-typedef struct
+typedef struct __Timer16_TriggerConfigTypeDef
 {
     /*
     * Variable: Source
@@ -537,7 +554,7 @@ typedef struct
  * Настройки фильтров
  * 
  */
-typedef struct
+typedef struct __Timer16_FilterConfigTypeDef
 {
     /*
     * Variable: ExternalClock
@@ -555,7 +572,7 @@ typedef struct
 
 } Timer16_FilterConfigTypeDef;
 
-typedef struct
+typedef struct __Timer16_IRQnTypeDef
 {
   uint8_t DOWN; /* Изменение направления счетчика c вверх на вниз. Режим энкодера */
 
@@ -578,7 +595,7 @@ typedef struct
  * Настройки экземпляра Timer16
  * 
  */
-typedef struct
+typedef struct __Timer16_HandleTypeDef
 {
     /*
     * Variable: Instance
@@ -613,12 +630,6 @@ typedef struct
     uint8_t ActiveEdge;
 
     /*
-    * Variable: Period
-    * Верхнее значение счета
-    *
-    */
-    uint16_t Period;
-    /*
     * Variable: Preload
     * Режим записи в ARR и CMP
     *
@@ -639,6 +650,8 @@ typedef struct
     */
     Timer16_FilterConfigTypeDef Filter;
 
+    Timer16_WaveformConfigTypeDef Waveform;
+
     /*
     * Variable: EncoderMode
     * Режим энкодера
@@ -654,6 +667,11 @@ typedef struct
     Timer16_IRQnTypeDef Interrupts;
     
 } Timer16_HandleTypeDef;
+
+
+#define __HAL_TIMER16_START_CONTINUOUS(__HANDLE__)  ((__HANDLE__)->Instance->CR |=  TIMER16_CR_CNTSTRT_M)
+
+#define __HAL_TIMER16_START_SINGLE(__HANDLE__)      ((__HANDLE__)->Instance->CR |=  TIMER16_CR_SNGSTRT_M)
 
 /* Title: Функции */
 void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16);
@@ -944,6 +962,22 @@ void HAL_Timer16_SetFilterTrigger(Timer16_HandleTypeDef *htimer16, uint8_t Filte
  */
 void HAL_Timer16_SetEncoderMode(Timer16_HandleTypeDef *htimer16, uint8_t EncoderMode);
 
+/*
+ * Function: HAL_Timer16_InvertOutput
+ * Задать полярность формы волны на выводе Output.
+ * 
+ * Используется при генерации волновой формы.
+ * 
+ * При использовании данной функции таймер выключается. Это необходимо для записи в регистр CFGR.
+ *
+ * Parameters:
+ * htimer16 - Указатель на структуру с настройками Timer16.
+ * WaveformPolarity - полярность выходного сигнала
+ *
+ * Returns:
+ * void
+ */
+void HAL_Timer16_WaveformPolarity(Timer16_HandleTypeDef *htimer16, HAL_Timer16_WaveformPolarityTypeDef WaveformPolarity);
 
 /*
  * Function: HAL_Timer16_SetPrescaler
@@ -1009,48 +1043,19 @@ uint8_t HAL_Timer16_CheckCMP(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_WaitCMP(Timer16_HandleTypeDef *htimer16);
 
 /*
- * Function: HAL_Timer16_StartSingleMode
- * Запустить таймер в одиночном режиме.
+ * Function: HAL_Timer16_Counter_Start
+ * Запустить таймер в продолжительном режиме.
  * 
- * Счетчик будет считать от 0 до значения в регистре ARR, а затем остановится.
+ * Счетчик будет считать от 0 до значения Period, а затем начнет сначала.
  *
  * Parameters:
  * htimer16 - Указатель на структуру с настройками Timer16.
+ * Period - Значение автоматической перезагрузки
  *
  * Returns:
  * void
  */
-void HAL_Timer16_StartSingleMode(Timer16_HandleTypeDef *htimer16);
-
-/*
- * Function: HAL_Timer16_StartContinuousMode
- * Запустить таймер в непрерывном режиме.
- * 
- * Счетчик будет считать от 0 до значения в регистре ARR, а затем начнет заново.
- *
- * Parameters:
- * htimer16 - Указатель на структуру с настройками Timer16.
- *
- * Returns:
- * void
- */
-void HAL_Timer16_StartContinuousMode(Timer16_HandleTypeDef *htimer16);
-
-/*
- * Function: HAL_Timer16_InvertOutput
- * Инвертировать сигнал на выводе Output.
- * 
- * Используется при генерации волновой формы.
- * 
- * При использовании данной функции таймер выключается. Это необходимо для записи в регистр CFGR.
- *
- * Parameters:
- * htimer16 - Указатель на структуру с настройками Timer16.
- *
- * Returns:
- * void
- */
-void HAL_Timer16_InvertOutput(Timer16_HandleTypeDef *htimer16);
+void HAL_Timer16_Counter_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period);
 
 /*
  * Function: HAL_Timer16_StartPWM
@@ -1104,6 +1109,25 @@ void HAL_Timer16_StartOneShot(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
  */
 void HAL_Timer16_StartSetOnes(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
 
+void HAL_Timer16_Encoder_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period);
+
+void HAL_Timer16_Encoder_Stop(Timer16_HandleTypeDef *htimer16);
+
+void HAL_Timer16_Stop(Timer16_HandleTypeDef *htimer16);
+
+void HAL_Timer16_Counter_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period);
+
+void HAL_Timer16_StartPWM_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
+
+void HAL_Timer16_StartOneShot_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
+
+void HAL_Timer16_StartSetOnes_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
+
+void HAL_Timer16_Encoder_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period);
+
+void HAL_Timer16_Encoder_Stop_IT(Timer16_HandleTypeDef *htimer16);
+
+void HAL_Timer16_Stop_IT(Timer16_HandleTypeDef *htimer16);
 /*
  * Function: HAL_Timer16_WaitTrigger
  * TОжидать флаг триггера - EXTTRIG.

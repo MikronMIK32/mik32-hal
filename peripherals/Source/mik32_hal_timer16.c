@@ -24,6 +24,15 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         }
+
+        if (htimer16->Waveform.Enable == TIMER16_WAVEFORM_GENERATION_ENABLE)
+        {
+            GPIO_InitStruct.Pin = PORT0_7;
+            GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
+            GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
+            HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
+        }
+        
         
     }
 
@@ -46,6 +55,14 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         }
+
+        if (htimer16->Waveform.Enable == TIMER16_WAVEFORM_GENERATION_ENABLE)
+        {
+            GPIO_InitStruct.Pin = PORT0_10;
+            GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
+            GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
+            HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
+        }
     }
 
     if (htimer16->Instance == TIMER16_2)
@@ -63,6 +80,14 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
         if (htimer16->EncoderMode == TIMER16_ENCODER_ENABLE)
         {
             GPIO_InitStruct.Pin = PORT0_11 | PORT0_12;
+            GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
+            GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
+            HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
+        }
+
+        if (htimer16->Waveform.Enable == TIMER16_WAVEFORM_GENERATION_ENABLE)
+        {
+            GPIO_InitStruct.Pin = PORT0_13;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -189,15 +214,14 @@ void HAL_Timer16_WaitCMPOK(Timer16_HandleTypeDef *htimer16)
 
 void HAL_Timer16_SetARR(Timer16_HandleTypeDef *htimer16, uint16_t Period)
 {
-    htimer16->Period = Period;
+    // htimer16->Period = Period;
 
     /* Выключение таймера для записи ARR */
     htimer16->Instance->ARR = Period;
-    if(htimer16->Interrupts.CMPOK == TIMER16_CMPOK_IRQ_DISABLE)
+    if (!(htimer16->Instance->IER & TIMER16_IER_ARROKIE_M))
     {
         HAL_Timer16_WaitARROK(htimer16);
     }
-    
 }
 
 void HAL_Timer16_SetCMP(Timer16_HandleTypeDef *htimer16, uint16_t Compare)
@@ -205,11 +229,10 @@ void HAL_Timer16_SetCMP(Timer16_HandleTypeDef *htimer16, uint16_t Compare)
     /* Выключение таймера для записи CMP */
     htimer16->Instance->CMP = Compare;
 
-    if(htimer16->Interrupts.CMPOK == TIMER16_CMPOK_IRQ_DISABLE)
+    if (!(htimer16->Instance->IER & TIMER16_IER_CMPOKIE_M))
     {
         HAL_Timer16_WaitCMPOK(htimer16);
-    }
-    
+    }  
 }
 
 void HAL_Timer16_SelectTrigger(Timer16_HandleTypeDef *htimer16, uint8_t TriggerSource)
@@ -290,6 +313,13 @@ void HAL_Timer16_SetEncoderMode(Timer16_HandleTypeDef *htimer16, uint8_t Encoder
     htimer16->Instance->CFGR = CFGRConfig;
 }
 
+void HAL_Timer16_WaveformPolarity(Timer16_HandleTypeDef *htimer16, HAL_Timer16_WaveformPolarityTypeDef WaveformPolarity)
+{
+    WaveformPolarity &= TIMER16_CFGR_WAVPOL_M;
+    HAL_Timer16_Disable(htimer16);
+    htimer16->Instance->CFGR = (htimer16->Instance->CFGR & (~TIMER16_CFGR_WAVPOL_M)) | WaveformPolarity;
+}
+
 void HAL_Timer16_SetPrescaler(Timer16_HandleTypeDef *htimer16, uint8_t Prescaler)
 {
     htimer16->Clock.Prescaler = Prescaler;
@@ -325,12 +355,14 @@ void HAL_Timer16_Init(Timer16_HandleTypeDef *htimer16)
     HAL_Timer16_SetTimeOut(htimer16, htimer16->Trigger.TimeOut);
     /*********************************************************/
 
-    HAL_Timer16_SetEncoderMode(htimer16, htimer16->EncoderMode);
+    // HAL_Timer16_SetEncoderMode(htimer16, htimer16->EncoderMode);
 
-    HAL_Timer16_Enable(htimer16);
+    HAL_Timer16_WaveformPolarity(htimer16, htimer16->Waveform.Polarity);
 
-    /* Верхний предел счета */
-    HAL_Timer16_SetARR(htimer16, htimer16->Period);
+    // HAL_Timer16_Enable(htimer16);
+
+    // /* Верхний предел счета */
+    // HAL_Timer16_SetARR(htimer16, htimer16->Period);
 
 }
 
@@ -356,23 +388,13 @@ void HAL_Timer16_WaitCMP(Timer16_HandleTypeDef *htimer16)
     while (!(htimer16->Instance->ISR & TIMER16_ISR_CMP_MATCH_M));
 }
 
-void HAL_Timer16_StartSingleMode(Timer16_HandleTypeDef *htimer16)
+void HAL_Timer16_Counter_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period)
 {
-    htimer16->Instance->CR |= TIMER16_CR_SNGSTRT_M;
-}
+    HAL_Timer16_Enable(htimer16);
 
-void HAL_Timer16_StartContinuousMode(Timer16_HandleTypeDef *htimer16)
-{
-    htimer16->Instance->CR |= TIMER16_CR_CNTSTRT_M;
-}
-
-void HAL_Timer16_InvertOutput(Timer16_HandleTypeDef *htimer16)
-{
-    HAL_Timer16_Disable(htimer16);
-    uint32_t CFGRConfig = htimer16->Instance->CFGR & TIMER16_CFGR_WAVPOL_M;
-    CFGRConfig = CFGRConfig ^ TIMER16_CFGR_WAVPOL_M;
-    CFGRConfig |= htimer16->Instance->CFGR & (~TIMER16_CFGR_WAVPOL_M);
-    htimer16->Instance->CFGR = CFGRConfig;
+    HAL_Timer16_SetARR(htimer16, Period);
+    
+    __HAL_TIMER16_START_CONTINUOUS(htimer16);
 }
 
 void HAL_Timer16_StartPWM(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare)
@@ -387,7 +409,7 @@ void HAL_Timer16_StartPWM(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint
         HAL_Timer16_SetARR(htimer16, Period);
     }
 
-    HAL_Timer16_StartContinuousMode(htimer16);
+    __HAL_TIMER16_START_CONTINUOUS(htimer16);
 
 }
 
@@ -403,7 +425,7 @@ void HAL_Timer16_StartOneShot(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
         HAL_Timer16_SetARR(htimer16, Period);
     }
 
-    HAL_Timer16_StartSingleMode(htimer16);
+    __HAL_TIMER16_START_SINGLE(htimer16);
 
 }
 
@@ -419,7 +441,167 @@ void HAL_Timer16_StartSetOnes(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
         HAL_Timer16_SetARR(htimer16, Period);
     }
 
-    HAL_Timer16_StartSingleMode(htimer16);
+    __HAL_TIMER16_START_SINGLE(htimer16);
+}
+
+void HAL_Timer16_Encoder_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period)
+{
+    HAL_Timer16_Disable(htimer16);
+    HAL_Timer16_SetEncoderMode(htimer16, TIMER16_ENCODER_ENABLE);
+
+    HAL_Timer16_Enable(htimer16);
+
+    htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_DOWNCF_M | TIMER16_ICR_UPCF_M;
+    HAL_Timer16_SetARR(htimer16, Period);
+
+    __HAL_TIMER16_START_CONTINUOUS(htimer16);
+}
+
+void HAL_Timer16_Encoder_Stop(Timer16_HandleTypeDef *htimer16)
+{
+    HAL_Timer16_Disable(htimer16);
+    HAL_Timer16_SetEncoderMode(htimer16, TIMER16_ENCODER_DISABLE);
+}
+
+void HAL_Timer16_Stop(Timer16_HandleTypeDef *htimer16)
+{
+    HAL_Timer16_Disable(htimer16);
+}
+
+void HAL_Timer16_Counter_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period)
+{
+    HAL_Timer16_Enable(htimer16);
+
+    htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_ARRMCF_M;
+    
+    HAL_Timer16_SetARR(htimer16, Period);
+
+    htimer16->Instance->IER |= TIMER16_IER_ARROKIE_M | TIMER16_IER_ARRMIE_M;
+
+    
+    __HAL_TIMER16_START_CONTINUOUS(htimer16);
+}
+
+void HAL_Timer16_StartPWM_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare)
+{
+
+
+    HAL_Timer16_Disable(htimer16);
+    htimer16->Instance->CFGR &= ~TIMER16_CFGR_WAVE_M;
+    HAL_Timer16_Enable(htimer16);
+
+    htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_CMPOKCF_M | TIMER16_ICR_ARRMCF_M 
+                            | TIMER16_ICR_CMPMCF_M | TIMER16_ICR_EXTTRIGCF_M;
+    
+
+    
+    if(Period > Compare)
+    {
+        HAL_Timer16_SetCMP(htimer16, Compare);
+        HAL_Timer16_SetARR(htimer16, Period);
+    }
+
+    htimer16->Instance->IER |= TIMER16_IER_ARROKIE_M | TIMER16_IER_CMPOKIE_M 
+                            | TIMER16_IER_ARRMIE_M | TIMER16_IER_CMPMIE_M;
+
+    if (htimer16->Trigger.ActiveEdge != TIMER16_TRIGGER_ACTIVEEDGE_SOFTWARE)
+    {
+        htimer16->Instance->IER |= TIMER16_IER_EXTTRIGIE_M;
+    }
+
+    __HAL_TIMER16_START_CONTINUOUS(htimer16);
+
+}
+
+void HAL_Timer16_StartOneShot_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare)
+{
+    HAL_Timer16_Disable(htimer16);
+    htimer16->Instance->CFGR &= ~TIMER16_CFGR_WAVE_M;
+    HAL_Timer16_Enable(htimer16);
+
+    htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_CMPOKCF_M | TIMER16_ICR_ARRMCF_M 
+                            | TIMER16_ICR_CMPMCF_M | TIMER16_ICR_EXTTRIGCF_M;
+    
+    if(Period > Compare)
+    {
+        HAL_Timer16_SetCMP(htimer16, Compare);
+        HAL_Timer16_SetARR(htimer16, Period);
+    }
+
+    htimer16->Instance->IER |= TIMER16_IER_ARROKIE_M | TIMER16_IER_CMPOKIE_M 
+                            | TIMER16_IER_ARRMIE_M | TIMER16_IER_CMPMIE_M;
+
+    if (htimer16->Trigger.ActiveEdge != TIMER16_TRIGGER_ACTIVEEDGE_SOFTWARE)
+    {
+        htimer16->Instance->IER |= TIMER16_IER_EXTTRIGIE_M;
+    }
+
+    __HAL_TIMER16_START_SINGLE(htimer16);
+}
+
+void HAL_Timer16_StartSetOnes_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare)
+{
+    HAL_Timer16_Disable(htimer16);
+    htimer16->Instance->CFGR |= TIMER16_CFGR_WAVE_M;
+    HAL_Timer16_Enable(htimer16);
+
+    htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_CMPOKCF_M | TIMER16_ICR_ARRMCF_M 
+                            | TIMER16_ICR_CMPMCF_M | TIMER16_ICR_EXTTRIGCF_M;
+    
+    if(Period > Compare)
+    {
+        HAL_Timer16_SetCMP(htimer16, Compare);
+        HAL_Timer16_SetARR(htimer16, Period);
+    }
+
+    htimer16->Instance->IER |= TIMER16_IER_ARROKIE_M | TIMER16_IER_CMPOKIE_M 
+                            | TIMER16_IER_ARRMIE_M | TIMER16_IER_CMPMIE_M;
+
+    if (htimer16->Trigger.ActiveEdge != TIMER16_TRIGGER_ACTIVEEDGE_SOFTWARE)
+    {
+        htimer16->Instance->IER |= TIMER16_IER_EXTTRIGIE_M;
+    }
+
+    __HAL_TIMER16_START_SINGLE(htimer16);
+}
+
+void HAL_Timer16_Encoder_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period)
+{
+    HAL_Timer16_Disable(htimer16);
+    HAL_Timer16_SetEncoderMode(htimer16, TIMER16_ENCODER_ENABLE);
+
+    HAL_Timer16_Enable(htimer16);
+
+    htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_DOWNCF_M | TIMER16_ICR_UPCF_M;
+    
+    HAL_Timer16_SetARR(htimer16, Period);
+
+    HAL_Timer16_Disable(htimer16);
+    htimer16->Instance->IER |= TIMER16_IER_DOWNIE_M | TIMER16_IER_UPIE_M;
+
+    HAL_Timer16_Enable(htimer16);
+    __HAL_TIMER16_START_CONTINUOUS(htimer16);
+}
+
+void HAL_Timer16_Encoder_Stop_IT(Timer16_HandleTypeDef *htimer16)
+{
+    HAL_Timer16_Disable(htimer16);
+    HAL_Timer16_SetEncoderMode(htimer16, TIMER16_ENCODER_DISABLE);
+    htimer16->Instance->IER &= ~(TIMER16_IER_DOWNIE_M | TIMER16_IER_UPIE_M);
+}
+
+void HAL_Timer16_Stop_IT(Timer16_HandleTypeDef *htimer16)
+{
+    HAL_Timer16_Disable(htimer16);
+
+    htimer16->Instance->IER &= ~(TIMER16_IER_ARROKIE_M | TIMER16_IER_CMPOKIE_M 
+                            | TIMER16_IER_ARRMIE_M | TIMER16_IER_CMPMIE_M);
+
+    if (htimer16->Trigger.ActiveEdge != TIMER16_TRIGGER_ACTIVEEDGE_SOFTWARE)
+    {
+        htimer16->Instance->IER &= ~TIMER16_IER_EXTTRIGIE_M;
+    }
+
 }
 
 void HAL_Timer16_WaitTrigger(Timer16_HandleTypeDef *htimer16)

@@ -1,4 +1,5 @@
 #include "mik32_hal_scr1_timer.h"
+#include "mik32_hal.h"
 
 void HAL_SCR1_Timer_Enable(SCR1_TIMER_HandleTypeDef *hscr1_timer)
 {

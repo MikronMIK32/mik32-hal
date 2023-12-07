@@ -1,17 +1,49 @@
 #ifndef MIK32_HAL_PCC
 #define MIK32_HAL_PCC
 
-#include "mcu32_memory_map.h"
 #include "wakeup.h"
 #include "power_manager.h"
+#include "mik32_hal_def.h"
+#include "mcu32_memory_map.h"
 
-/* Источники тактирования */
-#define PCC_OSCILLATORTYPE_NONE            0b0000       /* Нет источника */
-#define PCC_OSCILLATORTYPE_HSI32M          0b0001       /* Внутренний источник тактирования 32МГц */           
-#define PCC_OSCILLATORTYPE_OSC32M          0b0010       /* Внешний источник тактирования 32МГц */    
-#define PCC_OSCILLATORTYPE_LSI32K          0b0100       /* Внутренний источник тактирования 32КГц */    
-#define PCC_OSCILLATORTYPE_OSC32K          0b1000       /* Внешний источник тактирования 32КГц */   
-#define PCC_OSCILLATORTYPE_ALL             0b1111       /* Все источники */     
+#define CLOCKSWITCH_TIMEOUT_VALUE 500000
+
+/* Источники тактирования */   
+typedef enum __HAL_PCC_OscillatorTypeTypeDef
+{
+    PCC_OSCILLATORTYPE_NONE     = 0b0000,       /* Автоматический выбор источника тактирования RTC */
+    PCC_OSCILLATORTYPE_HSI32M   = 0b0001,       /* Внутренний источник тактирования 32МГц */ 
+    PCC_OSCILLATORTYPE_OSC32M   = 0b0010,       /* Внешний источник тактирования 32МГц */    
+    PCC_OSCILLATORTYPE_LSI32K   = 0b0100,       /* Внутренний источник тактирования 32КГц */ 
+    PCC_OSCILLATORTYPE_OSC32K   = 0b1000,       /* Внешний источник тактирования 32КГц */   
+    PCC_OSCILLATORTYPE_ALL      = 0b1111       /* Все источники */    
+} HAL_PCC_OscillatorTypeTypeDef;
+
+typedef enum __HAL_PCC_RTCClockSourceTypeDef
+{
+	PCC_RTC_CLOCK_SOURCE_AUTO    = 0b00,    /* Источник тактирования RTC выбирается автоматически. Если присутствуют оба тактовых сигнала 32K, то выбирается LSI32K */
+    PCC_RTC_CLOCK_SOURCE_LSI32K  = 0b01,    /* Приоритетный источник тактирования RTC - LSI32K */
+	PCC_RTC_CLOCK_SOURCE_OSC32K  = 0b10     /* Приоритетный источник тактирования RTC - OSC32K */
+} HAL_PCC_RTCClockSourceTypeDef;
+
+typedef enum HAL_PCC_CPURTCClockSourceTypeDef
+{
+	PCC_CPU_RTC_CLOCK_SOURCE_OSC32K  = 0,    /* Источник тактирования RTC в составе ядра - OSC32K */
+	PCC_CPU_RTC_CLOCK_SOURCE_LSI32K  = 1     /* Источник тактирования RTC в составе ядра - LSI32K */
+} HAL_PCC_CPURTCClockSourceTypeDef;
+
+typedef enum __HAL_PCC_FreqMonitorSourceTypeDef
+{
+	PCC_FREQ_MONITOR_SOURCE_AUTO    = 0b00,     /* Опорный источник частоты монитора частоты выбирается автоматически */
+    PCC_FREQ_MONITOR_SOURCE_LSI32K  = 0b01,     /* Опорный источник частоты монитора частоты принудительно выбран как LSI32K */
+	PCC_FREQ_MONITOR_SOURCE_OSC32K  = 0b10      /* Опорный источник частоты монитора частоты принудительно выбран как OSC32K */
+} HAL_PCC_FreqMonitorSourceTypeDef;
+
+typedef enum __HAL_PCC_ForceOscSysTypeDef
+{
+	PCC_FORCE_OSC_SYS_UNFIXED = 0,   /* Источник тактирования системы не выбирается принудительно */
+	PCC_FORCE_OSC_SYS_FIXED = 1     /* Источник тактирования системы выбирается принудительно */
+} HAL_PCC_ForceOscSysTypeDef;
 
 /* Источники тактирования RTC */
 #define PCC_RTCCLKSOURCE_NO_CLK            0b00          /* Нет источника */
@@ -181,16 +213,36 @@
 #define __HAL_PCC_GPIO_IRQ_CLK_DISABLE() (PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_GPIO_IRQ_M)
 
 
+typedef struct __PCC_ConfigErrorsTypeDef
+{
+    HAL_StatusTypeDef FreqMonRef;
+
+    HAL_StatusTypeDef SetOscSystem;
+
+    HAL_StatusTypeDef RTCClock;
+
+    HAL_StatusTypeDef CPURTCClock;
+
+} PCC_ConfigErrorsTypeDef;
 
 
-typedef struct
+typedef struct __PCC_FreqMonTypeDef
+{
+    uint8_t OscillatorSystem;              /*  Источник тактирования системы */   
+
+    HAL_PCC_ForceOscSysTypeDef ForceOscSys; /* Разрешение принудительного выбора источника тактирования системы */
+
+    HAL_PCC_FreqMonitorSourceTypeDef Force32KClk; /* Опорный источник монитора частоты */
+
+} PCC_FreqMonTypeDef;
+
+typedef struct __PCC_InitTypeDef
 {
     uint8_t OscillatorEnable;           /*  Осциллятор, который должен быть включен.
                                             Этот параметр может быть PCC_OSCILLATORTYPE_NONE,  PCC_OSCILLATORTYPE_HSI32M,
                                             PCC_OSCILLATORTYPE_LSI32K, PCC_OSCILLATORTYPE_OSC32K  */
 
-    uint8_t OscillatorSystem;              /*  Источник тактирования системы.
-                                            Этот параметр должен быть числом между Min = 0 и Max = 255 */        
+    PCC_FreqMonTypeDef FreqMon;         /* Настройки монитора частоты */
 
     uint8_t AHBDivider;                 /*  Делитель частоты AHB.
                                             Этот параметр должен быть числом между Min = 0 и Max = 255 */
@@ -207,14 +259,14 @@ typedef struct
     uint8_t LSI32KCalibrationValue;     /*  Поправочный коэффициент LSI32K.
                                             Этот параметр должен быть числом между Min = 0 и Max = 15 */
 
-    uint32_t RTCClockSelection;         /*  Источник тактирования RTC. */
+    HAL_PCC_RTCClockSourceTypeDef RTCClockSelection;         /*  Источник тактирования RTC. */
 
-    uint32_t RTCClockCPUSelection;      /*  Источник тактирования RTC в составе ядра. */
+    HAL_PCC_CPURTCClockSourceTypeDef RTCClockCPUSelection;      /*  Источник тактирования RTC в составе ядра. */
 
-} PCC_OscInitTypeDef;
+} PCC_InitTypeDef;
 
 
-typedef struct
+typedef struct __PCC_PeriphCLKInitTypeDef
 {
     uint32_t PMClockAHB;                /*  Выбор тактирования устройств на шине AHB. */
 
@@ -227,16 +279,18 @@ typedef struct
 
 void HAL_PCC_OscEnable(uint32_t Oscillator);
 void HAL_PCC_OscDisable(uint32_t Oscillator);
-void HAL_PCC_SetOscSystem(uint32_t OscillatorSystem);
+HAL_StatusTypeDef HAL_PCC_FreqMonRefSet(HAL_PCC_FreqMonitorSourceTypeDef Force32KClk);
+HAL_StatusTypeDef HAL_PCC_SetOscSystem(uint32_t OscillatorSystem, HAL_PCC_ForceOscSysTypeDef ForceOscSys);
+HAL_StatusTypeDef HAL_PCC_RTCClock(HAL_PCC_RTCClockSourceTypeDef Oscillator);
+HAL_StatusTypeDef HAL_PCC_CPURTCClock(HAL_PCC_CPURTCClockSourceTypeDef Oscillator);
 void HAL_PCC_DividerAHB(uint32_t DividerAHB);
 void HAL_PCC_DividerAPB_M(uint32_t DividerAPB_M);
 void HAL_PCC_DividerAPB_P(uint32_t DividerAPB_P);
-void HAL_PCC_OscConfig(PCC_OscInitTypeDef *PCC_OscInit);
+PCC_ConfigErrorsTypeDef HAL_PCC_Config(PCC_InitTypeDef *PCC_Init);
 void HAL_PCC_ClockConfig(PCC_PeriphCLKInitTypeDef *PeriphClkInit);
 void HAL_PCC_ClockSet(uint32_t Periphery);
 void HAL_PCC_ClockClear(uint32_t Periphery);
-void HAL_PCC_RTCClock(uint32_t Oscillator);
-void HAL_PCC_CPURTCClock(uint32_t Oscillator);
+uint32_t HAL_PCC_GetSysClockFreq();
 
 
 #endif

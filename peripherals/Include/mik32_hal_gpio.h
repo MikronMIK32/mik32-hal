@@ -19,65 +19,65 @@
 #define PORT0	0
 #define PORT1	1
 #define PORT2	2
-#define PORT_INDEX_S 	30
+#define PORT_INDEX_S 	30	// Смещение номера порта (PORT0, PORT1, PORT2) в PORTx_y
 #define PORT_INDEX_M 	(0b11 << PORT_INDEX_S)   
 
-typedef enum
-{
-	PORT0_0 = (PORT0 << PORT_INDEX_S) | (1 << 0),
-	PORT0_1 = (PORT0 << PORT_INDEX_S) | (1 << 1),
-	PORT0_2 = (PORT0 << PORT_INDEX_S) | (1 << 2),
-	PORT0_3 = (PORT0 << PORT_INDEX_S) | (1 << 3),
-	PORT0_4 = (PORT0 << PORT_INDEX_S) | (1 << 4),
-	PORT0_5 = (PORT0 << PORT_INDEX_S) | (1 << 5),
-	PORT0_6 = (PORT0 << PORT_INDEX_S) | (1 << 6),
-	PORT0_7 = (PORT0 << PORT_INDEX_S) | (1 << 7),
-	PORT0_8 = (PORT0 << PORT_INDEX_S) | (1 << 8),
-	PORT0_9 = (PORT0 << PORT_INDEX_S) | (1 << 9),
-	PORT0_10 = (PORT0 << PORT_INDEX_S) | (1 << 10),
-	PORT0_11 = (PORT0 << PORT_INDEX_S) | (1 << 11),
-	PORT0_12 = (PORT0 << PORT_INDEX_S) | (1 << 12),
-	PORT0_13 = (PORT0 << PORT_INDEX_S) | (1 << 13),
-	PORT0_14 = (PORT0 << PORT_INDEX_S) | (1 << 14),
-	PORT0_15 = (PORT0 << PORT_INDEX_S) | (1 << 15),
-	PORT0_ALL = (PORT0 << PORT_INDEX_S) | 0xFFFF,
-
-	PORT1_0 = (PORT1 << PORT_INDEX_S) | (1 << 0),
-	PORT1_1 = (PORT1 << PORT_INDEX_S) | (1 << 1),
-	PORT1_2 = (PORT1 << PORT_INDEX_S) | (1 << 2),
-	PORT1_3 = (PORT1 << PORT_INDEX_S) | (1 << 3),
-	PORT1_4 = (PORT1 << PORT_INDEX_S) | (1 << 4),
-	PORT1_5 = (PORT1 << PORT_INDEX_S) | (1 << 5),
-	PORT1_6 = (PORT1 << PORT_INDEX_S) | (1 << 6),
-	PORT1_7 = (PORT1 << PORT_INDEX_S) | (1 << 7),
-	PORT1_8 = (PORT1 << PORT_INDEX_S) | (1 << 8),
-	PORT1_9 = (PORT1 << PORT_INDEX_S) | (1 << 9),
-	PORT1_10 = (PORT1 << PORT_INDEX_S) | (1 << 10),
-	PORT1_11 = (PORT1 << PORT_INDEX_S) | (1 << 11),
-	PORT1_12 = (PORT1 << PORT_INDEX_S) | (1 << 12),
-	PORT1_13 = (PORT1 << PORT_INDEX_S) | (1 << 13),
-	PORT1_14 = (PORT1 << PORT_INDEX_S) | (1 << 14),
-	PORT1_15 = (PORT1 << PORT_INDEX_S) | (1 << 15),
-	PORT1_ALL = (PORT1 << PORT_INDEX_S) | 0xFFFF,
-
-	PORT2_0 = (PORT2 << PORT_INDEX_S) | 1 << 0,
-	PORT2_1 = (PORT2 << PORT_INDEX_S) | 1 << 1,
-	PORT2_2 = (PORT2 << PORT_INDEX_S) | 1 << 2,
-	PORT2_3 = (PORT2 << PORT_INDEX_S) | 1 << 3,
-	PORT2_4 = (PORT2 << PORT_INDEX_S) | 1 << 4,
-	PORT2_5 = (PORT2 << PORT_INDEX_S) | 1 << 5,
-	PORT2_6 = (PORT2 << PORT_INDEX_S) | 1 << 6,
-	PORT2_7 = (PORT2 << PORT_INDEX_S) | 1 << 7,
-	PORT2_ALL = (PORT2 << PORT_INDEX_S) | 0xFF
+typedef enum __HAL_PinMapNewTypeDef
+{									 // Режим выводов: 0b00     0b0b                0b10                0b11
+	PORT0_0 = (PORT0 << PORT_INDEX_S) | (1 << 0), 	// GPIO, 	SPI0_MISO, 			TIMER32_1_CH1, 		REF_TST
+	PORT0_1 = (PORT0 << PORT_INDEX_S) | (1 << 1), 	// GPIO, 	SPI0_MOSI, 			TIMER32_1_CH2
+	PORT0_2 = (PORT0 << PORT_INDEX_S) | (1 << 2), 	// GPIO, 	SPI0_CLK, 			TIMER32_1_CH3, 		ADC2
+	PORT0_3 = (PORT0 << PORT_INDEX_S) | (1 << 3), 	// GPIO, 	SPI0_N_SS_IN, 		TIMER32_1_CH4
+	PORT0_4 = (PORT0 << PORT_INDEX_S) | (1 << 4), 	// GPIO, 	SPI0_N_SS_OUT_0, 	TIMER32_1_TX, 		ADC3
+	PORT0_5 = (PORT0 << PORT_INDEX_S) | (1 << 5), 	// GPIO, 	UART0_RXD, 			TIMER16_0_IN1
+	PORT0_6 = (PORT0 << PORT_INDEX_S) | (1 << 6), 	// GPIO, 	UART0_TXD, 			TIMER16_0_IN2
+	PORT0_7 = (PORT0 << PORT_INDEX_S) | (1 << 7), 	// GPIO, 	UART0_NCTS, 		TIMER16_0_OUT, 		ADC4
+	PORT0_8 = (PORT0 << PORT_INDEX_S) | (1 << 8), 	// GPIO, 	UART0_NRTS, 		TIMER16_1_IN1
+	PORT0_9 = (PORT0 << PORT_INDEX_S) | (1 << 9), 	// GPIO, 	I2C0_SDA, 			TIMER16_1_IN2, 		ADC5
+	PORT0_10 = (PORT0 << PORT_INDEX_S) | (1 << 10), // GPIO, 	I2C0_SCL, 			TIMER16_1_OUT
+	PORT0_11 = (PORT0 << PORT_INDEX_S) | (1 << 11), // GPIO, 	TDI, 				TIMER16_2_IN1, 		ADC6
+	PORT0_12 = (PORT0 << PORT_INDEX_S) | (1 << 12), // GPIO, 	TCK, 				TIMER16_2_IN2
+	PORT0_13 = (PORT0 << PORT_INDEX_S) | (1 << 13), // GPIO, 	TMS, 				TIMER16_2_OUT, 		ADC7
+	PORT0_14 = (PORT0 << PORT_INDEX_S) | (1 << 14), // GPIO, 	TRST
+	PORT0_15 = (PORT0 << PORT_INDEX_S) | (1 << 15), // GPIO, 	TDO
+	PORT0_ALL = (PORT0 << PORT_INDEX_S) | 0xFFFF, 	// Маска для всех выводов на PORT0                                                                                                                    
+                                                                                                                
+	PORT1_0 = (PORT1 << PORT_INDEX_S) | (1 << 0), 	// GPIO, 	SPI1_MISO, 			TIMER32_2_CH1
+	PORT1_1 = (PORT1 << PORT_INDEX_S) | (1 << 1), 	// GPIO, 	SPI1_MOSI, 			TIMER32_2_CH2
+	PORT1_2 = (PORT1 << PORT_INDEX_S) | (1 << 2), 	// GPIO, 	SPI1_CLK, 			TIMER32_2_CH3
+	PORT1_3 = (PORT1 << PORT_INDEX_S) | (1 << 3), 	// GPIO, 	SPI1_N_SS_IN, 		TIMER32_2_CH4
+	PORT1_4 = (PORT1 << PORT_INDEX_S) | (1 << 4), 	// GPIO, 	SPI1_N_SS_OUT_0, 	TIMER32_2_TX
+	PORT1_5 = (PORT1 << PORT_INDEX_S) | (1 << 5), 	// GPIO, 	SPI1_N_SS_OUT_1, 	UART0_CK, 			ADC0
+	PORT1_6 = (PORT1 << PORT_INDEX_S) | (1 << 6), 	// GPIO, 	SPI1_N_SS_OUT_2, 	UART0_DDIS
+	PORT1_7 = (PORT1 << PORT_INDEX_S) | (1 << 7), 	// GPIO, 	SPI1_N_SS_OUT_3, 	DIGITAL_TEST_PAD,	ADC1
+	PORT1_8 = (PORT1 << PORT_INDEX_S) | (1 << 8), 	// GPIO, 	UART1_RXD
+	PORT1_9 = (PORT1 << PORT_INDEX_S) | (1 << 9), 	// GPIO, 	UART1_TXD
+	PORT1_10 = (PORT1 << PORT_INDEX_S) | (1 << 10), // GPIO, 	UART1_NCTS
+	PORT1_11 = (PORT1 << PORT_INDEX_S) | (1 << 11), // GPIO, 	UART1_NRTS, 		REF_ADC_DAC
+	PORT1_12 = (PORT1 << PORT_INDEX_S) | (1 << 12), // GPIO, 	I2C1_SDA, 			UART0_NDTR, 		DAC0
+	PORT1_13 = (PORT1 << PORT_INDEX_S) | (1 << 13), // GPIO, 	I2C1_SCL, 			UART0_NDCD, 		DAC1
+	PORT1_14 = (PORT1 << PORT_INDEX_S) | (1 << 14), // GPIO, 	SPI0_N_SS_OUT_1, 	UART0_NDSR
+	PORT1_15 = (PORT1 << PORT_INDEX_S) | (1 << 15), // GPIO, 	SPI0_N_SS_OUT_2, 	UART0_NRI, 			TEST MUX OUT
+	PORT1_ALL = (PORT1 << PORT_INDEX_S) | 0xFFFF,   // Маска для всех выводов на PORT1                                                                                                                  
+                                                                                                                
+	PORT2_0 = (PORT2 << PORT_INDEX_S) | 1 << 0, 	// GPIO, 	SPIFI_SCLK, 		UART1_NDTR
+	PORT2_1 = (PORT2 << PORT_INDEX_S) | 1 << 1, 	// GPIO, 	SPIFI_CS, 			UART1_DCD
+	PORT2_2 = (PORT2 << PORT_INDEX_S) | 1 << 2, 	// GPIO, 	SPIFI_DATA_0, 		UART1_NDSR
+	PORT2_3 = (PORT2 << PORT_INDEX_S) | 1 << 3, 	// GPIO, 	SPIFI_DATA_1, 		UART1_NRI
+	PORT2_4 = (PORT2 << PORT_INDEX_S) | 1 << 4, 	// GPIO, 	SPIFI_DATA_2
+	PORT2_5 = (PORT2 << PORT_INDEX_S) | 1 << 5, 	// GPIO, 	SPIFI_DATA_3
+	PORT2_6 = (PORT2 << PORT_INDEX_S) | 1 << 6, 	// GPIO, 	SPI0_N_SS_OUT_3, 	UART1_CK
+	PORT2_7 = (PORT2 << PORT_INDEX_S) | 1 << 7, 	// GPIO
+	PORT2_ALL = (PORT2 << PORT_INDEX_S) | 0xFF      // Маска для всех выводов на PORT2                                                                                                                 
 } HAL_PinMapNewTypeDef;
 
-typedef enum
+typedef enum __GPIO_PinState
 {
 	GPIO_PIN_LOW = 0,
 	GPIO_PIN_HIGH = 1
 } GPIO_PinState;
 
-typedef enum
+typedef enum __HAL_GPIO_ModeTypeDef
 {
 #ifdef MIK32V0
 	HAL_GPIO_MODE_GPIO_INPUT = 0b101,  /* Режим вывода - GPIO. Вход */
@@ -95,21 +95,21 @@ typedef enum
 	HAL_GPIO_MODE_ANALOG = 0b11		   /* Аналоговый сигнал */
 } HAL_GPIO_ModeTypeDef;
 
-typedef enum
+typedef enum __HAL_GPIO_PullTypeDef
 {
 	HAL_GPIO_PULL_NONE = 0b00, /* Подтяжки не подключаются */
 	HAL_GPIO_PULL_UP = 0b01,   /* Подтяжки к питанию */
 	HAL_GPIO_PULL_DOWN = 0b10  /* Подтяжки к земле */
 } HAL_GPIO_PullTypeDef;
 
-typedef enum
+typedef enum __HAL_GPIO_DSTypeDef
 {
 	HAL_GPIO_DS_2MA = 0b00, /* 2мА */
 	HAL_GPIO_DS_4MA = 0b01, /* 4мА */
 	HAL_GPIO_DS_8MA = 0b10	/* 8мА */
 } HAL_GPIO_DSTypeDef;
 
-typedef struct
+typedef struct __GPIO_InitTypeDef
 {
 	HAL_PinMapNewTypeDef Pin;  /* Маска выводов */
 	HAL_GPIO_ModeTypeDef Mode; /* Режим выводов или направление GPIO */
@@ -122,7 +122,7 @@ GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef *GPIOx, HAL_PinMapNewTypeDef GPIO_Pi
 void HAL_GPIO_WritePin(GPIO_TypeDef *GPIOx, HAL_PinMapNewTypeDef GPIO_Pin, GPIO_PinState PinState);
 void HAL_GPIO_TogglePin(GPIO_TypeDef *GPIOx, HAL_PinMapNewTypeDef GPIO_Pin);
 
-typedef enum
+typedef enum __HAL_GPIO_Line
 {
 	GPIO_LINE_0 = 0 << GPIO_IRQ_LINE_S, /* Линия прерываний 0 */
 	GPIO_LINE_1 = 1 << GPIO_IRQ_LINE_S, /* Линия прерываний 1 */
@@ -139,7 +139,7 @@ typedef enum
  *
  * @note use form 0b0LLLMMMM, where L - line number bits, M - mux configuration bits
  */
-typedef enum
+typedef enum __HAL_GPIO_Line_Config
 {
 	GPIO_MUX_LINE_0_PORT0_0 = 0 | GPIO_LINE_0,
 	GPIO_MUX_LINE_0_PORT0_8 = 1 | GPIO_LINE_0,
@@ -322,7 +322,7 @@ typedef enum
 /** Режим прерывания линии GPIO
  * \note Функция инициализации не включает прерывания GPIO в EPIC
  */
-typedef enum
+typedef enum __HAL_GPIO_InterruptMode
 {
 	GPIO_INT_MODE_LOW = 0,												   /* Режим прерывания по низкому уровню на выводе */
 	GPIO_INT_MODE_HIGH = GPIO_MODE_BIT_LEVEL_M,							   /* Режим прерывания по высокому уровню на выводе */
@@ -333,7 +333,7 @@ typedef enum
 
 /** Функция инициализации линии прерывания
  *
- * \param irq_line Номер линии прерывания
+
  * \param mux Настройка мультиплексора линии прерывания
  * \param mode Режим линии прерывания
  * \note Номер линии прерывания можно получить после настройки мультиплексора.
