@@ -1,6 +1,6 @@
 #include <mik32_hal_spifi.h>
 
-__attribute__((weak)) void HAL_SPIFI_MspInit(SPIFI_MemoryModeConfig_HandleTypeDef* hspifi)
+__attribute__((weak)) void HAL_SPIFI_MspInit(SPIFI_HandleTypeDef *spifi)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     __HAL_PCC_SPIFI_CLK_ENABLE();
@@ -19,7 +19,7 @@ __attribute__((weak)) void HAL_SPIFI_MspInit(SPIFI_MemoryModeConfig_HandleTypeDe
 void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi)
 {
     HAL_SPIFI_MspInit(spifi);
-    
+
     spifi->Instance->STAT |= SPIFI_CONFIG_STAT_RESET_M;
     spifi->Instance->CLIMIT = spifi->CacheLimit; // Граница кеширования
     if (spifi->CacheEnable)
@@ -38,10 +38,10 @@ void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi)
                              (spifi->Command.OpCode << SPIFI_CONFIG_MCMD_OPCODE_S));
 }
 
-
 void SPIFI_WaitIntrqTimeout()
 {
-    while (~(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M));
+    while (~(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M))
+        ;
 }
 
 void HAL_SPIFI_SendCommand(
@@ -53,13 +53,17 @@ void HAL_SPIFI_SendCommand(
 {
     // spifi->Instance->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
     spifi->Instance->ADDR = address;
+    if (cmd->InterimLength > 0)
+    {
+        spifi->Instance->IDATA = cmd->InterimData;
+    }
     spifi->Instance->CMD = ((cmd->OpCode << SPIFI_CONFIG_CMD_OPCODE_S) |
                             (cmd->FrameForm << SPIFI_CONFIG_CMD_FRAMEFORM_S) |
                             (cmd->FieldForm << SPIFI_CONFIG_CMD_FIELDFORM_S) |
                             (dataLength << SPIFI_CONFIG_CMD_DATALEN_S) |
                             (cmd->InterimLength << SPIFI_CONFIG_CMD_INTLEN_S) |
                             (cmd->Direction << SPIFI_CONFIG_CMD_DOUT_S));
-    
+
     // SPIFI_WaitIntrqTimeout();
 
     if (cmd->Direction == SPIFI_DIRECTION_INPUT)
@@ -74,7 +78,7 @@ void HAL_SPIFI_SendCommand(
         if ((dataBytes == 0) && (dataLength > 0))
         {
             // xprintf("dataByte zero pointer\n");
-            //Сделать возврат ошибки
+            // Сделать возврат ошибки
             return;
         }
         for (int i = 0; i < dataLength; i++)
@@ -82,4 +86,19 @@ void HAL_SPIFI_SendCommand(
             spifi->Instance->DATA8 = dataBytes[i];
         }
     }
+}
+
+bool HAL_SPIFI_IsMemoryModeEnabled(SPIFI_HandleTypeDef *spifi)
+{
+    return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_MCINIT_M) != 0;
+}
+
+void HAL_SPIFI_Reset(SPIFI_HandleTypeDef *spifi)
+{
+    spifi->Instance->STAT = SPIFI_CONFIG_STAT_RESET_M;
+}
+
+bool HAL_SPIFI_IsReady(SPIFI_HandleTypeDef *spifi)
+{
+    return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_RESET_M) == 0;
 }
