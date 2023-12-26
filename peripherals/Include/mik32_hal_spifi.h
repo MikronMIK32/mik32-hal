@@ -2,6 +2,7 @@
 #define MIK32_HAL_SPIFI
 
 #include <stdbool.h>
+#include "mik32_hal_def.h"
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include <spifi.h>
