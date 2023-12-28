@@ -11,34 +11,34 @@
 
 
 /* Выбор напряжения на UPP матрицы. */
-#define OTP_UPP_READ_2V         0b000   /* 2 В. */
-#define OTP_UPP_READ_2_5V       0b001   /* 2,5 В. */
-#define OTP_UPP_READ_3V         0b011   /* 3 В. */
-#define OTP_UPP_READ_VDD18      0b010   /* VDD18. */
-#define OTP_UPP_READ_VDD5       0b110   /* VDD5. */
+#define OTP_UPP_READ_2V         0b000   /**< 2 В. */
+#define OTP_UPP_READ_2_5V       0b001   /**< 2,5 В. */
+#define OTP_UPP_READ_3V         0b011   /**< 3 В. */
+#define OTP_UPP_READ_VDD18      0b010   /**< VDD18. */
+#define OTP_UPP_READ_VDD5       0b110   /**< VDD5. */
 
 /* Выбор тока считывания. */
-#define OTP_READ_CUR_2         0        /* 2 мкА. */
-#define OTP_READ_CUR_0_2       1        /* 0,2 мкА. */
+#define OTP_READ_CUR_2         0        /**< 2 мкА. */
+#define OTP_READ_CUR_0_2       1        /**< 0,2 мкА. */
 
-#define OTP_POWER_OFF       1           /* Hard IP введен в режим пониженного энергопотребления, операции записи и чтения запрещены. */
-#define OTP_POWER_ON        0           /* Hard IP выведен из режима пониженного энергопотребления и может выполнять операции чтения и записи. */
+#define OTP_POWER_OFF       1           /**< Hard IP введен в режим пониженного энергопотребления, операции записи и чтения запрещены. */
+#define OTP_POWER_ON        0           /**< Hard IP выведен из режима пониженного энергопотребления и может выполнять операции чтения и записи. */
  
 
 /* Режим чтения. */
-#define OPT_READ_2STAGES    0           /* Чтение в 2 этапа. Вводятся такты ожидания APB. */
-#define OPT_READ_3STAGES    1           /* Чтение в 3 этапа. Опрос флага BSY. Нет тактов ожидания APB. */
+#define OPT_READ_2STAGES    0           /**< Чтение в 2 этапа. Вводятся такты ожидания APB. */
+#define OPT_READ_3STAGES    1           /**< Чтение в 3 этапа. Опрос флага BSY. Нет тактов ожидания APB. */
 
 
 /**
- * @brief Настройки экземпляра OTP.
+ * @brief Настройки OTP.
  * 
  */
 typedef struct __OTP_HandleTypeDef
 {
-    OTP_TypeDef *Instance;  /*!< Базовый адрес регистров OTP. */
+    OTP_TypeDef *Instance;  /**< Базовый адрес регистров OTP. */
 
-    uint8_t ReadMode;       /*!< Режим чтения. */
+    uint8_t ReadMode;       /**< Режим чтения. */
     
 } OTP_HandleTypeDef;
 

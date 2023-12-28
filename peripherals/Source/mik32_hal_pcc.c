@@ -1,7 +1,13 @@
 #include "mik32_hal_pcc.h"
 #include "mik32_hal.h"
 
-void HAL_PCC_OscEnable(uint32_t Oscillator)
+/**
+ * @brief Включить источник тактирования.
+ * @param Oscillator Источник тактирования для включения.
+ * @warning Аргумент функции не является маской.
+ * 
+ */
+void HAL_PCC_OscEnable(HAL_PCC_OscillatorTypeTypeDef Oscillator)
 {
     switch (Oscillator)
     {
@@ -20,12 +26,18 @@ void HAL_PCC_OscEnable(uint32_t Oscillator)
     }
 }
 
+/**
+ * @brief Выключить источник тактирования.
+ * @param Oscillator Источник тактирования для выключения.
+ * @warning Аргумент функции не является маской.
+ * 
+ */
 void HAL_PCC_OscDisable(uint32_t Oscillator)
 {
     switch (Oscillator)
     {
     case PCC_OSCILLATORTYPE_HSI32M:
-        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_HSI32M_EN_S); // ВЫключить HSI32M
+        WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_HSI32M_EN_S); // Выключить HSI32M
         break;
     case PCC_OSCILLATORTYPE_OSC32M:
         WU->CLOCKS_SYS |= (1 << WU_CLOCKS_SYS_OSC32M_EN_S); // Выключить OSC32M
@@ -39,6 +51,17 @@ void HAL_PCC_OscDisable(uint32_t Oscillator)
     }
 }
 
+/**
+ * @brief Выбрать опорный источник тактирования монитора частоты.
+ * 
+ * Функция предназначена для назначения опорного источника тактирования монитора частоты.
+ * 
+ * @param Force32KClk Опорный источник тактирования монитора частоты.
+ * @return Состояние об ошибках.
+ * @warning Если выбранный источник не детектируется монитором частоты в течение #CLOCKSWITCH_TIMEOUT_VALUE итераций,
+ * то функция вернет ошибку HAL_TIMEOUT, а выбранный источник не будет назначен.
+ * 
+ */
 HAL_StatusTypeDef HAL_PCC_FreqMonRefSet(HAL_PCC_FreqMonitorSourceTypeDef Force32KClk)
 {
     uint32_t clockswitch_timeout = 0;
@@ -77,6 +100,20 @@ HAL_StatusTypeDef HAL_PCC_FreqMonRefSet(HAL_PCC_FreqMonitorSourceTypeDef Force32
     return HAL_OK;
 }
 
+/**
+ * @brief Выбрать приоритетный источник тактирования системы.
+ * 
+ * Функция предназначена для назначения приоритетного источника тактирования системы. Если ForceOscSys = #PCC_FORCE_OSC_SYS_FIXED, 
+ * то источник тактирования системы не будет автоматически переключаться, при пропадании сигнала.
+ * 
+ * @param OscillatorSystem Источник тактирования системы.
+ * @param ForceOscSys Запрет автоматического переключения с выбранного источника тактирования.
+ * @return Состояние об ошибках.
+ * @warning Если выбранный источник не детектируется монитором частоты в течение #CLOCKSWITCH_TIMEOUT_VALUE итераций,
+ * то функция вернет ошибку HAL_TIMEOUT. При этом выбранный источник будет назначен приоритетным. Разрешение автоматического 
+ * переключения будет установлено как #PCC_FORCE_OSC_SYS_UNFIXED.
+ * 
+ */
 HAL_StatusTypeDef HAL_PCC_SetOscSystem(uint32_t OscillatorSystem, HAL_PCC_ForceOscSysTypeDef ForceOscSys)
 {
     uint32_t clockswitch_timeout = 0;
@@ -124,6 +161,17 @@ HAL_StatusTypeDef HAL_PCC_SetOscSystem(uint32_t OscillatorSystem, HAL_PCC_ForceO
     return HAL_OK;
 }
 
+/**
+ * @brief Выбрать приоритетный источник тактирования RTC.
+ * 
+ * Функция предназначена для назначения приоритетного источника RTC.
+ * 
+ * @param Oscillator Источник тактирования RTC.
+ * @return Состояние об ошибках.
+ * @warning Если выбранный источник не детектируется монитором частоты в течение #CLOCKSWITCH_TIMEOUT_VALUE итераций,
+ * то функция вернет ошибку HAL_TIMEOUT. При этом выбранный источник не будет назначен приоритетным.
+ * 
+ */
 HAL_StatusTypeDef HAL_PCC_RTCClock(HAL_PCC_RTCClockSourceTypeDef Oscillator)
 {
     uint32_t clockswitch_timeout = 0;
@@ -166,6 +214,17 @@ HAL_StatusTypeDef HAL_PCC_RTCClock(HAL_PCC_RTCClockSourceTypeDef Oscillator)
     return HAL_OK;
 }
 
+/**
+ * @brief Выбрать источник тактирования RTC в составе ядра.
+ * 
+ * Функция предназначена для выбора приоритетного источника RTC в составе ядра.
+ * 
+ * @param Oscillator Источник тактирования RTC в составе ядра.
+ * @return Состояние об ошибках.
+ * @warning Если выбранный источник не детектируется монитором частоты в течение #CLOCKSWITCH_TIMEOUT_VALUE итераций,
+ * то функция вернет ошибку HAL_TIMEOUT. При этом выбранный источник не будет выбран.
+ * 
+ */
 HAL_StatusTypeDef HAL_PCC_CPURTCClock(HAL_PCC_CPURTCClockSourceTypeDef Oscillator)
 {
     uint32_t clockswitch_timeout = 0;
@@ -203,21 +262,52 @@ HAL_StatusTypeDef HAL_PCC_CPURTCClock(HAL_PCC_CPURTCClockSourceTypeDef Oscillato
     return HAL_OK;
 }
 
+/**
+ * @brief Задать делитель шины AHB.
+ * @param DividerAHB Делитель.
+ * 
+ *  Делитель является 32-х битным числом. Частота шины AHB определяется по формуле: @f$ \frac{F_{sys\_clk}}{DividerAHB + 1} @f$.
+ */
 void HAL_PCC_DividerAHB(uint32_t DividerAHB)
 {
     PM->DIV_AHB = DividerAHB;
 }
 
+/**
+ * @brief Задать делитель шины APB_M.
+ * @param DividerAPB_M Делитель.
+ * 
+ * Делитель является 32-х битным числом. Частота шины APB_M определяется по формуле: @f$ \frac{F_{AHB}}{DividerAPB\_M + 1} @f$.
+ */
 void HAL_PCC_DividerAPB_M(uint32_t DividerAPB_M)
 {
     PM->DIV_APB_M = DividerAPB_M;
 }
 
+/**
+ * @brief Задать делитель шины APB_P.
+ * @param DividerAPB_P Делитель.
+ * 
+ * Делитель является 32-х битным числом. Частота шины APB_M определяется по формуле: @f$ \frac{F_{AHB}}{DividerAPB\_P + 1} @f$.
+ */
 void HAL_PCC_DividerAPB_P(uint32_t DividerAPB_P)
 {
     PM->DIV_APB_P = DividerAPB_P;
 }
 
+/**
+ * @brief Настроить тактирование и монитор частоты.
+ * 
+ * Функция для настройки тактирования и монитора частоты в соответствии с заданными настройками в PCC_Init.
+ * 
+ * @param PCC_Init Структура с настройками.
+ * @return Структура с состояниями об ошибках.
+ * @warning Если выбранный источник не детектируется монитором частоты в течение #CLOCKSWITCH_TIMEOUT_VALUE итераций,
+ * то функция вернет ошибку HAL_TIMEOUT. При этом выбранный источник не будет применен. Если такая ошибка возникла при
+ * при выборе системного источника, то выбранный источник будет назначен приоритетным. Разрешение автоматического 
+ * переключения будет установлено как #PCC_FORCE_OSC_SYS_UNFIXED.
+ * 
+ */
 PCC_ConfigErrorsTypeDef HAL_PCC_Config(PCC_InitTypeDef *PCC_Init)
 {
     PCC_ConfigErrorsTypeDef errors = {HAL_OK};
@@ -278,57 +368,12 @@ PCC_ConfigErrorsTypeDef HAL_PCC_Config(PCC_InitTypeDef *PCC_Init)
     return errors;
 }
 
-void HAL_PCC_ClockConfig(PCC_PeriphCLKInitTypeDef *PeriphClkInit)
-{
-    /* Управление тактированием устройств на шине AHB */
-    PM->CLK_AHB_CLEAR = ~PeriphClkInit->PMClockAHB; // Выключение тактирования необходимых блоков
-    PM->CLK_AHB_SET = PeriphClkInit->PMClockAHB;    // включение тактирования необходимых блоков
-
-    /* Управление тактированием устройств на шине APB_M */
-    PM->CLK_APB_M_CLEAR = ~PeriphClkInit->PMClockAPB_M; // Выключение тактирования необходимых блоков
-    PM->CLK_APB_M_SET = PeriphClkInit->PMClockAPB_M;    // включение тактирования необходимых блоков
-
-    /* Управление тактированием устройств на шине APB_P */
-    PM->CLK_APB_P_CLEAR = ~PeriphClkInit->PMClockAPB_P; // Выключение тактирования необходимых блоков
-    PM->CLK_APB_P_SET = PeriphClkInit->PMClockAPB_P;    // включение тактирования необходимых блоков
-}
-
-void HAL_PCC_ClockSet(uint32_t Periphery)
-{
-    uint32_t mask = Periphery & HAL_CLOCK_MASK;
-    Periphery &= ~HAL_CLOCK_MASK;
-    switch (mask)
-    {
-    case HAL_CLOCK_AHB_MASK:
-        PM->CLK_AHB_SET |= Periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_M_MASK:
-        PM->CLK_APB_M_SET |= Periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_P_MASK:
-        PM->CLK_APB_P_SET |= Periphery; // включение тактирования необходимых блоков
-        break;
-    }
-}
-
-void HAL_PCC_ClockClear(uint32_t Periphery)
-{
-    uint32_t mask = Periphery & HAL_CLOCK_MASK;
-    Periphery &= ~HAL_CLOCK_MASK;
-    switch (mask)
-    {
-    case HAL_CLOCK_AHB_MASK:
-        PM->CLK_AHB_CLEAR |= Periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_M_MASK:
-        PM->CLK_APB_M_CLEAR |= Periphery; // включение тактирования необходимых блоков
-        break;
-    case HAL_CLOCK_APB_P_MASK:
-        PM->CLK_APB_P_CLEAR |= Periphery; // включение тактирования необходимых блоков
-        break;
-    }
-}
-
+/**
+ * @brief Получить частоту приоритетного системного источника тактирования в Гц.
+ * @return Частота приоритетного системного источника в Гц.
+ * @warning Система может тактироваться не от приоритетного источника. Например, если источник не был назначен принудительно и сигнал от источника отсутствует.
+ * В таком случае автоматически выбирается источник в соответствии со следующим приоритетом: OSC32M, HSI32M, OSC32K, LSI32K.
+ */
 uint32_t HAL_PCC_GetSysClockFreq()
 {
     uint32_t system_clock = 0;

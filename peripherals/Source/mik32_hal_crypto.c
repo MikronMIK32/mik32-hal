@@ -1,21 +1,38 @@
 #include "mik32_hal_crypto.h"
 
-
-__attribute__((weak)) void HAL_CRYPTO_MspInit(Crypto_HandleTypeDef* hcrypto)
+/**
+ * @brief Включение тактирования модуля Crypto. 
+ * @note Эта weak функция может быть переопределена пользователем.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ */
+__attribute__((weak)) void HAL_CRYPTO_MspInit(Crypto_HandleTypeDef* hcrypto) 
 {
     __HAL_PCC_CRYPTO_CLK_ENABLE();
 }
 
+/**
+ * @brief Сброс счётчиков загружаемых/выгружаемых данных.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ */
 void HAL_Crypto_CounterReset(Crypto_HandleTypeDef *hcrypto)
 {
     hcrypto->Instance->CONFIG |= CRYPTO_CONFIG_C_RESET_M;
 }
 
+/**
+ * @brief Ожидать когда модуль станет доступен.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ */
 void HAL_Crypto_WaitReady(Crypto_HandleTypeDef *hcrypto)
 {
     while (!(hcrypto->Instance->CONFIG & CRYPTO_CONFIG_READY_M));
 }
 
+/**
+ * @brief Задать алгоритм шифрования.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param Algorithm Алгоритм шифрования.
+ */
 void HAL_Crypto_SetAlgorithm(Crypto_HandleTypeDef *hcrypto, uint8_t Algorithm)
 {
     hcrypto->Algorithm = Algorithm; 
@@ -29,6 +46,11 @@ void HAL_Crypto_SetAlgorithm(Crypto_HandleTypeDef *hcrypto, uint8_t Algorithm)
     hcrypto->Instance->CONFIG = ConfigTemp;
 }
 
+/**
+ * @brief Задать режим шифрования.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param CipherMode Режим шифрования.
+ */
 void HAL_Crypto_SetCipherMode(Crypto_HandleTypeDef *hcrypto, uint8_t CipherMode)
 {
     hcrypto->CipherMode = CipherMode;
@@ -42,6 +64,11 @@ void HAL_Crypto_SetCipherMode(Crypto_HandleTypeDef *hcrypto, uint8_t CipherMode)
     hcrypto->Instance->CONFIG = ConfigTemp;
 }
 
+/**
+ * @brief Задать режим перестановки слова.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param SwapMode Режим перестановки слова.
+ */
 void HAL_Crypto_SetSwapMode(Crypto_HandleTypeDef *hcrypto, uint8_t SwapMode)
 {
     hcrypto->SwapMode = SwapMode;
@@ -55,6 +82,11 @@ void HAL_Crypto_SetSwapMode(Crypto_HandleTypeDef *hcrypto, uint8_t SwapMode)
     hcrypto->Instance->CONFIG = ConfigTemp;
 }
 
+/**
+ * @brief Задать порядок загрузки/выгрузки данных.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param OrderMode Порядок загрузки/выгрузки данных.
+ */
 void HAL_Crypto_SetOrderMode(Crypto_HandleTypeDef *hcrypto, uint8_t OrderMode)
 {
     hcrypto->OrderMode = OrderMode;
@@ -68,6 +100,12 @@ void HAL_Crypto_SetOrderMode(Crypto_HandleTypeDef *hcrypto, uint8_t OrderMode)
     hcrypto->Instance->CONFIG = ConfigTemp;
 }
 
+/**
+ * @brief Задать вектор инициализации.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param InitVector Вектор инициализации (IV).
+ * @param IvLength Количество слов в InitVector.
+ */
 void HAL_Crypto_SetIV(Crypto_HandleTypeDef *hcrypto, uint32_t InitVector[], uint32_t IvLength)
 {
 
@@ -87,6 +125,13 @@ void HAL_Crypto_SetIV(Crypto_HandleTypeDef *hcrypto, uint32_t InitVector[], uint
 
 }
 
+/**
+ * @brief Задать мастер-ключ.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param crypto_key Ключ.
+ * 
+ * @warning Ключ должен быть инициализирован в режиме шифрования (CONFIG.DECODE = 0).
+ */
 void HAL_Crypto_SetKey(Crypto_HandleTypeDef *hcrypto, uint32_t crypto_key[])
 {
     uint32_t key_length = 0;
@@ -115,6 +160,10 @@ void HAL_Crypto_SetKey(Crypto_HandleTypeDef *hcrypto, uint32_t crypto_key[])
     HAL_Crypto_WaitReady(hcrypto);
 }
 
+/**
+ * @brief Инициализировать Crypto в соответствии с настройками @ref Crypto_HandleTypeDef *hcrypto.
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ */
 void HAL_Crypto_Init(Crypto_HandleTypeDef *hcrypto)
 {
     HAL_CRYPTO_MspInit(hcrypto);
@@ -156,6 +205,16 @@ void HAL_Crypto_Init(Crypto_HandleTypeDef *hcrypto)
     #endif
 }
 
+/**
+ * @brief Зашифровать текст.
+ * 
+ * Зашифрованный текст передается в массив cipher_text.
+ * 
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param plain_text Массив с данными незашифрованного текста.
+ * @param cipher_text Массив с данными для зашифрованного текста.
+ * @param text_length Количество слов в тексте.
+ */
 void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uint32_t cipher_text[], uint32_t text_length)
 {
     uint8_t block_size = 0;
@@ -213,6 +272,16 @@ void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uin
      
 }
 
+/**
+ * @brief Расшифровать текст.
+ * 
+ * Расшифрованный текст передается в массив plain_text.
+ * 
+ * @param hcrypto Указатель на структуру с настройками Crypto.
+ * @param cipher_text Массив с данными зашифрованного текста.
+ * @param plain_text Массив с данными для незашифрованного текста.
+ * @param text_length Количество слов в тексте.
+ */
 void HAL_Crypto_Decode(Crypto_HandleTypeDef *hcrypto, uint32_t cipher_text[], uint32_t plain_text[], uint32_t text_length)
 {
     uint8_t block_size = 0;
