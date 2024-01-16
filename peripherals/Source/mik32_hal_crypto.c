@@ -39,9 +39,9 @@ void HAL_Crypto_SetAlgorithm(Crypto_HandleTypeDef *hcrypto, uint8_t Algorithm)
 
     uint32_t ConfigTemp = hcrypto->Instance->CONFIG;
     
-    ConfigTemp &= ~CRYPTO_CONFIG_DECODE_M; /* Обнуление DECODE */ 
+    ConfigTemp &= ~CRYPTO_CONFIG_CORE_SEL_M; /* Обнуление DECODE */ 
 
-    ConfigTemp |= Algorithm << CRYPTO_CONFIG_DECODE_S;
+    ConfigTemp |= Algorithm << CRYPTO_CONFIG_CORE_SEL_S;
 
     hcrypto->Instance->CONFIG = ConfigTemp;
 }
@@ -243,7 +243,7 @@ void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uin
 
     /* Режим шифрования */
     hcrypto->Instance->CONFIG &= ~CRYPTO_CONFIG_DECODE_M;
-
+    
     for (volatile uint32_t block_index = 0; block_index < text_length; block_index += block_size)
     {
         for (volatile uint32_t word_index = block_index; word_index < (block_index + block_size); word_index++)
@@ -252,7 +252,6 @@ void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uin
             {
                 break;
             }
-            
             hcrypto->Instance->BLOCK = plain_text[word_index];
             
         }
@@ -265,7 +264,6 @@ void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uin
             {
                 break;
             }
-            
             cipher_text[word_index] = hcrypto->Instance->BLOCK;
         }
     }
