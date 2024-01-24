@@ -8,6 +8,8 @@
 #include <spifi.h>
 #include <mcu32_memory_map.h>
 
+#define HAL_SPIFI_TIMEOUT 100000
+
 typedef enum __HAL_SPIFI_CacheEnableTypeDef
 {
     SPIFI_CACHE_DISABLE = 0,
@@ -52,27 +54,27 @@ typedef enum __HAL_SPIFI_DMAEnableTypeDef
 
 typedef enum __HAL_SPIFI_FieldFormTypeDef
 {
-    SPIFI_FIELDFORM_ALL_SERIAL = 0,
-    SPIFI_FIELDFORM_DATA_PARALLEL = 1,
-    SPIFI_FIELDFORM_COMMAND_SERIAL = 2,
-    SPIFI_FIELDFORM_ALL_PARALLEL = 3
+    SPIFI_FIELDFORM_ALL_SERIAL = SPIFI_CONFIG_CMD_FIELDFORM_ALL_SERIAL,
+    SPIFI_FIELDFORM_DATA_PARALLEL = SPIFI_CONFIG_CMD_FIELDFORM_DATA_PARALLEL,
+    SPIFI_FIELDFORM_OPCODE_SERIAL = SPIFI_CONFIG_CMD_FIELDFORM_OPCODE_SERIAL,
+    SPIFI_FIELDFORM_ALL_PARALLEL = SPIFI_CONFIG_CMD_FIELDFORM_ALL_PARALLEL,
 } HAL_SPIFI_FieldFormTypeDef;
 
 typedef enum __HAL_SPIFI_FrameFormTypeDef
 {
-    SPIFI_FRAMEFORM_OPCODE = 1,
-    SPIFI_FRAMEFORM_OPCODE_1ADDR = 2,
-    SPIFI_FRAMEFORM_OPCODE_2ADDR = 3,
-    SPIFI_FRAMEFORM_OPCODE_3ADDR = 4,
-    SPIFI_FRAMEFORM_OPCODE_4ADDR = 5,
-    SPIFI_FRAMEFORM_3ADDR = 6,
-    SPIFI_FRAMEFORM_4ADDR = 7
+    SPIFI_FRAMEFORM_OPCODE = SPIFI_CONFIG_CMD_FRAMEFORM_OPCODE_NOADDR,
+    SPIFI_FRAMEFORM_OPCODE_1ADDR = SPIFI_CONFIG_CMD_FRAMEFORM_OPCODE_1ADDR,
+    SPIFI_FRAMEFORM_OPCODE_2ADDR = SPIFI_CONFIG_CMD_FRAMEFORM_OPCODE_2ADDR,
+    SPIFI_FRAMEFORM_OPCODE_3ADDR = SPIFI_CONFIG_CMD_FRAMEFORM_OPCODE_3ADDR,
+    SPIFI_FRAMEFORM_OPCODE_4ADDR = SPIFI_CONFIG_CMD_FRAMEFORM_OPCODE_4ADDR,
+    SPIFI_FRAMEFORM_3ADDR = SPIFI_CONFIG_CMD_FRAMEFORM_NOOPCODE_3ADDR,
+    SPIFI_FRAMEFORM_4ADDR = SPIFI_CONFIG_CMD_FRAMEFORM_NOOPCODE_4ADDR,
 } HAL_SPIFI_FrameFormTypeDef;
 
 typedef enum __HAL_SPIFI_DirectionTypeDef
 {
-    SPIFI_DIRECTION_INPUT = 0,
-    SPIFI_DIRECTION_OUTPUT = 1
+    SPIFI_DIRECTION_INPUT = SPIFI_CONFIG_CMD_DOUT_M ^ (1 << SPIFI_CONFIG_CMD_DOUT_S),
+    SPIFI_DIRECTION_OUTPUT = SPIFI_CONFIG_CMD_DOUT_M
 } HAL_SPIFI_DirectionTypeDef;
 
 typedef struct __SPIFI_MemoryCommandTypeDef
@@ -153,8 +155,18 @@ void HAL_SPIFI_SendCommand(
     SPIFI_HandleTypeDef *spifi,
     SPIFI_CommandTypeDef *cmd,
     uint32_t address,
-    uint16_t dataLength,
-    uint8_t *dataBytes);
+    uint16_t bufferSize,
+    uint8_t *readBuffer,
+    uint8_t *writeBuffer);
+
+void HAL_SPIFI_SendCommand_LL(
+    SPIFI_HandleTypeDef *spifi,
+    uint32_t cmdRegCfg,
+    uint32_t address,
+    uint16_t bufferSize,
+    uint8_t *readBuffer,
+    uint8_t *writeBuffer,
+    uint32_t interimData);
 
 bool HAL_SPIFI_IsMemoryModeEnabled(SPIFI_HandleTypeDef *spifi);
 
@@ -184,7 +196,7 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitInt
 {
     while (timeout-- != 0)
     {
-        if((spifi->Instance->STAT & SPIFI_CONFIG_STAT_INTRQ_M) != 0)
+        if ((spifi->Instance->STAT & SPIFI_CONFIG_STAT_INTRQ_M) != 0)
         {
             return HAL_OK;
         }
@@ -196,7 +208,7 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitInt
 {
     while (timeout-- != 0)
     {
-        if((spifi->Instance->STAT & SPIFI_CONFIG_STAT_INTRQ_M) == 0)
+        if ((spifi->Instance->STAT & SPIFI_CONFIG_STAT_INTRQ_M) == 0)
         {
             return HAL_OK;
         }
