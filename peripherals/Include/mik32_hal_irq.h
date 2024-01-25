@@ -146,9 +146,7 @@
     #define EPIC_CHECK_BOR()                    (EPIC->STATUS & (1 << EPIC_BOR_INDEX))
     #define EPIC_CHECK_TSENS()                  (EPIC->RAW_STATUS & (1 << EPIC_TSENS_INDEX))
     #define EPIC_CHECK_ADC()                    (EPIC->STATUS & (1 << EPIC_ADC_INDEX))
-#endif
-
-#ifdef MIK32V2
+#else // MIK32V2
     #define HAL_EPIC_TIMER32_0_MASK         (1 << EPIC_TIMER32_0_INDEX)        
     #define HAL_EPIC_UART_0_MASK            (1 << EPIC_UART_0_INDEX)           
     #define HAL_EPIC_UART_1_MASK            (1 << EPIC_UART_1_INDEX)           
@@ -214,12 +212,7 @@
     #define EPIC_CHECK_ADC()                   (EPIC->STATUS & (1 << EPIC_ADC_INDEX))            
     #define EPIC_CHECK_DAC0()                  (EPIC->STATUS & (1 << EPIC_DAC0_INDEX))            
     #define EPIC_CHECK_DAC1()                  (EPIC->STATUS & (1 << EPIC_DAC1_INDEX))                       
-#endif
-
-#ifdef MIK32V0
-
-#endif
-
+#endif // MIK32V0
 
 
 

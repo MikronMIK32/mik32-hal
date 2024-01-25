@@ -102,13 +102,11 @@ typedef enum __HAL_DMA_ChannelRequestTypeDef
 
 #ifdef MIK32V0
 	DMA_CHANNEL_TIMER32_0_REQUEST = 10
-#endif // MIK32V0
-
-#ifdef MIK32V2
+#else // MIK32V2
 	DMA_CHANNEL_DAC_0_REQUEST = 10,
 	DMA_CHANNEL_DAC_1_REQUEST = 11,
 	DMA_CHANNEL_TIMER32_0_REQUEST = 12
-#endif // MIK32V2
+#endif // MIK32V0
 
 } HAL_DMA_ChannelRequestTypeDef;
 
