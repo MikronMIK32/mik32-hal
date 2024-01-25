@@ -55,57 +55,15 @@ void HAL_SPIFI_SendCommand(
     HAL_SPIFI_SendCommand_LL(
         spifi,
         cmd->Direction |
-            cmd->InterimLength |
-            cmd->FieldForm |
-            cmd->FrameForm |
-            cmd->OpCode,
+            SPIFI_CONFIG_CMD_INTLEN(cmd->InterimLength) |
+            SPIFI_CONFIG_CMD_FIELDFORM(cmd->FieldForm) |
+            SPIFI_CONFIG_CMD_FRAMEFORM(cmd->FrameForm) |
+            SPIFI_CONFIG_CMD_OPCODE(cmd->OpCode),
         address,
         bufferSize,
         readBuffer,
         writeBuffer,
         cmd->InterimData);
-
-    // // spifi->Instance->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
-    // spifi->Instance->ADDR = address;
-    // if (cmd->InterimLength > 0)
-    // {
-    //     spifi->Instance->IDATA = cmd->InterimData;
-    // }
-    // spifi->Instance->CMD = ((cmd->OpCode << SPIFI_CONFIG_CMD_OPCODE_S) |
-    //                         (cmd->FrameForm << SPIFI_CONFIG_CMD_FRAMEFORM_S) |
-    //                         (cmd->FieldForm << SPIFI_CONFIG_CMD_FIELDFORM_S) |
-    //                         (bufferSize << SPIFI_CONFIG_CMD_DATALEN_S) |
-    //                         (cmd->InterimLength << SPIFI_CONFIG_CMD_INTLEN_S) |
-    //                         (cmd->Direction << SPIFI_CONFIG_CMD_DOUT_S));
-
-    // // SPIFI_WaitIntrqTimeout();
-
-    // if (cmd->Direction == SPIFI_DIRECTION_INPUT)
-    // {
-    //     if ((bufferSize > 0) && (readBuffer == 0))
-    //     {
-    //         // xprintf("dataByte zero pointer\n");
-    //         // Сделать возврат ошибки
-    //         return;
-    //     }
-    //     for (int i = 0; i < bufferSize; i++)
-    //     {
-    //         readBuffer[i] = (uint8_t)spifi->Instance->DATA8;
-    //     }
-    // }
-    // else
-    // {
-    //     if ((bufferSize > 0) && (writeBuffer == 0))
-    //     {
-    //         // xprintf("dataByte zero pointer\n");
-    //         // Сделать возврат ошибки
-    //         return;
-    //     }
-    //     for (int i = 0; i < bufferSize; i++)
-    //     {
-    //         spifi->Instance->DATA8 = writeBuffer[i];
-    //     }
-    // }
 }
 
 void HAL_SPIFI_SendCommand_LL(
@@ -121,7 +79,7 @@ void HAL_SPIFI_SendCommand_LL(
 
     spifi->Instance->ADDR = address;
     spifi->Instance->IDATA = interimData;
-    spifi->Instance->CMD = cmd | ((bufferSize << SPIFI_CONFIG_CMD_DATALEN_S) & SPIFI_CONFIG_CMD_DATALEN_M);
+    spifi->Instance->CMD = cmd | SPIFI_CONFIG_CMD_DATALEN(bufferSize);
 
     // SPIFI_WaitIntrqTimeout();
 
@@ -137,7 +95,6 @@ void HAL_SPIFI_SendCommand_LL(
         {
             spifi->Instance->DATA8 = writeBuffer[i];
         }
-        xprintf("write complete\n");
     }
     else
     {
@@ -151,7 +108,6 @@ void HAL_SPIFI_SendCommand_LL(
         {
             readBuffer[i] = (uint8_t)spifi->Instance->DATA8;
         }
-        xprintf("read complete\n");
     }
 }
 
