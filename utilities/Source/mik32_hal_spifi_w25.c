@@ -147,14 +147,14 @@ uint8_t HAL_SPIFI_W25_ReadSREG(SPIFI_HandleTypeDef *spifi, HAL_SPIFI_W25_SREGTyp
     uint32_t cmd;
     if (sreg == W25_SREG1)
     {
-        cmd = READ_SREG1;
+        cmd = cmd_read_sreg1;
     }
     else if (sreg == W25_SREG2)
     {
-        cmd = READ_SREG2;
+        cmd = cmd_read_sreg2;
     }
 
-    HAL_SPIFI_SendCommand(spifi, &cmd, 0, 1, &data, 0);
+    HAL_SPIFI_SendCommand(spifi, cmd, 0, 1, &data, 0);
 
     return data;
 }
