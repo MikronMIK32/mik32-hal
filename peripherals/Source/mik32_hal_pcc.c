@@ -23,6 +23,8 @@ void HAL_PCC_OscEnable(HAL_PCC_OscillatorTypeTypeDef Oscillator)
     case PCC_OSCILLATORTYPE_OSC32K:
         WU->CLOCKS_BU &= ~(1 << WU_CLOCKS_BU_OSC32K_EN_S); // Включить OSC32K
         break;
+    default:
+        break;
     }
 }
 
