@@ -13,7 +13,7 @@ __attribute__((weak)) void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
     {
         __HAL_PCC_SPI_0_CLK_ENABLE();
 
-        GPIO_InitStruct.Pin = PORT0_0 | PORT0_1 | PORT0_2;
+        GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -21,28 +21,28 @@ __attribute__((weak)) void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
         switch (hspi->Init.ChipSelect)
         {
         case SPI_CS_0:
-            GPIO_InitStruct.Pin = PORT0_4;
+            GPIO_InitStruct.Pin = GPIO_PIN_4;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
             break;
 
         case SPI_CS_1:
-            GPIO_InitStruct.Pin = PORT1_14;
+            GPIO_InitStruct.Pin = GPIO_PIN_14;
             HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
             break;
 
         case SPI_CS_2:
-            GPIO_InitStruct.Pin = PORT1_15;
+            GPIO_InitStruct.Pin = GPIO_PIN_15;
             HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
             break;
 
         case SPI_CS_3:
-            GPIO_InitStruct.Pin = PORT2_6;
+            GPIO_InitStruct.Pin = GPIO_PIN_6;
             HAL_GPIO_Init(GPIO_2, &GPIO_InitStruct);
             break;
         }
 
         /* В режиме ведущего вывод SPIx_N_SS_IN должен быть в режиме SPI с подтяжкой к питанию. */
-        GPIO_InitStruct.Pin = PORT0_3;
+        GPIO_InitStruct.Pin = GPIO_PIN_3;
         if (hspi->Init.SPI_Mode == HAL_SPI_MODE_MASTER)
         {
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_UP;
@@ -54,7 +54,7 @@ __attribute__((weak)) void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
     {
         __HAL_PCC_SPI_1_CLK_ENABLE();
 
-        GPIO_InitStruct.Pin = PORT1_0 | PORT1_1 | PORT1_2;
+        GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
@@ -62,24 +62,24 @@ __attribute__((weak)) void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
         switch (hspi->Init.ChipSelect)
         {
         case SPI_CS_0:
-            GPIO_InitStruct.Pin = PORT1_4;
+            GPIO_InitStruct.Pin = GPIO_PIN_4;
             break;
 
         case SPI_CS_1:
-            GPIO_InitStruct.Pin = PORT1_5;
+            GPIO_InitStruct.Pin = GPIO_PIN_5;
             break;
 
         case SPI_CS_2:
-            GPIO_InitStruct.Pin = PORT1_6;
+            GPIO_InitStruct.Pin = GPIO_PIN_6;
             break;
 
         case SPI_CS_3:
-            GPIO_InitStruct.Pin = PORT1_7;
+            GPIO_InitStruct.Pin = GPIO_PIN_7;
             break;
         }
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
 
-        GPIO_InitStruct.Pin = PORT1_3;
+        GPIO_InitStruct.Pin = GPIO_PIN_3;
         if (hspi->Init.SPI_Mode == HAL_SPI_MODE_MASTER)
         {
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_UP;

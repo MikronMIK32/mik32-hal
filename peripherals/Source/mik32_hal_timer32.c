@@ -15,7 +15,7 @@ __attribute__((weak)) void HAL_TIMER32_MspInit(TIMER32_HandleTypeDef* htimer32)
         __HAL_PCC_TIMER32_1_CLK_ENABLE();
         if (htimer32->Clock.Source == TIMER32_SOURCE_TX_PAD)
         {
-            GPIO_InitStruct.Pin = PORT0_4;
+            GPIO_InitStruct.Pin = GPIO_PIN_4;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -27,7 +27,7 @@ __attribute__((weak)) void HAL_TIMER32_MspInit(TIMER32_HandleTypeDef* htimer32)
         __HAL_PCC_TIMER32_2_CLK_ENABLE();
         if (htimer32->Clock.Source == TIMER32_SOURCE_TX_PAD)
         {
-            GPIO_InitStruct.Pin = PORT1_4;
+            GPIO_InitStruct.Pin = GPIO_PIN_4;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
@@ -41,7 +41,7 @@ __attribute__((weak)) void HAL_TIMER32_Channel_MspInit(TIMER32_CHANNEL_HandleTyp
 
     if (timerChannel->TimerInstance == TIMER32_1)
     {
-        GPIO_InitStruct.Pin = PORT0_0 | PORT0_1 | PORT0_2 | PORT0_3;
+        GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -50,7 +50,7 @@ __attribute__((weak)) void HAL_TIMER32_Channel_MspInit(TIMER32_CHANNEL_HandleTyp
 
     if (timerChannel->TimerInstance == TIMER32_2)
     {
-        GPIO_InitStruct.Pin = PORT1_0 | PORT1_1 | PORT1_2 | PORT1_3;
+        GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);

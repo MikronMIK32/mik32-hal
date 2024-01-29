@@ -7,7 +7,7 @@ __attribute__((weak)) void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
 
     if ((hdac->Init.EXTClb == DAC_EXTCLB_DACREF) && (hdac->Init.EXTRef == DAC_EXTREF_ON))
     {
-        GPIO_InitStruct.Pin = PORT1_11;
+        GPIO_InitStruct.Pin = GPIO_PIN_11;
     }
     GPIO_InitStruct.Mode = HAL_GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
@@ -15,12 +15,12 @@ __attribute__((weak)) void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
 
     if (hdac->Instance_dac == &(ANALOG_REG->DAC0))
     {
-        GPIO_InitStruct.Pin = PORT1_12;
+        GPIO_InitStruct.Pin = GPIO_PIN_12;
     }
 
     if (hdac->Instance_dac == &(ANALOG_REG->DAC1))
     {
-        GPIO_InitStruct.Pin = PORT1_13;
+        GPIO_InitStruct.Pin = GPIO_PIN_13;
     }
 
     HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);

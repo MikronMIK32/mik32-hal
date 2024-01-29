@@ -15,7 +15,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
         
         if ((htimer16->Clock.Source == TIMER16_SOURCE_EXTERNAL_INPUT1) || (htimer16->CountMode == TIMER16_COUNTMODE_EXTERNAL))
         {
-            GPIO_InitStruct.Pin = PORT0_5;
+            GPIO_InitStruct.Pin = GPIO_PIN_5;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -23,7 +23,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
 
         if (htimer16->EncoderMode == TIMER16_ENCODER_ENABLE)
         {
-            GPIO_InitStruct.Pin = PORT0_5 | PORT0_6;
+            GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -31,7 +31,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
 
         if (htimer16->Waveform.Enable == TIMER16_WAVEFORM_GENERATION_ENABLE)
         {
-            GPIO_InitStruct.Pin = PORT0_7;
+            GPIO_InitStruct.Pin = GPIO_PIN_7;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -46,7 +46,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
         
         if ((htimer16->Clock.Source == TIMER16_SOURCE_EXTERNAL_INPUT1) || (htimer16->CountMode == TIMER16_COUNTMODE_EXTERNAL))
         {
-            GPIO_InitStruct.Pin = PORT0_8;
+            GPIO_InitStruct.Pin = GPIO_PIN_8;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -54,7 +54,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
 
         if (htimer16->EncoderMode == TIMER16_ENCODER_ENABLE)
         {
-            GPIO_InitStruct.Pin = PORT0_8 | PORT0_9;
+            GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -62,7 +62,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
 
         if (htimer16->Waveform.Enable == TIMER16_WAVEFORM_GENERATION_ENABLE)
         {
-            GPIO_InitStruct.Pin = PORT0_10;
+            GPIO_InitStruct.Pin = GPIO_PIN_10;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -75,7 +75,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
 
         if ((htimer16->Clock.Source == TIMER16_SOURCE_EXTERNAL_INPUT1) || (htimer16->CountMode == TIMER16_COUNTMODE_EXTERNAL))
         {
-            GPIO_InitStruct.Pin = PORT0_11;
+            GPIO_InitStruct.Pin = GPIO_PIN_11;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -83,7 +83,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
 
         if (htimer16->EncoderMode == TIMER16_ENCODER_ENABLE)
         {
-            GPIO_InitStruct.Pin = PORT0_11 | PORT0_12;
+            GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -91,7 +91,7 @@ __attribute__((weak)) void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16)
 
         if (htimer16->Waveform.Enable == TIMER16_WAVEFORM_GENERATION_ENABLE)
         {
-            GPIO_InitStruct.Pin = PORT0_13;
+            GPIO_InitStruct.Pin = GPIO_PIN_13;
             GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
             GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
             HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);

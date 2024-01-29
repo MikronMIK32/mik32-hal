@@ -147,7 +147,7 @@ typedef struct __SPIFI_CommandTypeDef
 
 } SPIFI_CommandTypeDef;
 
-__attribute__((weak)) void HAL_SPIFI_MspInit(SPIFI_HandleTypeDef *spifi);
+__attribute__((weak)) void HAL_SPIFI_MspInit();
 
 void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi);
 

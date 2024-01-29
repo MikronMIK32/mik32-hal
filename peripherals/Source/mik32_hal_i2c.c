@@ -8,7 +8,7 @@ __attribute__((weak)) void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
     {
         __HAL_PCC_I2C_0_CLK_ENABLE();
         
-        GPIO_InitStruct.Pin = PORT0_9 | PORT0_10;
+        GPIO_InitStruct.Pin = GPIO_PIN_9 | GPIO_PIN_10;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_UP;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
@@ -18,7 +18,7 @@ __attribute__((weak)) void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
     {
         __HAL_PCC_I2C_1_CLK_ENABLE();
 
-        GPIO_InitStruct.Pin = PORT1_12 | PORT1_13;
+        GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_UP;
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);

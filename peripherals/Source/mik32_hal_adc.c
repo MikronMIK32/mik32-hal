@@ -8,9 +8,9 @@ __attribute__((weak)) void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     if ((hadc->Init.EXTClb == ADC_EXTCLB_ADCREF) && (hadc->Init.EXTRef == ADC_EXTREF_ON))
     {
         #ifdef MIK32V0
-        GPIO_InitStruct.Pin = PORT1_10;
+        GPIO_InitStruct.Pin = GPIO_PIN_10;
         #else // MIK32V2
-        GPIO_InitStruct.Pin = PORT1_11;
+        GPIO_InitStruct.Pin = GPIO_PIN_11;
         #endif // MIK32V0
     }
     
@@ -21,42 +21,42 @@ __attribute__((weak)) void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     switch (hadc->Init.Sel)
     {
     case ADC_CHANNEL0:
-        GPIO_InitStruct.Pin = PORT1_5;
+        GPIO_InitStruct.Pin = GPIO_PIN_5;
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
         break;
 
     case ADC_CHANNEL1:
-        GPIO_InitStruct.Pin = PORT1_7;
+        GPIO_InitStruct.Pin = GPIO_PIN_7;
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
         break;
 
     case ADC_CHANNEL2:
-        GPIO_InitStruct.Pin = PORT0_2;
+        GPIO_InitStruct.Pin = GPIO_PIN_2;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         break;
 
     case ADC_CHANNEL3:
-        GPIO_InitStruct.Pin = PORT0_4;
+        GPIO_InitStruct.Pin = GPIO_PIN_4;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         break;
 
     case ADC_CHANNEL4:
-        GPIO_InitStruct.Pin = PORT0_7;
+        GPIO_InitStruct.Pin = GPIO_PIN_7;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         break;
 
     case ADC_CHANNEL5:
-        GPIO_InitStruct.Pin = PORT0_9;
+        GPIO_InitStruct.Pin = GPIO_PIN_9;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         break;
 
     case ADC_CHANNEL6:
-        GPIO_InitStruct.Pin = PORT0_11;
+        GPIO_InitStruct.Pin = GPIO_PIN_11;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         break;
 
     case ADC_CHANNEL7:
-        GPIO_InitStruct.Pin = PORT0_13;
+        GPIO_InitStruct.Pin = GPIO_PIN_13;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
         break;
     }
