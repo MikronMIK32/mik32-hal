@@ -144,7 +144,7 @@ uint8_t HAL_SPIFI_W25_ReadSREG(SPIFI_HandleTypeDef *spifi, HAL_SPIFI_W25_SREGTyp
 {
     uint8_t data = 0;
 
-    uint32_t cmd;
+    uint32_t cmd = cmd_read_sreg1;
     if (sreg == W25_SREG1)
     {
         cmd = cmd_read_sreg1;
@@ -154,19 +154,19 @@ uint8_t HAL_SPIFI_W25_ReadSREG(SPIFI_HandleTypeDef *spifi, HAL_SPIFI_W25_SREGTyp
         cmd = cmd_read_sreg2;
     }
 
-    HAL_SPIFI_SendCommand(spifi, cmd, 0, 1, &data, 0);
+    HAL_SPIFI_SendCommand_LL(spifi, cmd, 0, 1, &data, 0, 0);
 
     return data;
 }
 
-void HAL_SPIFI_W25_WriteSREG(SPIFI_HandleTypeDef *spifi, uint8_t sreg1, uint8_t sreg2)
+HAL_StatusTypeDef HAL_SPIFI_W25_WriteSREG(SPIFI_HandleTypeDef *spifi, uint8_t sreg1, uint8_t sreg2)
 {
     uint8_t data[2] = {sreg1, sreg2};
 
     HAL_SPIFI_W25_WriteEnable(spifi);
 
     HAL_SPIFI_SendCommand_LL(spifi, cmd_write_sreg, 0, 2, 0, data, 0);
-    HAL_SPIFI_W25_WaitBusy(spifi, SPIFI_W25_WRITE_SREG_BUSY);
+    return HAL_SPIFI_W25_WaitBusy(spifi, SPIFI_W25_WRITE_SREG_BUSY);
 }
 
 void HAL_SPIFI_W25_WriteSREG_Volatile(SPIFI_HandleTypeDef *spifi, uint8_t sreg1, uint8_t sreg2)
@@ -233,7 +233,7 @@ HAL_StatusTypeDef HAL_SPIFI_W25_QuadEnable(SPIFI_HandleTypeDef *spifi)
     uint8_t sreg1 = HAL_SPIFI_W25_ReadSREG(spifi, W25_SREG1);
     uint8_t sreg2 = HAL_SPIFI_W25_ReadSREG(spifi, W25_SREG2);
 
-    HAL_SPIFI_W25_WriteSREG(spifi, sreg1, sreg2 | HAL_SPIFI_W25_SREG2_BUSY);
+    return HAL_SPIFI_W25_WriteSREG(spifi, sreg1, sreg2 | HAL_SPIFI_W25_SREG2_BUSY);
 }
 
 HAL_StatusTypeDef HAL_SPIFI_W25_QuadDisable(SPIFI_HandleTypeDef *spifi)
@@ -241,5 +241,5 @@ HAL_StatusTypeDef HAL_SPIFI_W25_QuadDisable(SPIFI_HandleTypeDef *spifi)
     uint8_t sreg1 = HAL_SPIFI_W25_ReadSREG(spifi, W25_SREG1);
     uint8_t sreg2 = HAL_SPIFI_W25_ReadSREG(spifi, W25_SREG2);
 
-    HAL_SPIFI_W25_WriteSREG(spifi, sreg1, sreg2 & (~HAL_SPIFI_W25_SREG2_BUSY));
+    return HAL_SPIFI_W25_WriteSREG(spifi, sreg1, sreg2 & (~HAL_SPIFI_W25_SREG2_BUSY));
 }
