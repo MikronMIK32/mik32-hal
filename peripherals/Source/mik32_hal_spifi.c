@@ -83,6 +83,7 @@ void HAL_SPIFI_SendCommand_LL(
 
     // SPIFI_WaitIntrqTimeout();
 
+    if (cmd->Direction == SPIFI_DIRECTION_READ)
     if (cmd & SPIFI_CONFIG_CMD_DOUT_M)
     {
         if ((bufferSize > 0) && (writeBuffer == 0))
