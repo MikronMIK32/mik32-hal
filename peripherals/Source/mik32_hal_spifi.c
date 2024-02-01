@@ -38,21 +38,16 @@ void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi)
                              (spifi->Command.OpCode << SPIFI_CONFIG_MCMD_OPCODE_S));
 }
 
-void SPIFI_WaitIntrqTimeout()
-{
-    while (~(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M))
-        ;
-}
-
-void HAL_SPIFI_SendCommand(
+HAL_StatusTypeDef HAL_SPIFI_SendCommand(
     SPIFI_HandleTypeDef *spifi,
     SPIFI_CommandTypeDef *cmd,
     uint32_t address,
     uint16_t bufferSize,
     uint8_t *readBuffer,
-    uint8_t *writeBuffer)
+    uint8_t *writeBuffer,
+    uint32_t timeout)
 {
-    HAL_SPIFI_SendCommand_LL(
+    return HAL_SPIFI_SendCommand_LL(
         spifi,
         cmd->Direction |
             SPIFI_CONFIG_CMD_INTLEN(cmd->InterimLength) |
@@ -63,33 +58,30 @@ void HAL_SPIFI_SendCommand(
         bufferSize,
         readBuffer,
         writeBuffer,
-        cmd->InterimData);
+        cmd->InterimData,
+        timeout);
 }
 
-void HAL_SPIFI_SendCommand_LL(
+HAL_StatusTypeDef HAL_SPIFI_SendCommand_LL(
     SPIFI_HandleTypeDef *spifi,
     uint32_t cmd,
     uint32_t address,
     uint16_t bufferSize,
     uint8_t *readBuffer,
     uint8_t *writeBuffer,
-    uint32_t interimData)
+    uint32_t interimData,
+    uint32_t timeout)
 {
-    // spifi->Instance->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
-
+    spifi->Instance->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
     spifi->Instance->ADDR = address;
     spifi->Instance->IDATA = interimData;
     spifi->Instance->CMD = cmd | SPIFI_CONFIG_CMD_DATALEN(bufferSize);
-
-    // SPIFI_WaitIntrqTimeout();
 
     if (cmd & SPIFI_CONFIG_CMD_DOUT_M)
     {
         if ((bufferSize > 0) && (writeBuffer == 0))
         {
-            // xprintf("dataByte zero pointer\n");
-            // Сделать возврат ошибки
-            return;
+            return HAL_ERROR;
         }
         for (int i = 0; i < bufferSize; i++)
         {
@@ -100,15 +92,14 @@ void HAL_SPIFI_SendCommand_LL(
     {
         if ((bufferSize > 0) && (readBuffer == 0))
         {
-            // xprintf("dataByte zero pointer\n");
-            // Сделать возврат ошибки
-            return;
+            return HAL_ERROR;
         }
         for (int i = 0; i < bufferSize; i++)
         {
             readBuffer[i] = (uint8_t)spifi->Instance->DATA8;
         }
     }
+    return HAL_SPIFI_WaitCommandProcessing(spifi, timeout);
 }
 
 bool HAL_SPIFI_IsMemoryModeEnabled(SPIFI_HandleTypeDef *spifi)

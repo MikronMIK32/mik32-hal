@@ -151,35 +151,37 @@ __attribute__((weak)) void HAL_SPIFI_MspInit();
 
 void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi);
 
-void HAL_SPIFI_SendCommand(
+HAL_StatusTypeDef HAL_SPIFI_SendCommand(
     SPIFI_HandleTypeDef *spifi,
     SPIFI_CommandTypeDef *cmd,
     uint32_t address,
     uint16_t bufferSize,
     uint8_t *readBuffer,
-    uint8_t *writeBuffer);
+    uint8_t *writeBuffer,
+    uint32_t timeout);
 
-void HAL_SPIFI_SendCommand_LL(
+HAL_StatusTypeDef HAL_SPIFI_SendCommand_LL(
     SPIFI_HandleTypeDef *spifi,
     uint32_t cmdRegCfg,
     uint32_t address,
     uint16_t bufferSize,
     uint8_t *readBuffer,
     uint8_t *writeBuffer,
-    uint32_t interimData);
+    uint32_t interimData,
+    uint32_t timeout);
 
 bool HAL_SPIFI_IsMemoryModeEnabled(SPIFI_HandleTypeDef *spifi);
 
-static inline __attribute__((always_inline)) bool HAL_SPIFI_IsCommandProcessing(SPIFI_HandleTypeDef *spifi)
+static inline __attribute__((always_inline)) bool HAL_SPIFI_IsCommandCompleted(SPIFI_HandleTypeDef *spifi)
 {
-    return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_CMD_M) != 0;
+    return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_INTRQ_M) != 0;
 }
 
 static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitCommandProcessing(SPIFI_HandleTypeDef *spifi, uint32_t timeout)
 {
-    while (timeout-- != 0)
+    while (timeout-- > 0)
     {
-        if (!HAL_SPIFI_IsCommandProcessing(spifi))
+        if (HAL_SPIFI_IsCommandCompleted(spifi))
         {
             return HAL_OK;
         }
