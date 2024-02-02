@@ -18,6 +18,14 @@ typedef struct __SPIFI_W25_ManufacturerDeviceIDTypeDef
 
 } W25_ManufacturerDeviceIDTypeDef;
 
+typedef struct __SPIFI_W25_ManufacturerDeviceIDTypeDef
+{
+    uint8_t Manufacturer;
+
+    uint8_t Device;
+
+} W25_ManufacturerDeviceIDTypeDef;
+
 #define SPIFI_W25_SREG1_BUSY_S 0
 #define SPIFI_W25_SREG1_BUSY_M (1 << SPIFI_W25_SREG1_BUSY_S)
 #define SPIFI_W25_SREG1_WRITE_ENABLE_S 1
@@ -71,6 +79,8 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_W25_Wai
     }
     return HAL_TIMEOUT;
 }
+
+HAL_StatusTypeDef HAL_SPIFI_W25_WaitBusy_Polling(SPIFI_HandleTypeDef *spifi, uint32_t timeout);
 
 void HAL_SPIFI_W25_PageProgram(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes);
 

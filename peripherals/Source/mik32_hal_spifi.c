@@ -99,7 +99,16 @@ HAL_StatusTypeDef HAL_SPIFI_SendCommand_LL(
             readBuffer[i] = (uint8_t)spifi->Instance->DATA8;
         }
     }
-    return HAL_SPIFI_WaitCommandProcessing(spifi, timeout);
+    HAL_StatusTypeDef waitStatus = HAL_SPIFI_WaitCommandProcessing(spifi, timeout);
+    if ((waitStatus == HAL_OK) && (cmd & SPIFI_CONFIG_CMD_POLL_M))
+    {
+        if (SPIFI_CONFIG->DATA8 == (cmd & SPIFI_CONFIG_CMD_DATALEN_BUSY_DONE_VALUE_M))
+        {
+            return HAL_OK;
+        }
+        return HAL_ERROR;
+    }
+    return waitStatus;
 }
 
 bool HAL_SPIFI_IsMemoryModeEnabled(SPIFI_HandleTypeDef *spifi)
