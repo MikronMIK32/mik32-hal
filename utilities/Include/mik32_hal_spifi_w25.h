@@ -18,14 +18,6 @@ typedef struct __SPIFI_W25_ManufacturerDeviceIDTypeDef
 
 } W25_ManufacturerDeviceIDTypeDef;
 
-typedef struct __SPIFI_W25_ManufacturerDeviceIDTypeDef
-{
-    uint8_t Manufacturer;
-
-    uint8_t Device;
-
-} W25_ManufacturerDeviceIDTypeDef;
-
 #define SPIFI_W25_SREG1_BUSY_S 0
 #define SPIFI_W25_SREG1_BUSY_M (1 << SPIFI_W25_SREG1_BUSY_S)
 #define SPIFI_W25_SREG1_WRITE_ENABLE_S 1
