@@ -102,7 +102,7 @@ HAL_StatusTypeDef HAL_SPIFI_SendCommand_LL(
     HAL_StatusTypeDef waitStatus = HAL_SPIFI_WaitCommandProcessing(spifi, timeout);
     if ((waitStatus == HAL_OK) && (cmd & SPIFI_CONFIG_CMD_POLL_M))
     {
-        if (SPIFI_CONFIG->DATA8 == (cmd & SPIFI_CONFIG_CMD_DATALEN_BUSY_DONE_VALUE_M))
+        if (SPIFI_CONFIG->DATA8 == (cmd & SPIFI_CONFIG_CMD_POLL_REQUIRED_VALUE_M))
         {
             return HAL_OK;
         }
