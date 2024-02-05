@@ -249,7 +249,7 @@ void HAL_IRQ_DisableInterrupts();
  * Returns:
  * void.
  */
-void HAL_EPIC_MaskSet(uint32_t InterruptMask);
+void HAL_EPIC_MaskEdgeSet(uint32_t InterruptMask);
 
 /*
  * Function: HAL_EPIC_MaskClear
@@ -261,7 +261,7 @@ void HAL_EPIC_MaskSet(uint32_t InterruptMask);
  * Returns:
  * void.
  */
-void HAL_EPIC_MaskClear(uint32_t InterruptMask);
+void HAL_EPIC_MaskEdgeClear(uint32_t InterruptMask);
 
 /*
  * Function: HAL_EPIC_MaskSet
