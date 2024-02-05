@@ -74,19 +74,19 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_W25_Wai
 
 HAL_StatusTypeDef HAL_SPIFI_W25_WaitBusy_Polling(SPIFI_HandleTypeDef *spifi, uint32_t timeout);
 
-void HAL_SPIFI_W25_PageProgram(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes);
+void HAL_SPIFI_W25_PageProgram(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
 
 void HAL_SPIFI_W25_SectorErase4K(SPIFI_HandleTypeDef *spifi, uint32_t address);
 
-void HAL_SPIFI_W25_ReadData(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes);
+void HAL_SPIFI_W25_ReadData(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
 
 W25_ManufacturerDeviceIDTypeDef HAL_SPIFI_W25_ReadManufacturerDeviceID(SPIFI_HandleTypeDef *spifi);
 
-void HAL_SPIFI_W25_PageProgram_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes);
+void HAL_SPIFI_W25_PageProgram_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
 
-void HAL_SPIFI_W25_ReadData_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes);
+void HAL_SPIFI_W25_ReadData_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
 
-void HAL_SPIFI_W25_ReadData_Quad_IO(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes);
+void HAL_SPIFI_W25_ReadData_Quad_IO(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
 
 HAL_StatusTypeDef HAL_SPIFI_W25_QuadEnable(SPIFI_HandleTypeDef *spifi);
 

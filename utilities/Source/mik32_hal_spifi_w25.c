@@ -192,7 +192,7 @@ HAL_StatusTypeDef HAL_SPIFI_W25_WaitBusy_Polling(SPIFI_HandleTypeDef *spifi, uin
     return HAL_SPIFI_SendCommand_LL(spifi, cmd_read_sreg1_polling, 0, 0, 0, 0, 0, timeout);
 }
 
-void HAL_SPIFI_W25_PageProgram(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes)
+void HAL_SPIFI_W25_PageProgram(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes)
 {
     HAL_SPIFI_W25_WriteEnable(spifi);
     HAL_SPIFI_SendCommand_LL(spifi, cmd_page_program, address, dataLength, 0, dataBytes, 0, HAL_SPIFI_TIMEOUT);
@@ -206,7 +206,7 @@ void HAL_SPIFI_W25_SectorErase4K(SPIFI_HandleTypeDef *spifi, uint32_t address)
     HAL_SPIFI_W25_WaitBusy(spifi, SPIFI_W25_PROGRAM_BUSY);
 }
 
-void HAL_SPIFI_W25_ReadData(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes)
+void HAL_SPIFI_W25_ReadData(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes)
 {
     HAL_SPIFI_SendCommand_LL(spifi, cmd_read_data, address, dataLength, dataBytes, 0, 0, HAL_SPIFI_TIMEOUT);
 }
@@ -223,19 +223,19 @@ W25_ManufacturerDeviceIDTypeDef HAL_SPIFI_W25_ReadManufacturerDeviceID(SPIFI_Han
     };
 }
 
-void HAL_SPIFI_W25_PageProgram_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes)
+void HAL_SPIFI_W25_PageProgram_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes)
 {
     HAL_SPIFI_W25_WriteEnable(spifi);
     HAL_SPIFI_SendCommand_LL(spifi, cmd_quad_page_program, address, dataLength, 0, dataBytes, 0, HAL_SPIFI_TIMEOUT);
     HAL_SPIFI_W25_WaitBusy(spifi, SPIFI_W25_PROGRAM_BUSY);
 }
 
-void HAL_SPIFI_W25_ReadData_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes)
+void HAL_SPIFI_W25_ReadData_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes)
 {
     HAL_SPIFI_SendCommand_LL(spifi, cmd_fast_read_quad_output, address, dataLength, dataBytes, 0, 0, HAL_SPIFI_TIMEOUT);
 }
 
-void HAL_SPIFI_W25_ReadData_Quad_IO(SPIFI_HandleTypeDef *spifi, uint32_t address, uint8_t dataLength, uint8_t *dataBytes)
+void HAL_SPIFI_W25_ReadData_Quad_IO(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes)
 {
     HAL_SPIFI_SendCommand_LL(spifi, cmd_fast_read_quad_io, address, dataLength, dataBytes, 0, 0, HAL_SPIFI_TIMEOUT);
 }
