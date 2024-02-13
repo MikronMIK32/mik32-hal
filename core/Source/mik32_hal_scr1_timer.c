@@ -1,13 +1,14 @@
 #include "mik32_hal_scr1_timer.h"
+#include "mik32_hal.h"
 
 void HAL_SCR1_Timer_Enable(SCR1_TIMER_HandleTypeDef *hscr1_timer)
 {
-    hscr1_timer->Instance->TIMER_CTRL |= SCR1_TIMER_ENABLE_M;
+    hscr1_timer->Instance->TIMER_CTRL |= SCR1_TIMER_CTRL_ENABLE_M;
 }
 
 void HAL_SCR1_Timer_Disable(SCR1_TIMER_HandleTypeDef *hscr1_timer)
 {
-    hscr1_timer->Instance->TIMER_CTRL &= ~SCR1_TIMER_ENABLE_M;
+    hscr1_timer->Instance->TIMER_CTRL &= ~SCR1_TIMER_CTRL_ENABLE_M;
 
     hscr1_timer->Instance->MTIME = 0;
     hscr1_timer->Instance->MTIMEH = 0;
@@ -20,11 +21,11 @@ void HAL_SCR1_Timer_SetClockSource(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint8_
     switch (ClockSource)
     {
     case SCR1_TIMER_CLKSRC_INTERNAL:
-        hscr1_timer->Instance->TIMER_CTRL &= SCR1_TIMER_CLKSRC_INTERNAL_M;
+        hscr1_timer->Instance->TIMER_CTRL &= SCR1_TIMER_CTRL_CLKSRC_INTERNAL_M;
         break;
     
     case SCR1_TIMER_CLKSRC_EXTERNAL_RTC:
-        hscr1_timer->Instance->TIMER_CTRL |= SCR1_TIMER_CLKSRC_RTC_M;
+        hscr1_timer->Instance->TIMER_CTRL |= SCR1_TIMER_CTRL_CLKSRC_RTC_M;
         break;
     }
 }

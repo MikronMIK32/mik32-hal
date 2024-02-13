@@ -1,5 +1,30 @@
 #include "mik32_hal_i2c.h"
 
+__attribute__((weak)) void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    if (hi2c->Instance == I2C_0)
+    {
+        __HAL_PCC_I2C_0_CLK_ENABLE();
+        
+        GPIO_InitStruct.Pin = GPIO_PIN_9 | GPIO_PIN_10;
+        GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
+        GPIO_InitStruct.Pull = HAL_GPIO_PULL_UP;
+        HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
+    }
+
+    if (hi2c->Instance == I2C_1)
+    {
+        __HAL_PCC_I2C_1_CLK_ENABLE();
+
+        GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13;
+        GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
+        GPIO_InitStruct.Pull = HAL_GPIO_PULL_UP;
+        HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
+    }
+
+}
 
 void HAL_I2C_Disable(I2C_HandleTypeDef *hi2c)
 {
@@ -173,6 +198,8 @@ void HAL_I2C_MasterInit(I2C_HandleTypeDef *hi2c)
 
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c)
 {
+    HAL_I2C_MspInit(hi2c);
+    
     /* Clear PE in I2C_CR1 */
     HAL_I2C_Disable(hi2c);
 

@@ -1,6 +1,11 @@
 #include "mik32_hal_crc32.h"
 
 
+__attribute__((weak)) void HAL_CRC32_MspInit(CRC_HandleTypeDef* hcrc)
+{
+    __HAL_PCC_CRC32_CLK_ENABLE();
+}
+
 void HAL_CRC_SetPoly(CRC_HandleTypeDef *hcrc)
 {
     /* Задается полином */
@@ -41,6 +46,8 @@ void HAL_CRC_SetInit(CRC_HandleTypeDef *hcrc)
 
 void HAL_CRC_Init(CRC_HandleTypeDef *hcrc)
 {
+    HAL_CRC32_MspInit(hcrc);
+    
     /* Найстройка перестановки битов/байтов входных данных */
     HAL_CRC_SetInputReverse(hcrc);
 

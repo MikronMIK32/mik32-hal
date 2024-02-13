@@ -1,8 +1,10 @@
 #ifndef MIK32_HAL_CRC32
 #define MIK32_HAL_CRC32
 
-#include "mcu32_memory_map.h"
+#include "mik32_hal_pcc.h"
 #include "crc.h"
+#include "mcu32_memory_map.h"
+
 
  
 /* Title: Макросы */
@@ -152,6 +154,8 @@ typedef struct
 } CRC_HandleTypeDef;
 
 /* Title: Функции */
+
+void HAL_CRC32_MspInit(CRC_HandleTypeDef* hcrc);
 
 /*
  * Function: HAL_CRC_SetInputReverse

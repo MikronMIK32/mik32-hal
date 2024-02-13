@@ -1,8 +1,10 @@
 #ifndef MIK32_HAL_RTC
 #define MIK32_HAL_RTC
 
-#include "mcu32_memory_map.h"
+#include "mik32_hal_pcc.h"
+#include "mik32_hal_gpio.h"
 #include "rtc.h"
+#include "mcu32_memory_map.h"
 
 /* Title: Макросы */
 
@@ -236,6 +238,7 @@ typedef struct
 } RTC_AlarmTypeDef;
 
 /* Title: Функции */
+void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc);
 
 /*  
  * Function: HAL_RTC_WaitFlag

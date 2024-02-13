@@ -1,11 +1,12 @@
 #ifndef MIK32_HAL_TIMER32
 #define MIK32_HAL_TIMER32
 
-#include "mik32_hal_def.h"
-#include <mcu32_memory_map.h>
+#include "mik32_hal_pcc.h"
+#include "mik32_hal_gpio.h"
 #include <timer32.h>
 #include <power_manager.h>
-
+#include "mik32_hal_def.h"
+#include <mcu32_memory_map.h>
 
 #define TIMER32_TIMEOUT 10000000
 
@@ -141,9 +142,9 @@ typedef struct
 } TIMER32_CHANNEL_HandleTypeDef;
 
 
-#define HAL_TIMER32_VALUE_GET(timer_instance) (*timer_instance).Instance->Value;
-#define HAL_TIMER32_INTERRUPTFLAGS_CLEAR(timer_instance) (*timer_instance).Instance->IntClear = TIMER32_INTERRUPT_CLEAR_MASK;
-#define HAL_TIMER32_VALUE_CLEAR(timer_instance) (*timer_instance).Instance->Enable |= TIMER32_RESET_VALUE_M;
+#define HAL_TIMER32_VALUE_GET(timer_instance) (*timer_instance).Instance->VALUE;
+#define HAL_TIMER32_INTERRUPTFLAGS_CLEAR(timer_instance) (*timer_instance).Instance->INT_CLEAR = TIMER32_INTERRUPT_CLEAR_MASK;
+#define HAL_TIMER32_VALUE_CLEAR(timer_instance) (*timer_instance).Instance->ENABLE |= TIMER32_ENABLE_TIM_CLR_M;
 
 static inline __attribute__((always_inline)) uint32_t HAL_Timer32_Channel_ICR_Get(TIMER32_CHANNEL_HandleTypeDef *timerChannel)
 {
@@ -151,26 +152,26 @@ static inline __attribute__((always_inline)) uint32_t HAL_Timer32_Channel_ICR_Ge
 }
 static inline __attribute__((always_inline)) uint32_t HAL_Timer32_InterruptFlags_Get(TIMER32_HandleTypeDef *timer)
 {
-    return timer->Instance->IntFlags;
+    return timer->Instance->INT_FLAGS;
 }
 static inline __attribute__((always_inline)) uint32_t HAL_Timer32_Value_Get(TIMER32_HandleTypeDef *timer)
 {
-    return timer->Instance->Value;
+    return timer->Instance->VALUE;
 }
 static inline __attribute__((always_inline)) void HAL_Timer32_InterruptFlags_Clear(TIMER32_HandleTypeDef *timer)
 {
-    timer->Instance->IntClear = TIMER32_INTERRUPT_CLEAR_MASK;
+    timer->Instance->INT_CLEAR = TIMER32_INTERRUPT_CLEAR_MASK;
 }
 static inline __attribute__((always_inline)) void HAL_Timer32_Value_Clear(TIMER32_HandleTypeDef *timer)
 {
-    timer->Instance->Enable |= TIMER32_RESET_VALUE_M;
+    timer->Instance->ENABLE |= TIMER32_ENABLE_TIM_CLR_M;
 }
 static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_Timer32_Channel_WaitFlagCapture(TIMER32_CHANNEL_HandleTypeDef *timerChannel, uint32_t timeout)
 {
     while (timeout)
     {
         timeout--;
-        if (timerChannel->TimerInstance->IntFlags & TIMER32_INT_IC_M(timerChannel->ChannelIndex))
+        if (timerChannel->TimerInstance->INT_FLAGS & TIMER32_INT_IC_M(timerChannel->ChannelIndex))
         {
             return HAL_OK;
         }
@@ -183,7 +184,7 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_Timer32_Chann
     while (timeout)
     {
         timeout--;
-        if (timerChannel->TimerInstance->IntFlags & TIMER32_INT_OC_M(timerChannel->ChannelIndex))
+        if (timerChannel->TimerInstance->INT_FLAGS & TIMER32_INT_OC_M(timerChannel->ChannelIndex))
         {
             return HAL_OK;
         }
@@ -196,7 +197,7 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_Timer32_WaitF
     while (timeout)
     {
         timeout--;
-        if (timer->Instance->IntFlags & TIMER32_INT_OVERFLOW_M)
+        if (timer->Instance->INT_FLAGS & TIMER32_INT_OVERFLOW_M)
         {
             return HAL_OK;
         }
@@ -209,7 +210,7 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_Timer32_WaitF
     while (timeout)
     {
         timeout--;
-        if (timer->Instance->IntFlags & TIMER32_INT_UNDERFLOW_M)
+        if (timer->Instance->INT_FLAGS & TIMER32_INT_UNDERFLOW_M)
         {
             return HAL_OK;
         }
@@ -218,6 +219,8 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_Timer32_WaitF
     return HAL_TIMEOUT;
 }
 
+void HAL_TIMER32_MspInit(TIMER32_HandleTypeDef* htimer32);
+void HAL_TIMER32_Channel_MspInit(TIMER32_CHANNEL_HandleTypeDef* timerChannel);
 HAL_StatusTypeDef HAL_Timer32_Init(TIMER32_HandleTypeDef *timer);
 void HAL_Timer32_State_Set(TIMER32_HandleTypeDef *timer, HAL_TIMER32_StateTypeDef state);
 void HAL_Timer32_Top_Set(TIMER32_HandleTypeDef *timer, uint32_t top);

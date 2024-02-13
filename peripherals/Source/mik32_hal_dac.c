@@ -1,5 +1,31 @@
 #include "mik32_hal_dac.h"
 
+__attribute__((weak)) void HAL_DAC_MspInit(DAC_HandleTypeDef* hdac)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    __HAL_PCC_ANALOG_REGS_CLK_ENABLE();
+
+    if ((hdac->Init.EXTClb == DAC_EXTCLB_DACREF) && (hdac->Init.EXTRef == DAC_EXTREF_ON))
+    {
+        GPIO_InitStruct.Pin = GPIO_PIN_11;
+    }
+    GPIO_InitStruct.Mode = HAL_GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
+    HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
+
+    if (hdac->Instance_dac == &(ANALOG_REG->DAC0))
+    {
+        GPIO_InitStruct.Pin = GPIO_PIN_12;
+    }
+
+    if (hdac->Instance_dac == &(ANALOG_REG->DAC1))
+    {
+        GPIO_InitStruct.Pin = GPIO_PIN_13;
+    }
+
+    HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
+}
+
 void HAL_DAC_CLBEnable(DAC_HandleTypeDef *hdac)
 {
     hdac->Instance->REFV_CONFIG |= 1 << REF_CLB_EN_S;
@@ -61,6 +87,8 @@ void HAL_DAC_Enable(DAC_HandleTypeDef *hdac)
 
 void HAL_DAC_Init(DAC_HandleTypeDef *hdac)
 { 
+    HAL_DAC_MspInit(hdac);
+
     /* Очищение регистра настроек ЦАП */
     hdac->Instance_dac->CFG = 0;
 

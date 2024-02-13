@@ -1,7 +1,8 @@
 #ifndef MIK32_HAL_I2C
 #define MIK32_HAL_I2C
 
-
+#include "mik32_hal_pcc.h"
+#include "mik32_hal_gpio.h"
 #include "mik32_hal_def.h"
 #include "i2c.h"
 #include "mcu32_memory_map.h"
@@ -374,7 +375,7 @@ typedef struct
 } I2C_HandleTypeDef;
 
 
-
+void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c);
 void HAL_I2C_Disable(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_Reset(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_Enable(I2C_HandleTypeDef *hi2c);

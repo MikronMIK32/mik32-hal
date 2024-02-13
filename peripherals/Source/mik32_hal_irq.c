@@ -13,14 +13,14 @@ void HAL_IRQ_DisableInterrupts()
     clear_csr(mie, MIE_MEIE);
 }
 
-void HAL_EPIC_MaskSet(uint32_t InterruptMask)
+void HAL_EPIC_MaskEdgeSet(uint32_t InterruptMask)
 {
-    EPIC->MASK_SET |= InterruptMask;
+    EPIC->MASK_EDGE_SET |= InterruptMask;
 }
 
-void HAL_EPIC_MaskClear(uint32_t InterruptMask)
+void HAL_EPIC_MaskEdgeClear(uint32_t InterruptMask)
 {
-    EPIC->MASK_CLEAR |= InterruptMask;
+    EPIC->MASK_EDGE_CLEAR |= InterruptMask;
 }
 
 void HAL_EPIC_MaskLevelSet(uint32_t InterruptMask)

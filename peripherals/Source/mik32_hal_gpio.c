@@ -1,225 +1,197 @@
 #include "mik32_hal_gpio.h"
 
-
-HAL_StatusTypeDef HAL_GPIO_PinDirection(HAL_PinMapTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection)
-{
-    uint32_t Port = PinMask & ~HAL_PIN_MASK;
-    return HAL_GPIO_PortDirection(Port, PinMask, PinDirection);
-}
-
-
-HAL_StatusTypeDef HAL_GPIO_PortDirection(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinDirectionTypeDef PinDirection)
-{
-    GPIO_TypeDef *port;
-
-    switch (Port)
-    {
-    case PORT0:
-        port = GPIO_0;
-        break;
-    case PORT1:
-        port = GPIO_1;
-        break;
-    case PORT2:
-        port = GPIO_2;
-        break;
-
-    default:
-        return HAL_ERROR;
-    }
-
-    if (PinDirection == GPIO_PIN_INPUT)
-    {
-        port->DIRECTION_IN = PinMask & HAL_PIN_MASK;
-    }
-    else if (PinDirection == GPIO_PIN_OUTPUT)
-    {
-        port->DIRECTION_OUT = PinMask & HAL_PIN_MASK;
-    }
-    else
-    {
-        return HAL_ERROR;
-    }
-
-    return HAL_OK;
-}
-
-
-HAL_StatusTypeDef HAL_GPIO_PinWrite(HAL_PinMapTypeDef PinMask, HAL_PinLevelTypeDef PinLevel)
-{
-    uint32_t Port = PinMask & ~HAL_PIN_MASK;
-    GPIO_TypeDef *port;
-
-    switch (Port)
-    {
-    case PORT0:
-        port = GPIO_0;
-        break;
-    case PORT1:
-        port = GPIO_1;
-        break;
-    case PORT2:
-        port = GPIO_2;
-        break;
-
-    default:
-        return HAL_ERROR;
-    }
-
-    if (PinLevel == GPIO_PIN_LOW)
-    {
-        port->CLEAR = PinMask & HAL_PIN_MASK;
-    }
-    else
-    {
-        port->SET = PinMask & HAL_PIN_MASK;
-    }
-
-    return HAL_OK;
-}
-
-
-HAL_StatusTypeDef HAL_GPIO_PortWrite(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask, HAL_PinLevelTypeDef PinLevel)
-{
-    GPIO_TypeDef *port;
-
-    switch (Port)
-    {
-    case PORT0:
-        port = GPIO_0;
-        break;
-    case PORT1:
-        port = GPIO_1;
-        break;
-    case PORT2:
-        port = GPIO_2;
-        break;
-
-    default:
-        return HAL_ERROR;
-    }
-
-    if (PinLevel == GPIO_PIN_LOW)
-    {
-        port->CLEAR = PinMask & HAL_PIN_MASK;
-    }
-    else
-    {
-        port->SET = PinMask & HAL_PIN_MASK;
-    }
-
-    return HAL_OK;
-}
-
-
-HAL_PinLevelTypeDef HAL_GPIO_PinRead(HAL_PinMapTypeDef Pin)
-{
-    uint32_t Port = Pin & ~HAL_PIN_MASK;
-
-    switch (Port)
-    {
-    case PORT0:
-        return GPIO_0->SET & Pin;
-    case PORT1:
-        return GPIO_1->SET & Pin;
-    case PORT2:
-        return GPIO_2->SET & Pin;
-
-    default:
-        return 0;
-    }
-}
-
-
-uint16_t HAL_GPIO_PortRead(HAL_PortTypeDef Port)
-{
-    switch (Port)
-    {
-    case PORT0:
-        return GPIO_0->SET;
-    case PORT1:
-        return GPIO_1->SET;
-    case PORT2:
-        return GPIO_2->SET;
-
-    default:
-        return 0;
-    }
-}
-
-
-HAL_StatusTypeDef HAL_GPIO_PinToggle(HAL_PinMapTypeDef PinMask)
-{
-    uint32_t Port = PinMask & ~HAL_PIN_MASK;
-    return HAL_GPIO_PortToggle(Port, PinMask);
-}
-
-
-HAL_StatusTypeDef HAL_GPIO_PortToggle(HAL_PortTypeDef Port, HAL_PinTypeDef PinMask)
-{
-    switch (Port)
-    {
-    case PORT0:
-        GPIO_0->OUTPUT ^= PinMask & HAL_PIN_MASK;
-        break;
-    case PORT1:
-        GPIO_1->OUTPUT ^= PinMask & HAL_PIN_MASK;
-        break;
-    case PORT2:
-        GPIO_2->OUTPUT ^= PinMask & HAL_PIN_MASK;
-        break;
-
-    default:
-        return HAL_ERROR;
-    }
-
-    return HAL_OK;
-}
-
-
 /** Для обхода бага МК, чтение из регистра IRQ_LINE_MUX всегда возвращает 0
  *  \note Используется в функциях HAL_GPIO_InitInterruptLine и HAL_GPIO_DeInitInterruptLine
  */
-uint32_t current_irq_line_mux = 0;
+volatile uint32_t current_irq_line_mux = 0;
 
+/**
+ * @brief Инициализация модуля GPIO_x в соответствии с указанными параметрами в GPIO_Init.
+ * @param GPIO_x порт GPIO_x, где x может быть (0, 1, 2).
+ * @param GPIO_Init указатель на структуру GPIO_InitTypeDef, которая содержит информацию о конфигурации для указанного модуля GPIO.
+ * @return статус HAL.
+ * @warning функция не включает тактирование выбранного модуля GPIO. Включить тактирование можно, например, с помощью макроса @ref __HAL_PCC_GPIO_2_CLK_ENABLE.
+ */
+HAL_StatusTypeDef HAL_GPIO_Init(GPIO_TypeDef *GPIO_x, GPIO_InitTypeDef *GPIO_Init)
+{
+    uint32_t *port_cfg = 0;
+    uint32_t *port_ds = 0;
+    uint32_t *port_pupd = 0;
 
-HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line_Config mux,
-                            HAL_GPIO_InterruptMode mode)
+    uint32_t position = 0;
+    uint32_t current_pin = 0;
+
+    switch ((uint32_t)GPIO_x)
+    {
+    case (uint32_t)GPIO_0:
+        port_cfg = (uint32_t *)&(PAD_CONFIG->PORT_0_CFG);
+        port_ds = (uint32_t *)&(PAD_CONFIG->PORT_0_DS);
+        port_pupd = (uint32_t *)&(PAD_CONFIG->PORT_0_PUPD);
+        break;
+    case (uint32_t)GPIO_1:
+        port_cfg = (uint32_t *)&(PAD_CONFIG->PORT_1_CFG);
+        port_ds = (uint32_t *)&(PAD_CONFIG->PORT_1_DS);
+        port_pupd = (uint32_t *)&(PAD_CONFIG->PORT_1_PUPD);
+        break;
+    case (uint32_t)GPIO_2:
+        port_cfg = (uint32_t *)&(PAD_CONFIG->PORT_2_CFG);
+        port_ds = (uint32_t *)&(PAD_CONFIG->PORT_2_DS);
+        port_pupd = (uint32_t *)&(PAD_CONFIG->PORT_2_PUPD);
+        break;
+
+    default:
+        return HAL_ERROR;
+        break;
+    }
+    // magic_foo(pinMask, port_cfg, port_pupd, port_ds)
+    while (((GPIO_Init->Pin) >> position) != 0)
+    {
+        current_pin = GPIO_Init->Pin & (1 << position);
+
+        if (current_pin)
+        {
+            *port_cfg = (*port_cfg & (~PAD_CONFIG_PIN_M(position))) | PAD_CONFIG_PIN(position, GPIO_Init->Mode & 0b11);
+
+            if ((GPIO_Init->Mode == HAL_GPIO_MODE_GPIO_INPUT) || (GPIO_Init->Mode == HAL_GPIO_MODE_GPIO_OUTPUT))
+            {
+                if (GPIO_Init->Mode == HAL_GPIO_MODE_GPIO_INPUT)
+                {
+                    GPIO_x->DIRECTION_IN = 1 << position;
+                }
+                else
+                {
+                    GPIO_x->DIRECTION_OUT = 1 << position;
+                }
+            }
+
+            *port_ds = (*port_ds & (~PAD_CONFIG_PIN_M(position))) | PAD_CONFIG_PIN(position, GPIO_Init->DS);
+            *port_pupd = (*port_pupd & (~PAD_CONFIG_PIN_M(position))) | PAD_CONFIG_PIN(position, GPIO_Init->Pull);
+        }
+
+        position++;
+    }
+
+    return HAL_OK;
+}
+
+/**
+ * @brief Инициализация модуля GPIO_x.
+ * @param GPIO_x порт GPIO_x, где x может быть (0, 1, 2).
+ * @param pin маска выводов порта GPIO_x, к которым применяются указанные настройки.
+ * @param mode режим вывода.
+ * @param pull режим подтяжки вывода.
+ * @param driveStrength перечисление режимов нагрузочной способности.
+ * @return Статус HAL.
+ */
+HAL_StatusTypeDef HAL_GPIO_PinConfig(GPIO_TypeDef *GPIO_x, HAL_PinsTypeDef pin, HAL_GPIO_ModeTypeDef mode, HAL_GPIO_PullTypeDef pull, HAL_GPIO_DSTypeDef driveStrength)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = pin;
+    GPIO_InitStruct.Mode = mode;
+    GPIO_InitStruct.Pull = pull;
+    GPIO_InitStruct.DS = driveStrength;
+    return HAL_GPIO_Init(GPIO_x, &GPIO_InitStruct);
+}
+
+/**
+ * @brief Считать текущее состояние выводов порта GPIO_x.
+ * @param GPIO_x порт GPIO_x, где x может быть (0, 1, 2).
+ * @param pin маска выводов порта GPIO_x, с которых считывание значение.
+ * @return @ref GPIO_PIN_HIGH если с одного или больше выводов, указанных в pin, считалась 1. Иначе @ref GPIO_PIN_LOW.
+ */
+GPIO_PinState HAL_GPIO_ReadPin(GPIO_TypeDef *GPIO_x, HAL_PinsTypeDef pin)
+{
+    GPIO_PinState bitStatus;
+
+    if ((GPIO_x->SET & pin) != (uint32_t)GPIO_PIN_LOW)
+    {
+        bitStatus = GPIO_PIN_HIGH;
+    }
+    else
+    {
+        bitStatus = GPIO_PIN_LOW;
+    }
+    return bitStatus;
+}
+
+/**
+ * @brief Задать логический уровень выходного сигнала для указанных выводов порта GPIO_x.
+ * @param GPIO_x порт GPIO_x, где x может быть (0, 1, 2).
+ * @param pin маска выводов порта GPIO_x, к которым применяются указанные настройки.
+ * @param pinState значение состояние вывода, в которое будут установлены указанные выводы.
+ *                  Этот параметр должен быть одним из значений:
+ * 		                - @ref GPIO_PIN_LOW низкий выходной уровень
+ * 		                - @ref GPIO_PIN_HIGH высокий выходной уровень
+ */
+void HAL_GPIO_WritePin(GPIO_TypeDef *GPIO_x, HAL_PinsTypeDef pin, GPIO_PinState pinState)
+{
+    if (pinState == GPIO_PIN_LOW)
+    {
+        GPIO_x->CLEAR = pin;
+    }
+    else
+    {
+        GPIO_x->SET = pin;
+    }
+}
+
+/**
+ * @brief Переключить логический уровень выходного сигнала для указанных выводов порта GPIO_x.
+ * @param GPIO_x порт GPIO_x, где x может быть (0, 1, 2).
+ * @param pin маска выводов порта GPIO_x, к которым применяются указанные настройки.
+ */
+void HAL_GPIO_TogglePin(GPIO_TypeDef *GPIO_x, HAL_PinsTypeDef pin)
+{
+    GPIO_x->OUTPUT ^= pin;
+}
+
+/** 
+ *  @brief Функция инициализации линии прерывания.
+ * \param mux настройка мультиплексора линии прерывания.
+ * \param mode режим линии прерывания.
+ * @return Статус HAL.
+ * \note Номер линии прерывания можно получить после настройки мультиплексора.
+ * Введите в mux GPIO_MUX_GPIO_X_X, где X - номера порта и вывода,
+ * и нажмите Ctrl+Пробел: появятся варианты констант для данного вывода,
+ * далее достаточно выбрать константу для доступной линии.
+ * В mode введите GPIO_INT_MODE и нажмите Ctrl+Пробел: появятся варианты типов прерываний канала.
+ */
+HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line_Config mux, HAL_GPIO_InterruptMode mode)
 {
     int irq_line_num = mux >> GPIO_IRQ_LINE_S;
-
+    mode &= 0b111;
     if (irq_line_num > 7)
         return HAL_ERROR;
 
-    current_irq_line_mux &= ~(0b1111 << (irq_line_num << 2));
-    current_irq_line_mux |= (mux << (irq_line_num << 2));
-    GPIO_IRQ->CFG = current_irq_line_mux;
+    current_irq_line_mux &= ~GPIO_IRQ_LINE_MUX_M(irq_line_num);
+    current_irq_line_mux |= GPIO_IRQ_LINE_MUX(mux, irq_line_num);
+    GPIO_IRQ->LINE_MUX = current_irq_line_mux;
 
-    if (mode & GPIO_MODE_BIT_LEVEL_M)
+    if (mode & GPIO_MODE_BIT_LEVEL_M) // GPIO_INT_MODE_HIGH, GPIO_INT_MODE_RISING
     {
-        GPIO_IRQ->LEVEL_SET = (1 << irq_line_num);
+        GPIO_IRQ->LEVEL_SET = (1 << irq_line_num); // нарастающий фронт или логический уровень 1
     }
     else
     {
-        GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line_num);
+        GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line_num); // спадающий фронт или логический уровень 0
     }
 
-    if (mode & GPIO_MODE_BIT_EDGE_M)
+    if (mode & GPIO_MODE_BIT_EDGE_M) // GPIO_INT_MODE_FALLING, GPIO_INT_MODE_RISING, GPIO_INT_MODE_CHANGE
     {
-        GPIO_IRQ->EDGE |= (1 << irq_line_num);
+        GPIO_IRQ->EDGE = (1 << irq_line_num); // тип прерывания - событие (фронт/спад)
     }
     else
     {
-        GPIO_IRQ->EDGE &= ~(1 << irq_line_num);
+        GPIO_IRQ->LEVEL = (1 << irq_line_num); // тип прерывания - логический уровень
     }
 
-    if (mode & GPIO_MODE_BIT_ANYEDGE_M)
+    if (mode & GPIO_MODE_BIT_ANYEDGE_M) // GPIO_INT_MODE_CHANGE
     {
-        GPIO_IRQ->ANYEDGE_SET = (1 << irq_line_num);
+        GPIO_IRQ->ANY_EDGE_SET = (1 << irq_line_num); // разрешено прерывание по любому фронту
     }
     else
     {
-        GPIO_IRQ->ANYEDGE_CLEAR = (1 << irq_line_num);
+        GPIO_IRQ->ANY_EDGE_CLEAR = (1 << irq_line_num); // запрещено прерывание по любому фронту
     }
 
     GPIO_IRQ->ENABLE_SET = (1 << irq_line_num);
@@ -227,39 +199,61 @@ HAL_StatusTypeDef HAL_GPIO_InitInterruptLine(HAL_GPIO_Line_Config mux,
     return HAL_OK;
 }
 
-
-void HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irq_line)
+/**
+ * @brief Функция деинициализации линии прерывания, запрещает прерывание и возвращает настройки по умолчанию для указанной лини.
+ * @param irqLine номер линии прерывания.
+ * @return Статус HAL.
+ */
+HAL_StatusTypeDef HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irqLine)
 {
-    int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
+    int irq_line_num = irqLine >> GPIO_IRQ_LINE_S;
 
     if (irq_line_num > 7)
-        return;
+        return HAL_ERROR;
 
-    current_irq_line_mux &= ~(0b1111 << (irq_line_num << 2));
-    GPIO_IRQ->CFG = current_irq_line_mux;
+    GPIO_IRQ->ENABLE_CLEAR = (1 << irq_line_num);
 
-    GPIO_IRQ->EDGE &= ~(1 << irq_line_num);
-    GPIO_IRQ->LEVEL_SET &= ~(1 << irq_line_num);
-    GPIO_IRQ->ANYEDGE_SET &= ~(1 << irq_line_num);
+    current_irq_line_mux &= ~GPIO_IRQ_LINE_MUX_M(irq_line_num);
+    GPIO_IRQ->LINE_MUX = current_irq_line_mux;
 
-    GPIO_IRQ->ENABLE_SET &= ~(1 << irq_line_num);
+    GPIO_IRQ->LEVEL = (1 << irq_line_num);
+    GPIO_IRQ->LEVEL_CLEAR = (1 << irq_line_num);
+    GPIO_IRQ->ANY_EDGE_CLEAR = (1 << irq_line_num);
+
+    return HAL_OK;
 }
 
-
-HAL_PinLevelTypeDef HAL_GPIO_LineInterruptState(HAL_GPIO_Line irq_line)
+/** 
+ * @brief Получить состояние линии прерывания.
+ * @param irqLine номер линии прерывания.
+ * @return Возвращает 1 если сработало прерывание данной линии, иначе 0.
+ */
+uint32_t HAL_GPIO_LineInterruptState(HAL_GPIO_Line irqLine)
 {
-    int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
-    return (GPIO_IRQ->INTERRUPTS & (1 << (irq_line_num))) != 0;
+    int irq_line_num = irqLine >> GPIO_IRQ_LINE_S;
+    return (GPIO_IRQ->INTERRUPT & (1 << (irq_line_num))) != 0;
 }
 
-
-HAL_PinLevelTypeDef HAL_GPIO_LinePinState(HAL_GPIO_Line irq_line)
+/**
+ * @brief Функция чтения логического уровня вывода, подключенного к линии прерывания.
+ * @param irqLine номер линии прерывания.
+ * @return Логический уровень вывода.
+ */
+GPIO_PinState HAL_GPIO_LinePinState(HAL_GPIO_Line irqLine)
 {
-    int irq_line_num = irq_line >> GPIO_IRQ_LINE_S;
-    return GPIO_IRQ->STATE & (1 << (irq_line_num));
+    int irq_line_num = irqLine >> GPIO_IRQ_LINE_S;
+    return (GPIO_PinState)((GPIO_IRQ->STATE & (1 << (irq_line_num))) >> irq_line_num);
 }
 
-
+/** 
+ *  @brief Функция сброса регистра состояния прерываний.
+ *  @note Когда срабатывает прерывание на одной из линии, в регистре INTERRUPT
+ *  выставляется 1 в разряде, соответствующем линии прерывания.
+ *  После обработки прерывания необходимо сбросить данный регистр
+ *  в обработчике прерывания trap_handler().
+ *  Если после обработки прерывания регистр не был сброшен,
+ *  обработчик будет вызван снова, программа будет бесконечно вызывать обработчик.
+ */
 void HAL_GPIO_ClearInterrupts()
 {
     GPIO_IRQ->CLEAR = 0b11111111;
