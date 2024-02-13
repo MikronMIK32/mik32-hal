@@ -150,10 +150,6 @@ void HAL_ADC_Init(ADC_HandleTypeDef *hadc)
     HAL_ADC_Enable(hadc);
 
     HAL_ADC_ChannelSet(hadc); /* Настройка канала АЦП. Перевод используемого вывода в аналоговый режим */
-    if ((hadc->Init.EXTRef == ADC_EXTREF_ON) || (hadc->Init.EXTClb == ADC_EXTCLB_ADCREF))
-    {
-        PAD_CONFIG->PORT_1_CFG |= (ADC_PORT_AS_FUNC3 << 2 * ADC_REF_PORT_1_10);
-    }
 
 #ifdef MIK32V0
     hadc->Instance->ADC_CONFIG |= (hadc->Init.EXTRef << ADC_CONFIG_EXTREF_S) |   /* Настройка источника опорного напряжения */
