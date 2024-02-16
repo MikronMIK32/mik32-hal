@@ -9,7 +9,7 @@
 #endif
 
 #ifndef OSC_CLOCK_VALUE
-    #define OSC_CLOCK_VALUE ((uint32_t)32000U) // Значение частоты часового внешнего источника по умолчанию.
+    #define OSC_CLOCK_VALUE ((uint32_t)32768U) // Значение частоты часового внешнего источника по умолчанию.
 #endif
 
 #ifndef HSI_VALUE
@@ -17,7 +17,7 @@
 #endif
 
 #ifndef LSI_VALUE
-    #define LSI_VALUE ((uint32_t)32000U) // Значение частоты часового внутреннего источника по умолчанию.
+    #define LSI_VALUE ((uint32_t)32768U) // Значение частоты часового внутреннего источника по умолчанию.
 #endif
 
 void HAL_MspInit();
