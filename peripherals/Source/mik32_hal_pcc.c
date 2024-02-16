@@ -1,5 +1,4 @@
 #include "mik32_hal_pcc.h"
-#include "mik32_hal.h"
 
 /**
  * @brief Включить источник тактирования.
