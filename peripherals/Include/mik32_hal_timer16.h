@@ -196,23 +196,6 @@ typedef struct __Timer16_FilterConfigTypeDef
 
 } Timer16_FilterConfigTypeDef;
 
-typedef struct
-{
-  uint8_t DOWN; /* Изменение направления счетчика c вверх на вниз. Режим энкодера */
-
-  uint8_t UP; /* Изменение направления счетчика с вниз на вверх. Режим энкодера */
-
-  uint8_t ARROK; /* Обновление регистра автозагрузки OK */
-
-  uint8_t CMPOK; /* Обновление регистра сравнения OK */
-
-  uint8_t EXTTRIG; /* Событие фронта внешнего триггера */
-
-  uint8_t ARRM; /* Соответствие автозагрузки */
-
-  uint8_t CMPM; /* Совпадение сравнения */
-
-} Timer16_IRQnTypeDef;
 
 /**
  * @brief Настройки Timer16
