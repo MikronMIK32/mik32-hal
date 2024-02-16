@@ -1,6 +1,8 @@
 #ifndef MIK32_TSENS
 #define MIK32_TSENS
 
+#ifndef MIK32V0
+
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "mcu32_memory_map.h"
@@ -143,4 +145,5 @@ void HAL_TSENS_SingleStart_IT(TSENS_HandleTypeDef *htsens);
 void HAL_TSENS_Stop_IT(TSENS_HandleTypeDef *htsens);
 
 
-#endif
+#endif // MIK32V0
+#endif // MIK32_TSENS
