@@ -139,8 +139,14 @@ typedef struct __SPIFI_HandleTypeDef
 
 __attribute__((weak)) void HAL_SPIFI_MspInit();
 
+static inline __attribute__((always_inline)) void HAL_SPIFI_MspInit_LL()
+{
+    PAD_CONFIG->PORT_2_CFG = (PAD_CONFIG->PORT_2_CFG & 0xF000) | 0x555;
+    PAD_CONFIG->PORT_2_PUPD = (PAD_CONFIG->PORT_2_CFG & 0xF000) | 0x550;
+    __HAL_PCC_SPIFI_CLK_ENABLE();
+}
+
 void HAL_SPIFI_MemoryMode_Init(SPIFI_HandleTypeDef *spifi, SPIFI_InitTypeDef *init, SPIFI_MemoryCommandTypeDef *mcmd);
-void HAL_SPIFI_MemoryMode_Init_LL(SPIFI_HandleTypeDef *spifi, uint32_t ctrlReg, uint32_t climitReg, uint32_t mcmdReg);
 void HAL_SPIFI_Init(SPIFI_HandleTypeDef *spifi, SPIFI_InitTypeDef *init);
 void HAL_SPIFI_Init_LL(SPIFI_HandleTypeDef *spifi, uint32_t ctrlReg, uint32_t climitReg);
 
@@ -250,6 +256,16 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitInt
 static inline __attribute__((always_inline)) bool HAL_SPIFI_Version(SPIFI_HandleTypeDef *spifi)
 {
     return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_RESET_M) != 0;
+}
+
+static inline __attribute__((always_inline)) void HAL_SPIFI_MemoryMode_Init_LL(SPIFI_HandleTypeDef *spifi, uint32_t ctrlReg, uint32_t climitReg, uint32_t mcmdReg)
+{
+    HAL_SPIFI_Reset(spifi);
+    HAL_SPIFI_WaitResetClear(spifi, HAL_SPIFI_TIMEOUT);
+
+    SPIFI_CONFIG->CLIMIT = climitReg;
+    SPIFI_CONFIG->CTRL = ctrlReg;
+    SPIFI_CONFIG->MCMD = mcmdReg;
 }
 
 #endif // MIK32_HAL_SPIFI

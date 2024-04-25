@@ -43,17 +43,6 @@ void HAL_SPIFI_MemoryMode_Init(SPIFI_HandleTypeDef *spifi, SPIFI_InitTypeDef *in
          (mcmd->opCode << SPIFI_CONFIG_MCMD_OPCODE_S)));
 }
 
-void HAL_SPIFI_MemoryMode_Init_LL(SPIFI_HandleTypeDef *spifi, uint32_t ctrlReg, uint32_t climitReg, uint32_t mcmdReg)
-{
-    HAL_SPIFI_MspInit();
-    HAL_SPIFI_Reset(spifi);
-    HAL_SPIFI_WaitResetClear(spifi, HAL_SPIFI_TIMEOUT);
-
-    spifi->Instance->CTRL = ctrlReg;
-    spifi->Instance->CLIMIT = climitReg;
-    spifi->Instance->MCMD = mcmdReg;
-}
-
 void HAL_SPIFI_Init(SPIFI_HandleTypeDef *spifi, SPIFI_InitTypeDef *init)
 {
     HAL_SPIFI_Init_LL(
