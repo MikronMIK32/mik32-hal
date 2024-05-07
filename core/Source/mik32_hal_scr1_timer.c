@@ -1,6 +1,13 @@
 #include "mik32_hal_scr1_timer.h"
 
-
+/**
+ * @brief Инициализация таймера SCR1 для работы в качестве системных часов.
+ * После инициализации системного таймера не рекомендуется изменять делитель тактовой частоты AHB.
+ * Если делитель такта был изменен или микроконтроллер переключился на другой источник тактирования, необходимо
+ * переинициализаровать таймер. При этом прежнее значение системного времени потеряется
+ * 
+ * Время переполнения системных часов зависит от частоты тактирования. Минимальное время переполнения - 4295c.
+*/
 void HAL_Time_SCR1TIM_Init()
 {
     /* Setting dividers */
@@ -21,24 +28,36 @@ void HAL_Time_SCR1TIM_Init()
     __HAL_SCR1_TIMER_SET_TIME(0);
 }
 
+/**
+ * @brief Системное время в микросекундах, используется таймер SCR1 в качестве системных часов
+*/
 uint32_t HAL_Time_SCR1TIM_Micros()
 {
     return (uint32_t)(__HAL_SCR1_TIMER_GET_TIME() * (1000000UL * HAL_Time_SCR1TIM_Handler.presc *
         HAL_Time_SCR1TIM_Handler.pt) / HAL_Time_SCR1TIM_Handler.clock_freq);
 }
 
+/**
+ * @brief Системное время в миллисекундах, используется таймер SCR1 в качестве системных часов
+*/
 uint32_t HAL_Time_SCR1TIM_Millis()
 {
     return (uint32_t)(__HAL_SCR1_TIMER_GET_TIME() * (1000UL * HAL_Time_SCR1TIM_Handler.presc *
         HAL_Time_SCR1TIM_Handler.pt) / HAL_Time_SCR1TIM_Handler.clock_freq);
 }
 
+/**
+ * @brief Функция задержки в микросекундах, используется таймер SCR1 в качестве системных часов
+*/
 void HAL_Time_SCR1TIM_DelayUs(uint32_t time_us)
 {
     uint32_t time_metka = HAL_Time_SCR1TIM_Micros();
     while (HAL_Time_SCR1TIM_Micros() - time_metka < time_us);
 }
 
+/**
+ * @brief Функция задержки в миллисекундах, используется таймер SCR1 в качестве системных часов
+*/
 void HAL_Time_SCR1TIM_DelayMs(uint32_t time_ms)
 {
     uint32_t time_metka = HAL_Time_SCR1TIM_Millis();
