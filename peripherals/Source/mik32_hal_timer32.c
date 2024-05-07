@@ -493,3 +493,81 @@ void HAL_Timer32_Stop_IT(TIMER32_HandleTypeDef *timer, uint32_t intMask)
     /* Запустить счет */
     HAL_Timer32_Stop(timer);
 }
+
+// Функции системных часов
+
+/**
+ * @brief Инициализация 32-р таймера для работы в качестве системных часов.
+ * После инициализации системного таймера не рекомендуется изменять делители тактовой частоты AHB, APB_P и APB_M
+ * Если делители такта были изменены или микроконтроллер переключился на другой источник тактирования, необходимо
+ * переинициализаровать таймер. При этом прежнее значение системного времени потеряется
+ * 
+ * Время переполнения системных часов зависит от частоты тактирования. Минимальное время переполнения - 4295с
+ * 
+ * @param timer  TIMER32_0, TIMER32_1 или TIMER32_2
+*/
+void HAL_Time_TIM32_Init(TIMER32_TypeDef* timer)
+{
+    HAL_Time_TIM32_Handler.tim32.Instance = timer;
+    HAL_Time_TIM32_Handler.tim32.Top = 0xFFFFFFFF;
+    HAL_Time_TIM32_Handler.tim32.Clock.Source = TIMER32_SOURCE_PRESCALER;
+    /* Calculate prescaler values */
+    uint32_t clock_freq = HAL_PCC_GetSysClockFreq();
+    /* TIMER32_0 тактируется от APB_M, а не APB_P */
+    if (timer == TIMER32_0) HAL_Time_TIM32_Handler.presc = (PM->DIV_AHB+1) * (PM->DIV_APB_M+1);
+    else HAL_Time_TIM32_Handler.presc = (PM->DIV_AHB+1) * (PM->DIV_APB_P+1);
+    if (clock_freq % (HAL_Time_TIM32_Handler.presc * 1000000UL) != 0)
+        HAL_Time_TIM32_Handler.pt = 1;
+    else
+    {
+        uint32_t pt_raw = clock_freq / (HAL_Time_TIM32_Handler.presc * 1000000UL);
+        if (pt_raw < 2) HAL_Time_TIM32_Handler.pt = 1;
+        else HAL_Time_TIM32_Handler.pt = pt_raw;
+    }
+    HAL_Time_TIM32_Handler.tim32.Clock.Prescaler = HAL_Time_TIM32_Handler.pt-1;
+
+    HAL_Time_TIM32_Handler.tim32.CountMode = TIMER32_COUNTMODE_FORWARD;
+    HAL_Timer32_Init(&HAL_Time_TIM32_Handler.tim32);
+    HAL_Timer32_Value_Clear(&HAL_Time_TIM32_Handler.tim32);
+    HAL_Timer32_Start(&HAL_Time_TIM32_Handler.tim32);
+}
+
+/**
+ * @brief Системное время в микросекундах, используется 32-р таймер в качестве системных часов
+*/
+uint32_t HAL_Time_TIM32_Micros()
+{
+    uint32_t clock_freq = HAL_PCC_GetSysClockFreq();
+    return (uint32_t)((uint64_t)HAL_Time_TIM32_Handler.tim32.Instance->VALUE * (1000000UL *
+        HAL_Time_TIM32_Handler.presc * HAL_Time_TIM32_Handler.pt) / clock_freq);
+}
+
+/**
+ * @brief Системное время в микросекундах, используется 32-р таймер в качестве системных часов
+*/
+uint32_t HAL_Time_TIM32_Millis()
+{
+    uint32_t clock_freq = HAL_PCC_GetSysClockFreq();
+    return (uint32_t)((uint64_t)HAL_Time_TIM32_Handler.tim32.Instance->VALUE * (1000UL *
+        HAL_Time_TIM32_Handler.presc * HAL_Time_TIM32_Handler.pt) / clock_freq);
+}
+
+/**
+ * @brief Функция задержки в микросекундах, используется 32-р таймер в качестве системных часов
+*/
+void HAL_Time_TIM32_DelayUs(uint32_t time_us)
+{
+    uint32_t metka;
+    metka = HAL_Time_TIM32_Micros();
+    while ((HAL_Time_TIM32_Micros() - metka) < time_us);
+}
+
+/**
+ * @brief Функция задержки в миллисекундах, используется 32-р таймер в качестве системных часов
+*/
+void HAL_Time_TIM32_DelayMs(uint32_t time_ms)
+{
+    uint32_t metka;
+    metka = HAL_Time_TIM32_Millis();
+    while ((HAL_Time_TIM32_Millis() - metka) < time_ms);
+}
