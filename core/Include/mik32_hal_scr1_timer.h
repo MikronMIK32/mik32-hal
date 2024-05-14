@@ -165,7 +165,7 @@ struct __HAL_Time_SCR1TIM_Handler
 {
     uint32_t presc;     // AHB prescaler
     uint32_t pt;        // Timer divider
-    uint32_t clock_freq // Clock frequency
+    uint32_t clock_freq; // Clock frequency
 } HAL_Time_SCR1TIM_Handler;
 
 
