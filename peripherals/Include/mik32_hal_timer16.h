@@ -7,6 +7,7 @@
 #include "timer16.h"
 #include "pad_config.h"
 #include "stdbool.h"
+#include "mik32_hal_irq.h"
 #include "mcu32_memory_map.h"
 
 
@@ -233,7 +234,7 @@ struct {
     /* Time in ticks, updated by interrupts */
     volatile uint32_t ticks;
     /* Clock frequency */
-    uint32_t clock_freq
+    uint32_t clock_freq;
 } HAL_Time_TIM16_Handler;
 
 

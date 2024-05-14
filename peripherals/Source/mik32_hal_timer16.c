@@ -1134,7 +1134,6 @@ uint32_t HAL_Time_TIM16_Micros()
 uint32_t HAL_Time_TIM16_Millis()
 {
     uint64_t time_raw = HAL_Time_TIM16_Handler.ticks + HAL_Time_TIM16_Handler.tim16.Instance->CNT;
-    uint32_t clock_freq = HAL_PCC_GetSysClockFreq();
     return (uint32_t)(time_raw * (1000UL * HAL_Time_TIM16_Handler.pt) /
         HAL_Time_TIM16_Handler.clock_freq);
 }
