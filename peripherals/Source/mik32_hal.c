@@ -36,7 +36,7 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
         "bne    %[count], x0, cycle_main_%="        "\n\t"
         "end_metka_%=:"
         ::
-        [count] "r" (time_ms)
+        [count] "r" (time_ms) : "t0"
     );
 }
 
@@ -54,7 +54,7 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayUs(uint32_t time_us)
         "bne    %[count], x0, cycle_main_%="        "\n\t"
         "end_metka_%=:"
         ::
-        [count] "r" (time_us)
+        [count] "r" (time_us) : "t0"
     );
 }
 
