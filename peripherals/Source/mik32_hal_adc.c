@@ -88,11 +88,11 @@ void HAL_ADC_ICLBSet(ADC_HandleTypeDef *hadc, uint8_t i_coef)
 void HAL_ADC_ResetEnable(ADC_HandleTypeDef *hadc)
 {
 #ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG |= (1 << ADC_CONFIG_RESETN_S);
+    hadc->Instance->ADC_CONFIG |= (1 << ADC_CONFIG_RN_S);
 #else // MIK32V2
     hadc->Instance->ADC_CONFIG = (hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) |
-                                 (1 << ADC_CONFIG_RESETN_S);
+                                 (1 << ADC_CONFIG_RN_S);
 #endif // MIK32V0
 }
 
@@ -100,9 +100,9 @@ void HAL_ADC_ResetDisable(ADC_HandleTypeDef *hadc)
 {
 
 #ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG &= ~(1 << ADC_CONFIG_RESETN_S);
+    hadc->Instance->ADC_CONFIG &= ~(1 << ADC_CONFIG_RN_S);
 #else // MIK32V2
-    hadc->Instance->ADC_CONFIG = ((hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_RESETN_M)) & (~ADC_CONFIG_SAH_TIME_M)) |
+    hadc->Instance->ADC_CONFIG = ((hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_RN_M)) & (~ADC_CONFIG_SAH_TIME_M)) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M);
 #endif // MIK32V0
 }
@@ -152,12 +152,12 @@ void HAL_ADC_Init(ADC_HandleTypeDef *hadc)
     HAL_ADC_ChannelSet(hadc); /* Настройка канала АЦП. Перевод используемого вывода в аналоговый режим */
 
 #ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG |= (hadc->Init.EXTRef << ADC_CONFIG_EXTREF_S) |   /* Настройка источника опорного напряжения */
+    hadc->Instance->ADC_CONFIG |= (hadc->Init.EXTRef << ADC_CONFIG_EXTEN_S) |   /* Настройка источника опорного напряжения */
                                   (hadc->Init.EXTClb << ADC_CONFIG_EXTPAD_EN_S); /* Выбор внешнего источника опорного напряжения */
 #else // MIK32V2
     hadc->Instance->ADC_CONFIG = (hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) |
-                                 (hadc->Init.EXTRef << ADC_CONFIG_EXTREF_S) |   /* Настройка источника опорного напряжения */
+                                 (hadc->Init.EXTRef << ADC_CONFIG_EXTEN_S) |   /* Настройка источника опорного напряжения */
                                  (hadc->Init.EXTClb << ADC_CONFIG_EXTPAD_EN_S); /* Выбор внешнего источника опорного напряжения */
 #endif // MIK32V0
 }

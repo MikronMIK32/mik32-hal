@@ -65,23 +65,23 @@ void HAL_DAC_SetDiv(DAC_HandleTypeDef *hdac, uint8_t div)
 
 void HAL_DAC_ResetEnable(DAC_HandleTypeDef *hdac)
 {
-    hdac->Instance_dac->CFG |= DAC_CFG_RESN_M;
+    hdac->Instance_dac->CFG |= DAC_CFG_RN_M;
 }
 
 void HAL_DAC_ResetDisable(DAC_HandleTypeDef *hdac)
 {
-    hdac->Instance_dac->CFG &= ~DAC_CFG_RESN_M;
+    hdac->Instance_dac->CFG &= ~DAC_CFG_RN_M;
 }
 
 void HAL_DAC_Disable(DAC_HandleTypeDef *hdac)
 {
-    hdac->Instance_dac->CFG &= ~DAC_CFG_EN18_M;
+    hdac->Instance_dac->CFG &= ~DAC_CFG_EN_M;
     HAL_DAC_ResetDisable(hdac);
 }
 
 void HAL_DAC_Enable(DAC_HandleTypeDef *hdac)
 {
-    hdac->Instance_dac->CFG |= DAC_CFG_EN18_M;
+    hdac->Instance_dac->CFG |= DAC_CFG_EN_M;
     HAL_DAC_ResetEnable(hdac);
 }
 
@@ -113,7 +113,7 @@ void HAL_DAC_Init(DAC_HandleTypeDef *hdac)
     HAL_DAC_SetDiv(hdac, hdac->Init.DIV); /* Задание делителя */
 
     hdac->Instance_dac->CFG |= (hdac->Init.EXTRef << DAC_CFG_EXTEN_S) |    /* Настройка источника опорного напряжения */
-                               (hdac->Init.EXTClb << DAC_EXTPAD_EN_S);     /* Выбор внешнего источника опорного напряжения */
+                               (hdac->Init.EXTClb << DAC_EXTPAD_S);     /* Выбор внешнего источника опорного напряжения */
 
 
 }
