@@ -42,6 +42,11 @@ typedef enum __HAL_SPIFI_W25_OPCodesTypeDef
     OCTAL_WORD_READ_QUAD_IO = 0xE3,
     SET_BURST_WITH_WRAP = 0x77,
     MANUFACTURER_DEVICE_ID_BY_QUAD_IO = 0x94,
+
+    // QPI Instructions
+    SET_READ_PARAMETERS = 0xC0,
+    BURST_READ_WITH_WRAP = 0x0C,
+    DISABLE_QPI = 0xFF,
 } HAL_SPIFI_W25_OPCodesTypeDef;
 
 #define HAL_SPIFI_W25_SREG2_BUSY 2
@@ -52,6 +57,13 @@ const uint32_t cmd_write_enable =
     SPIFI_CONFIG_CMD_FIELDFORM(SPIFI_FIELDFORM_ALL_SERIAL) |
     SPIFI_CONFIG_CMD_FRAMEFORM(SPIFI_FRAMEFORM_OPCODE) |
     SPIFI_CONFIG_CMD_OPCODE(WRITE_ENABLE);
+
+const uint32_t cmd_write_disable =
+    SPIFI_DIRECTION_INPUT |
+    SPIFI_CONFIG_CMD_INTLEN(0) |
+    SPIFI_CONFIG_CMD_FIELDFORM(SPIFI_FIELDFORM_ALL_SERIAL) |
+    SPIFI_CONFIG_CMD_FRAMEFORM(SPIFI_FRAMEFORM_OPCODE) |
+    SPIFI_CONFIG_CMD_OPCODE(WRITE_DISABLE);
 
 const uint32_t cmd_volatile_sr_write_enable =
     SPIFI_DIRECTION_INPUT |
@@ -139,9 +151,35 @@ const uint32_t cmd_read_sreg1_polling =
     SPIFI_CONFIG_CMD_FRAMEFORM(SPIFI_FRAMEFORM_OPCODE) |
     SPIFI_CONFIG_CMD_OPCODE(READ_SREG1);
 
+const uint32_t cmd_qpi_enable =
+    SPIFI_DIRECTION_INPUT |
+    SPIFI_CONFIG_CMD_INTLEN(0) |
+    SPIFI_CONFIG_CMD_FIELDFORM(SPIFI_FIELDFORM_ALL_SERIAL) |
+    SPIFI_CONFIG_CMD_FRAMEFORM(SPIFI_FRAMEFORM_OPCODE) |
+    SPIFI_CONFIG_CMD_OPCODE(ENABLE_QPI);
+
+const uint32_t cmd_qpi_disable =
+    SPIFI_DIRECTION_INPUT |
+    SPIFI_CONFIG_CMD_INTLEN(0) |
+    SPIFI_CONFIG_CMD_FIELDFORM(SPIFI_FIELDFORM_ALL_PARALLEL) |
+    SPIFI_CONFIG_CMD_FRAMEFORM(SPIFI_FRAMEFORM_OPCODE) |
+    SPIFI_CONFIG_CMD_OPCODE(DISABLE_QPI);
+
+const uint32_t cmd_fast_read_quad_io_qpi =
+    SPIFI_DIRECTION_INPUT |
+    SPIFI_CONFIG_CMD_INTLEN(1) |
+    SPIFI_CONFIG_CMD_FIELDFORM(SPIFI_FIELDFORM_ALL_PARALLEL) |
+    SPIFI_CONFIG_CMD_FRAMEFORM(SPIFI_FRAMEFORM_OPCODE_3ADDR) |
+    SPIFI_CONFIG_CMD_OPCODE(FAST_READ_QUAD_IO);
+
 void HAL_SPIFI_W25_WriteEnable(SPIFI_HandleTypeDef *spifi)
 {
     HAL_SPIFI_SendCommand_LL(spifi, cmd_write_enable, 0, 0, 0, 0, 0, HAL_SPIFI_TIMEOUT);
+}
+
+void HAL_SPIFI_W25_WriteDisable(SPIFI_HandleTypeDef *spifi)
+{
+    HAL_SPIFI_SendCommand_LL(spifi, cmd_write_disable, 0, 0, 0, 0, 0, HAL_SPIFI_TIMEOUT);
 }
 
 void HAL_SPIFI_W25_VolatileSRWriteEnable(SPIFI_HandleTypeDef *spifi)
@@ -254,4 +292,16 @@ HAL_StatusTypeDef HAL_SPIFI_W25_QuadDisable(SPIFI_HandleTypeDef *spifi)
     uint8_t sreg2 = HAL_SPIFI_W25_ReadSREG(spifi, W25_SREG2);
 
     return HAL_SPIFI_W25_WriteSREG(spifi, sreg1, sreg2 & (~HAL_SPIFI_W25_SREG2_BUSY));
+}
+
+void HAL_SPIFI_W25_QPIEnable(SPIFI_HandleTypeDef *spifi)
+{
+    HAL_SPIFI_SendCommand_LL(spifi, cmd_qpi_enable, 0, 0, 0, 0, 0, HAL_SPIFI_TIMEOUT);
+
+void HAL_SPIFI_W25_QPIDisable(SPIFI_HandleTypeDef *spifi)
+{
+    HAL_SPIFI_SendCommand_LL(spifi, cmd_qpi_disable, 0, 0, 0, 0, 0, HAL_SPIFI_TIMEOUT);
+
+void HAL_SPIFI_W25_ReadData_Quad_IO_QPI(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes)
+    HAL_SPIFI_SendCommand_LL(spifi, cmd_fast_read_quad_io_qpi, address, dataLength, dataBytes, 0, 0, HAL_SPIFI_TIMEOUT);
 }
