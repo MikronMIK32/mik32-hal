@@ -142,9 +142,9 @@ typedef struct
 } TIMER32_CHANNEL_HandleTypeDef;
 
 
-#define HAL_TIMER32_VALUE_GET(timer_instance) (*timer_instance).Instance->VALUE;
-#define HAL_TIMER32_INTERRUPTFLAGS_CLEAR(timer_instance) (*timer_instance).Instance->INT_CLEAR = TIMER32_INTERRUPT_CLEAR_MASK;
-#define HAL_TIMER32_VALUE_CLEAR(timer_instance) (*timer_instance).Instance->ENABLE |= TIMER32_ENABLE_TIM_CLR_M;
+#define HAL_TIMER32_VALUE_GET(timer_instance) ((*timer_instance).Instance->VALUE)
+#define HAL_TIMER32_INTERRUPTFLAGS_CLEAR(timer_instance) ((*timer_instance).Instance->INT_CLEAR = TIMER32_INTERRUPT_CLEAR_MASK)
+#define HAL_TIMER32_VALUE_CLEAR(timer_instance) ((*timer_instance).Instance->ENABLE |= TIMER32_ENABLE_TIM_CLR_M)
 
 static inline __attribute__((always_inline)) uint32_t HAL_Timer32_Channel_ICR_Get(TIMER32_CHANNEL_HandleTypeDef *timerChannel)
 {
