@@ -43,7 +43,7 @@ HAL_StatusTypeDef HAL_GPIO_Init(GPIO_TypeDef *GPIO_x, GPIO_InitTypeDef *GPIO_Ini
         return HAL_ERROR;
         break;
     }
-    // magic_foo(pinMask, port_cfg, port_pupd, port_ds)
+    
     while (((GPIO_Init->Pin) >> position) != 0)
     {
         current_pin = GPIO_Init->Pin & (1 << position);
