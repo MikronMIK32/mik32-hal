@@ -586,7 +586,7 @@ void HAL_Timer16_WaitCMP(Timer16_HandleTypeDef *htimer16)
  * @param htimer16 Указатель на структуру с настройками Timer16.
  * @param Period Значение автоматической перезагрузки.
  */
-void HAL_Timer16_Counter_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period)
+void HAL_Timer16_Counter_Start(Timer16_HandleTypeDef *htimer16, uint16_t Period)
 {
     HAL_Timer16_Enable(htimer16);
 
@@ -674,7 +674,7 @@ void HAL_Timer16_StartSetOnes(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
  * @param htimer16 Указатель на структуру с настройками Timer16.
  * @param Period Верхнее значение счета.
  */
-void HAL_Timer16_Encoder_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period)
+void HAL_Timer16_Encoder_Start(Timer16_HandleTypeDef *htimer16, uint16_t Period)
 {
     HAL_Timer16_Disable(htimer16);
     HAL_Timer16_SetEncoderMode(htimer16, TIMER16_ENCODER_ENABLE);
@@ -713,7 +713,7 @@ void HAL_Timer16_Stop(Timer16_HandleTypeDef *htimer16)
  * @param htimer16 Указатель на структуру с настройками Timer16.
  * @param Period Верхнее значение счета.
  */
-void HAL_Timer16_Counter_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period)
+void HAL_Timer16_Counter_Start_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period)
 {
     HAL_Timer16_Enable(htimer16);
 
@@ -863,7 +863,7 @@ void HAL_Timer16_StartSetOnes_IT(Timer16_HandleTypeDef *htimer16, uint16_t Perio
  * @param htimer16 Указатель на структуру с настройками Timer16.
  * @param Period Верхнее значение счета.
  */
-void HAL_Timer16_Encoder_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period)
+void HAL_Timer16_Encoder_Start_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period)
 {
     HAL_Timer16_Disable(htimer16);
     HAL_Timer16_SetEncoderMode(htimer16, TIMER16_ENCODER_ENABLE);

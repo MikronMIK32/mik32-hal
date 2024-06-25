@@ -52,6 +52,8 @@ typedef struct __SPIFI_W25_ManufacturerDeviceIDTypeDef
 
 void HAL_SPIFI_W25_WriteEnable(SPIFI_HandleTypeDef *spifi);
 
+void HAL_SPIFI_W25_WriteDisable(SPIFI_HandleTypeDef *spifi);
+
 uint8_t HAL_SPIFI_W25_ReadSREG(SPIFI_HandleTypeDef *spifi, HAL_SPIFI_W25_SREGTypeDef SREG);
 
 HAL_StatusTypeDef HAL_SPIFI_W25_WriteSREG(SPIFI_HandleTypeDef *spifi, uint8_t sreg1, uint8_t sreg2);
@@ -87,6 +89,12 @@ void HAL_SPIFI_W25_PageProgram_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address
 void HAL_SPIFI_W25_ReadData_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
 
 void HAL_SPIFI_W25_ReadData_Quad_IO(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
+
+void HAL_SPIFI_W25_QPIEnable(SPIFI_HandleTypeDef *spifi);
+
+void HAL_SPIFI_W25_ReadData_Quad_IO_QPI(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
+
+void HAL_SPIFI_W25_QPIDisable(SPIFI_HandleTypeDef *spifi);
 
 HAL_StatusTypeDef HAL_SPIFI_W25_QuadEnable(SPIFI_HandleTypeDef *spifi);
 
