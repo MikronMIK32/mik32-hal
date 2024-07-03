@@ -286,7 +286,7 @@ void HAL_ADC_Init(ADC_HandleTypeDef *hadc);
 void HAL_ADC_Single(ADC_HandleTypeDef *hadc);
 
 /*
- * Function: HAL_ADC_ContiniusDisabled
+ * Function: HAL_ADC_ContinuousDisabled
  * Выключить непрерывное измерение АЦП.
  *
  * Parameters:
@@ -298,7 +298,7 @@ void HAL_ADC_Single(ADC_HandleTypeDef *hadc);
 void HAL_ADC_ContinuousDisabled(ADC_HandleTypeDef *hadc);
 
 /*
- * Function: HAL_ADC_ContiniusEnable
+ * Function: HAL_ADC_ContinuousEnable
  * Выключить непрерывное измерение АЦП.
  *
  * Parameters:
