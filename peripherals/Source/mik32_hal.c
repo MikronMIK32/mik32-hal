@@ -19,16 +19,17 @@ HAL_StatusTypeDef HAL_Init()
  * @brief Функция программной задержки в миллисекундах
  * @p time_ms - время в миллисекундах. Максимальное значение - 0xFFFFFFFF
  * 
- * TODO: добавить обработку случая, когда time_ms = 0
  */
 __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
 {
+    register uint32_t del = 1777 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;
     asm volatile(
         "beq    %[count], x0, end_metka_%="         "\n\t"
         "cycle_main_%=:"
         //"lui    t0, 0"                              "\n\t"
         //"addi   t0, %[temp], 1777"                  "\n\t"
-        "li     t0, 3554"                           "\n\t"
+        //"li     %[d], 3555/2"                           "\n\t"
+        "mv     t0, %[d]"                           "\n\t"
         "cycle_internal_%=:"
         "addi   t0, t0, -1"                         "\n\t"
         "bne    t0, x0, cycle_internal_%="          "\n\t"
@@ -36,17 +37,24 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
         "bne    %[count], x0, cycle_main_%="        "\n\t"
         "end_metka_%=:"
         ::
-        [count] "r" (time_ms) : "t0"
+        [count] "r" (time_ms), [d] "r" (del) : "t0"
     );
 }
 
+/**
+ * @brief Функция программной задержки в микросекундах
+ * @p time_us - время в миллисекундах. Максимальное значение - 0xFFFFFFFF
+ * 
+ * Чем меньше частота AHB, тем больше будет погрешность задержки
+ */
 __attribute__((section(".ram_text")))void HAL_ProgramDelayUs(uint32_t time_us)
 {
-    time_us >>= 1;
+    time_us >>= 3;
+    register uint32_t del = 14 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;
     asm volatile(
         "beq    %[count], x0, end_metka_%="         "\n\t"
         "cycle_main_%=:"
-        "li     t0, 7"                              "\n\t"
+        "mv     t0, %[d]"                              "\n\t"
         "cycle_internal_%=:"
         "addi   t0, t0, -1"                         "\n\t"
         "bne    t0, x0, cycle_internal_%="          "\n\t"
@@ -54,7 +62,7 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayUs(uint32_t time_us)
         "bne    %[count], x0, cycle_main_%="        "\n\t"
         "end_metka_%=:"
         ::
-        [count] "r" (time_us) : "t0"
+        [count] "r" (time_us), [d] "r" (del) : "t0"
     );
 }
 
