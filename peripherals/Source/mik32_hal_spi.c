@@ -425,6 +425,8 @@ HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitByte
             goto error;
         }
     }
+    
+    return error_code;
 
 error:
     __HAL_SPI_DISABLE(hspi);
@@ -544,6 +546,8 @@ HAL_StatusTypeDef HAL_SPI_ExchangeThreshold(SPI_HandleTypeDef *hspi, uint8_t Tra
             tx_counter = 0;
         }
     }
+
+    return error_code;
 
 error:
     __HAL_SPI_DISABLE(hspi);
