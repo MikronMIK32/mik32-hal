@@ -96,9 +96,13 @@ HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
     if (setting->Instance->DIVIDER < 16) return HAL_ERROR;
     
     __HAL_USART_TX_Enable(setting->Instance);
+    __HAL_USART_RX_Enable(setting->Instance);
     __HAL_USART_Enable(setting->Instance);
 
-    while (!HAL_USART_Read_TransmitReady_Flag(setting->Instance));
+    if (setting->Instance->CONTROL1 | UART_CONTROL1_TE_M)
+        while(!HAL_USART_Read_TransmitReady_Flag(setting->Instance));
+    if (setting->Instance->CONTROL1 | UART_CONTROL1_RE_M)
+        while(!HAL_USART_Read_ReceiveReady_Flag(setting->Instance));
     return HAL_OK;
 }
 
@@ -170,7 +174,7 @@ char HAL_USART_ReadByte(UART_TypeDef* local)
  */
 char HAL_USART_Receive(UART_TypeDef* local)
 {
-    while(HAL_USART_Read_RC_Flag(local) == true);
+    while(HAL_USART_Read_RC_Flag(local));
     return HAL_USART_ReadByte(local);
 }
 
