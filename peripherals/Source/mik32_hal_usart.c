@@ -5,31 +5,69 @@
  * @param local - pointer to USART structure-descriptor
  * @return none
  */
-__attribute__((weak)) void HAL_USART_MspInit(UART_TypeDef* local)
+__attribute__((weak)) void HAL_USART_MspInit(UART_Setting_TypeDef* setting)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0}; 
 
-    if (local == UART_0)
+    if (setting->Instance == UART_0)
     {
         __HAL_PCC_UART_0_CLK_ENABLE();
-        GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
+        /* TXD */
+        if (setting->transmitting) GPIO_InitStruct.Pin |= GPIO_PIN_6;
+        /* RXD */
+        if (setting->receiving) GPIO_InitStruct.Pin |= GPIO_PIN_5;
+        /* RTS */
+        if (setting->Modem.rts) GPIO_InitStruct.Pin |= GPIO_PIN_8;
+        /* CTS */
+        if (setting->Modem.cts) GPIO_InitStruct.Pin |= GPIO_PIN_7;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_0, &GPIO_InitStruct);
-        GPIO_InitStruct.Pin = GPIO_PIN_5;
+        GPIO_InitStruct.Pin = 0;
+        /* XCK */
+        if (setting->mode == Synchronous_Mode) GPIO_InitStruct.Pin |= GPIO_PIN_5;
+        /* DDIS */
+        if (setting->Modem.ddis) GPIO_InitStruct.Pin |= GPIO_PIN_6;
+        /* DTR */
+        if (setting->Modem.dtr) GPIO_InitStruct.Pin |= GPIO_PIN_12;
+        /* DCD */
+        if (setting->Modem.dcd) GPIO_InitStruct.Pin |= GPIO_PIN_13;
+        /* DSR */
+        if (setting->Modem.dsr) GPIO_InitStruct.Pin |= GPIO_PIN_14;
+        /* RI */
+        if (setting->Modem.ri) GPIO_InitStruct.Pin |= GPIO_PIN_15;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
     }
 
-    if (local == UART_1)
+    if (setting->Instance == UART_1)
     {
         __HAL_PCC_UART_1_CLK_ENABLE();
-        GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
+        /* TXD */
+        if (setting->transmitting) GPIO_InitStruct.Pin |= GPIO_PIN_9;
+        /* RXD */
+        if (setting->receiving) GPIO_InitStruct.Pin |= GPIO_PIN_8;
+        /* RTS */
+        if (setting->Modem.rts) GPIO_InitStruct.Pin |= GPIO_PIN_11;
+        /* CTS */
+        if (setting->Modem.cts) GPIO_InitStruct.Pin |= GPIO_PIN_10;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_1, &GPIO_InitStruct);
-        GPIO_InitStruct.Pin = GPIO_PIN_6;
+        GPIO_InitStruct.Pin = 0;
+        /* XCK */
+        if (setting->mode == Synchronous_Mode) GPIO_InitStruct.Pin |= GPIO_PIN_6;
+        // /* DDIS */
+        // if (setting->Modem.ddis) GPIO_InitStruct.Pin |= GPIO_PIN_6;
+        /* DTR */
+        if (setting->Modem.dtr) GPIO_InitStruct.Pin |= GPIO_PIN_0;
+        /* DCD */
+        if (setting->Modem.dcd) GPIO_InitStruct.Pin |= GPIO_PIN_1;
+        /* DSR */
+        if (setting->Modem.dsr) GPIO_InitStruct.Pin |= GPIO_PIN_2;
+        /* RI */
+        if (setting->Modem.ri) GPIO_InitStruct.Pin |= GPIO_PIN_3;
         GPIO_InitStruct.Mode = HAL_GPIO_MODE_TIMER_SERIAL;
         GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
         HAL_GPIO_Init(GPIO_2, &GPIO_InitStruct);
@@ -39,13 +77,13 @@ __attribute__((weak)) void HAL_USART_MspInit(UART_TypeDef* local)
 
 /*******************************************************************************
  * @brief USART initializing
- * @param setting - pointer to USART setting structure
+ * @param setting pointer to USART setting structure
  * @return HAL_OK or HAL_ERROR
  */
 HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
 {
     __HAL_USART_Disable(setting->Instance);
-    HAL_USART_MspInit(setting->Instance);
+    HAL_USART_MspInit(setting);
     /* CONTROL1 */
     uint32_t control1 = 0;
     if (setting->frame & 0b01)      control1 |= UART_CONTROL1_M0_M;
@@ -89,27 +127,31 @@ HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
     if (setting->Interrupt.ctsie)   control3 |= UART_CONTROL3_CTSIE_M;
     if (setting->Interrupt.eie)     control3 |= UART_CONTROL3_EIE_M;
     setting->Instance->CONTROL3 = control3;
+    /* MODEM */
+    if (setting->Modem.dtr)         setting->Instance->MODEM |= UART_MODEM_DTR_M;
 
     /* Baudrate */
     setting->Instance->DIVIDER = (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / (PM->DIV_APB_P+1)) /
         setting->baudrate;
     if (setting->Instance->DIVIDER < 16) return HAL_ERROR;
     
-    __HAL_USART_TX_Enable(setting->Instance);
-    __HAL_USART_RX_Enable(setting->Instance);
+    /* Enable receiving & transmitting */
+    if (setting->transmitting)      setting->Instance->CONTROL1 |= UART_CONTROL1_TE_M;
+    if (setting->receiving)         setting->Instance->CONTROL1 |= UART_CONTROL1_RE_M;
     __HAL_USART_Enable(setting->Instance);
 
-    if (setting->Instance->CONTROL1 | UART_CONTROL1_TE_M)
-        while(!HAL_USART_Read_TransmitReady_Flag(setting->Instance));
-    if (setting->Instance->CONTROL1 | UART_CONTROL1_RE_M)
-        while(!HAL_USART_Read_ReceiveReady_Flag(setting->Instance));
+    /* Wait for module is ready */
+    if (setting->transmitting)
+        while(!HAL_USART_Read_TransmitEnableAck(setting->Instance));
+    if (setting->receiving)
+        while(!HAL_USART_Read_ReceiveEnableAck(setting->Instance));
     return HAL_OK;
 }
 
 /*******************************************************************************
  * @brief UART send 1 byte of data for transmission
- * @param local - pointer to USART structure-descriptor
- * @param data - a byte of data to send
+ * @param local pointer to USART structure-descriptor
+ * @param data a byte of data to send
  * @return none
  */
 void HAL_USART_WriteByte(UART_TypeDef* local, char data)
@@ -119,21 +161,21 @@ void HAL_USART_WriteByte(UART_TypeDef* local, char data)
 
 /*******************************************************************************
  * @brief USART transmit 1 byte of data
- * @param local - pointer to USART structure-descriptor
- * @param data - a byte of data to transmit by USART
+ * @param local pointer to USART structure-descriptor
+ * @param data a byte of data to transmit by USART
  * @return none
  */
 void HAL_USART_Transmit(UART_TypeDef* local, char data)
 {
     HAL_USART_WriteByte(local, data);
-    while (!HAL_USART_Read_TC_Flag(local));
+    while (!HAL_USART_TXC_ReadFlag(local));
 }
 
 /*******************************************************************************
  * @brief USART write array of data
- * @param local - pointer to USART structure-descriptor
- * @param buffer - pointer to array of data to transmit
- * @param len - buffer size
+ * @param local pointer to USART structure-descriptor
+ * @param buffer pointer to array of data to transmit
+ * @param len buffer size
  * @return none
  */
 void HAL_USART_Write(UART_TypeDef* local, char* buffer, uint32_t len)
@@ -143,8 +185,8 @@ void HAL_USART_Write(UART_TypeDef* local, char* buffer, uint32_t len)
 
 /*******************************************************************************
  * @brief USART print a string
- * @param local - pointer to USART structure-descriptor
- * @param str - pointer to string to transmit
+ * @param local pointer to USART structure-descriptor
+ * @param str pointer to string to transmit
  * @return none
  */
 void HAL_USART_Print(UART_TypeDef* local, char* str)
@@ -159,7 +201,7 @@ void HAL_USART_Print(UART_TypeDef* local, char* str)
 
 /*******************************************************************************
  * @brief Read data from USART module
- * @param local - pointer to USART structure-descriptor
+ * @param local pointer to USART structure-descriptor
  * @return read data
  */
 char HAL_USART_ReadByte(UART_TypeDef* local)
@@ -167,22 +209,22 @@ char HAL_USART_ReadByte(UART_TypeDef* local)
     return local->RXDATA;
 }
 
-/**
+/*******************************************************************************
  * @brief USART receive 1 byte of data
- * @param local - pointer to USART structure-descriptor
+ * @param local pointer to USART structure-descriptor
  * @return received data
  */
 char HAL_USART_Receive(UART_TypeDef* local)
 {
-    while(HAL_USART_Read_RC_Flag(local));
+    while(HAL_USART_RXC_ReadFlag(local));
     return HAL_USART_ReadByte(local);
 }
 
-/**
+/*******************************************************************************
  * @brief USART receive array of data
- * @param local - pointer to USART structure-descriptor
- * @param buffer - pointer to array of data to receive
- * @param len - buffer size
+ * @param local pointer to USART structure-descriptor
+ * @param buffer pointer to array of data to receive
+ * @param len buffer size
  * @return none
  */
 void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len)
@@ -192,90 +234,279 @@ void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len)
 
 
 
-bool HAL_USART_Read_ReceiveReady_Flag(UART_TypeDef* local)
+bool HAL_USART_Read_ReceiveEnableAck(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_REACK_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_TransmitReady_Flag(UART_TypeDef* local)
+bool HAL_USART_Read_TransmitEnableAck(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_TEACK_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_CTS_Level(UART_TypeDef* local)
+bool HAL_USART_CTS_ReadLevel(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_CTS_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_CTS_Change_Flag(UART_TypeDef* local)
+void HAL_USART_CTS_ClearToggleFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_CTSIF_M;
+}
+
+bool HAL_USART_CTS_ReadToggleFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_CTSIF_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_RX_Break_Flag(UART_TypeDef* local)
+void HAL_USART_RX_ClearBreakFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_LBDF_M;
+}
+
+bool HAL_USART_RX_ReadBreakFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_LBDF_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_TC_Flag(UART_TypeDef* local)
+void HAL_USART_TXC_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_TC_M;
+}
+
+bool HAL_USART_TXC_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_TC_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_TXE_Flag(UART_TypeDef* local)
+void HAL_USART_TXE_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_TXE_M;
+}
+
+bool HAL_USART_TXE_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_TXE_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_RC_Flag(UART_TypeDef* local)
+void HAL_USART_RXC_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_RXNE_M;
+}
+
+bool HAL_USART_RXC_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_RXNE_M) == 0) return true;
     else return false;
 }
 
-bool HAL_USART_Read_IDLE_Flag(UART_TypeDef* local)
+void HAL_USART_IDLE_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_IDLE_M;
+}
+
+bool HAL_USART_IDLE_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_IDLE_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_ReceiveOverwrite_Flag(UART_TypeDef* local)
+void HAL_USART_ReceiveOverwrite_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_ORE_M;
+}
+
+bool HAL_USART_ReceiveOverwrite_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_ORE_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_NF_Flag(UART_TypeDef* local)
+void HAL_USART_NF_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_NF_M;
+}
+
+bool HAL_USART_NF_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_NF_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_StopBit_Error_Flag(UART_TypeDef* local)
+void HAL_USART_StopBitError_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_FE_M;
+}
+
+bool HAL_USART_StopBitError_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_FE_M) == 0) return false;
     else return true;
 }
 
-bool HAL_USART_Read_Parity_Error_Flag(UART_TypeDef* local)
+void HAL_USART_ParityError_ClearFlag(UART_TypeDef* local)
+{
+    local->FLAGS |= UART_FLAGS_PE_M;
+}
+
+bool HAL_USART_ParityError_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_PE_M) == 0) return false;
     else return true;
 }
 
-/**
- * @brief xputc - sending data for xprintf
- * @param c - symbol
+/*******************************************************************************
+ * @brief USART clear flags (all flags without modem flags)
+ * @param local pointer to USART structure-descriptor
+ * @return none
+ */
+void HAL_USART_ClearFlags(UART_TypeDef* local)
+{
+    local->FLAGS = 0xFFFFFFFF;
+}
+
+/*******************************************************************************
+ * @brief Sending a byte of data for xprintf
+ * @param c symbol
  * @return none
  */
 void __attribute__((weak)) xputc(char c)
 {
 	HAL_USART_Transmit(UART_0, c);
+}
+
+
+/*******************************************************************************
+ * @brief USART DTR line management
+ * DTR - Ready-to-receive signal. Active level 0
+ * @param local pointer to USART structure-descriptor
+ * @param en Enable or Disable
+ * @return none
+ */
+void HAL_USART_Set_DTR(UART_TypeDef* local, HAL_USART_EnableDisable_enum en)
+{
+    if (en) local->MODEM |= UART_MODEM_DTR_M;
+    else local->MODEM &= ~UART_MODEM_DTR_M;
+}
+
+/*******************************************************************************
+ * @brief USART DCD line read status
+ * DCD - сигнал обнаружения несущей
+ * @param local pointer to USART structure-descriptor
+ * @return true or false
+ */
+bool HAL_USART_DCD_Status(UART_TypeDef* local)
+{
+    if (local->MODEM & UART_MODEM_DCD_M) return true;
+    else return false;
+}
+
+/*******************************************************************************
+ * @brief USART DCD clear toggle flag
+ * DCD - сигнал обнаружения несущей
+ * @param local pointer to USART structure-descriptor
+ * @return none
+ */
+void HAL_USART_DCD_ClearToggleFlag(UART_TypeDef* local)
+{
+    local->MODEM |= UART_MODEM_DCDIF_M;
+}
+
+/*******************************************************************************
+ * @brief USART DCD line read toggle flag
+ * DCD - сигнал обнаружения несущей
+ * @param local pointer to USART structure-descriptor
+ * @return true or false
+ */
+bool HAL_USART_DCD_ReadToggleFlag(UART_TypeDef* local)
+{
+    if (local->MODEM & UART_MODEM_DCDIF_M) return true;
+    else return false;
+}
+
+/*******************************************************************************
+ * @brief USART RI line read status
+ * RI - сигнал обнаружения звонка
+ * @param local pointer to USART structure-descriptor
+ * @return true or false
+ */
+bool HAL_USART_RI_Status(UART_TypeDef* local)
+{
+    if (local->MODEM & UART_MODEM_RI_M) return true;
+    else return false;
+}
+
+/*******************************************************************************
+ * @brief USART RI clear toggle flag
+ * RI - сигнал обнаружения звонка
+ * @param local pointer to USART structure-descriptor
+ * @return none
+ */
+void HAL_USART_RI_ClearToggleFlag(UART_TypeDef* local)
+{
+    local->MODEM |= UART_MODEM_RIIF_M;
+}
+
+/*******************************************************************************
+ * @brief USART RI line read toggle flag
+ * RI - сигнал обнаружения звонка
+ * @param local pointer to USART structure-descriptor
+ * @return true or false
+ */
+bool HAL_USART_RI_ReadToggleFlag(UART_TypeDef* local)
+{
+    if (local->MODEM & UART_MODEM_RIIF_M) return true;
+    else return false;
+}
+
+/*******************************************************************************
+ * @brief USART DSR line read status
+ * DSR - сигнал готовности источника данных
+ * @param local pointer to USART structure-descriptor
+ * @return true or false
+ */
+bool HAL_USART_DSR_Status(UART_TypeDef* local)
+{
+    if (local->MODEM & UART_MODEM_DSR_M) return true;
+    else return false;
+}
+
+/*******************************************************************************
+ * @brief USART DSR clear toggle flag
+ * DSR - сигнал готовности источника данных
+ * @param local pointer to USART structure-descriptor
+ * @return none
+ */
+void HAL_USART_DSR_ClearToggleFlag(UART_TypeDef* local)
+{
+    local->MODEM |= UART_MODEM_DSRIF_M;
+}
+
+/*******************************************************************************
+ * @brief USART DSR line read toggle flag
+ * DSR - сигнал готовности источника данных
+ * @param local pointer to USART structure-descriptor
+ * @return true or false
+ */
+bool HAL_USART_DSR_ReadToggleFlag(UART_TypeDef* local)
+{
+    if (local->MODEM & UART_MODEM_DSRIF_M) return true;
+    else return false;
+}
+
+/*******************************************************************************
+ * @brief USART clear modem flags (DCD, RI, DSR toggle flags)
+ * @param local pointer to USART structure-descriptor
+ * @return none
+ */
+void HAL_USART_ClearModemFlags(UART_TypeDef* local)
+{
+    local->MODEM |= (UART_MODEM_DCDIF_M | UART_MODEM_RIIF_M | UART_MODEM_DSRIF_M);
 }
