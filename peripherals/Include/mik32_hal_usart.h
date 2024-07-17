@@ -1,9 +1,7 @@
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
-
 #include <stdbool.h>
 #include <string.h>
-
 #include "mcu32_memory_map.h"
 #include "uart.h"
 #include "gpio.h"
@@ -17,20 +15,12 @@ inline void __HAL_USART_RX_Enable(UART_TypeDef* local)  { local->CONTROL1 |= UAR
 inline void __HAL_USART_RX_Disable(UART_TypeDef* local) { local->CONTROL1 &= ~UART_CONTROL1_RE_M; }
 
 
-
 typedef enum 
 {
     Frame_8bit = 0b00,
     Frame_9bit = 0b01,
     Frame_7bit = 0b10
 } HAL_USART_Frame_enum;
-
-typedef enum
-{
-    ParityBit_Inverted = 1,
-    ParityBit_NotInverted = 0
-} HAL_USART_PB_Inversion_enum;
-
 
 typedef enum
 {
@@ -85,10 +75,24 @@ typedef struct
     HAL_USART_EnableDisable_enum eie;
 } HAL_USART_Interrupt_TypeDef;
 
+typedef struct
+{
+    HAL_USART_EnableDisable_enum rts;
+    HAL_USART_EnableDisable_enum cts;
+    HAL_USART_EnableDisable_enum ri;
+    HAL_USART_EnableDisable_enum dsr;
+    HAL_USART_EnableDisable_enum dtr;
+    HAL_USART_EnableDisable_enum ddis;
+    HAL_USART_EnableDisable_enum dcd;
+} HAL_USART_Modem_TypeDef;
+
+
 typedef struct __SettingTypeDef
 {
     UART_TypeDef* Instance;
     /* Settings */
+    HAL_USART_EnableDisable_enum transmitting;
+    HAL_USART_EnableDisable_enum receiving;
     HAL_USART_Frame_enum frame;
     HAL_USART_EnableDisable_enum parity_bit;
     HAL_USART_EnableDisable_enum parity_bit_inversion;
@@ -112,6 +116,8 @@ typedef struct __SettingTypeDef
     HAL_USART_EnableDisable_enum tx_break_mode;
     /* Interrupts */
     HAL_USART_Interrupt_TypeDef Interrupt;
+    /* Modem signals */
+    HAL_USART_Modem_TypeDef Modem;
     /* Baudrate */
     uint32_t baudrate;
 
@@ -119,24 +125,33 @@ typedef struct __SettingTypeDef
 
 
 /* Initialization */
-void HAL_USART_MspInit(UART_TypeDef* uart);
+void HAL_USART_MspInit(UART_Setting_TypeDef* setting);
 HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting);
-
 /* Flags */
-bool HAL_USART_Read_ReceiveReady_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_TransmitReady_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_CTS_Level(UART_TypeDef* local);
-bool HAL_USART_Read_CTS_Change_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_RX_Break_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_TC_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_TXE_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_RC_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_IDLE_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_ReceiveOverwrite_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_NF_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_StopBit_Error_Flag(UART_TypeDef* local);
-bool HAL_USART_Read_Parity_Error_Flag(UART_TypeDef* local);
-
+bool HAL_USART_Read_ReceiveEnableAck(UART_TypeDef* local);
+bool HAL_USART_Read_TransmitEnableAck(UART_TypeDef* local);
+bool HAL_USART_CTS_ReadLevel(UART_TypeDef* local);
+void HAL_USART_CTS_ClearToggleFlag(UART_TypeDef* local);
+bool HAL_USART_CTS_ReadToggleFlag(UART_TypeDef* local);
+void HAL_USART_RX_ClearBreakFlag(UART_TypeDef* local);
+bool HAL_USART_RX_ReadBreakFlag(UART_TypeDef* local);
+void HAL_USART_TXC_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_TXC_ReadFlag(UART_TypeDef* local);
+void HAL_USART_TXE_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_TXE_ReadFlag(UART_TypeDef* local);
+void HAL_USART_RXC_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_RXC_ReadFlag(UART_TypeDef* local);
+void HAL_USART_IDLE_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_IDLE_ReadFlag(UART_TypeDef* local);
+void HAL_USART_ReceiveOverwrite_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_ReceiveOverwrite_ReadFlag(UART_TypeDef* local);
+void HAL_USART_NF_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_NF_ReadFlag(UART_TypeDef* local);
+void HAL_USART_StopBitError_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_StopBitError_ReadFlag(UART_TypeDef* local);
+void HAL_USART_ParityError_ClearFlag(UART_TypeDef* local);
+bool HAL_USART_ParityError_ReadFlag(UART_TypeDef* local);
+void HAL_USART_ClearFlags(UART_TypeDef* local);
 /* Writing & reading */
 void HAL_USART_WriteByte(UART_TypeDef* local, char data);
 void HAL_USART_Transmit(UART_TypeDef* local, char data);
@@ -145,9 +160,21 @@ void HAL_USART_Print(UART_TypeDef* local, char* str);
 char HAL_USART_ReadByte(UART_TypeDef* local);
 char HAL_USART_Receive(UART_TypeDef* local);
 void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len);
-
 /* Xprintf */
 void xputc(char c);
+/* Modem signals */
+void HAL_USART_Set_DTR(UART_TypeDef* local, HAL_USART_EnableDisable_enum en);
+bool HAL_USART_DCD_Status(UART_TypeDef* local);
+void HAL_USART_DCD_ClearToggleFlag(UART_TypeDef* local);
+bool HAL_USART_DCD_ReadToggleFlag(UART_TypeDef* local);
+bool HAL_USART_RI_Status(UART_TypeDef* local);
+void HAL_USART_RI_ClearToggleFlag(UART_TypeDef* local);
+bool HAL_USART_RI_ReadToggleFlag(UART_TypeDef* local);
+bool HAL_USART_DSR_Status(UART_TypeDef* local);
+void HAL_USART_DSR_ClearToggleFlag(UART_TypeDef* local);
+bool HAL_USART_DSR_ReadToggleFlag(UART_TypeDef* local);
+void HAL_USART_ClearModemFlags(UART_TypeDef* local);
+
 
 // void HAL_USART_Printf(UART_TypeDef* local, char* str, ...);
 // void HAL_USART_PrintBefore(UART_TypeDef* local, char* str);
