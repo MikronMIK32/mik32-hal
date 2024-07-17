@@ -1,8 +1,8 @@
 #include "mik32_hal_usart.h"
 
 /*******************************************************************************
- * @brief USART GPIO initializing
- * @param local - pointer to USART structure-descriptor
+ * @brief Инициализация линий GPIO модуля USART
+ * @param setting указатель на структуру настроек модуля USART
  * @return none
  */
 __attribute__((weak)) void HAL_USART_MspInit(UART_Setting_TypeDef* setting)
@@ -76,8 +76,8 @@ __attribute__((weak)) void HAL_USART_MspInit(UART_Setting_TypeDef* setting)
 
 
 /*******************************************************************************
- * @brief USART initializing
- * @param setting pointer to USART setting structure
+ * @brief Инициализация модуля USART
+ * @param setting указатель на структуру настроек модуля USART
  * @return HAL_OK or HAL_ERROR
  */
 HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
@@ -149,9 +149,10 @@ HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
 }
 
 /*******************************************************************************
- * @brief UART send 1 byte of data for transmission
- * @param local pointer to USART structure-descriptor
- * @param data a byte of data to send
+ * @brief Функция отправки 1 байта данных на модуль USART для последующей
+ * передачи.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @param data 1 байт отправляемых данных
  * @return none
  */
 void HAL_USART_WriteByte(UART_TypeDef* local, char data)
@@ -160,9 +161,9 @@ void HAL_USART_WriteByte(UART_TypeDef* local, char data)
 }
 
 /*******************************************************************************
- * @brief USART transmit 1 byte of data
- * @param local pointer to USART structure-descriptor
- * @param data a byte of data to transmit by USART
+ * @brief Функция передачи 1 байта данных через интерфейс USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @param data 1 байт отправляемых данных
  * @return none
  */
 void HAL_USART_Transmit(UART_TypeDef* local, char data)
@@ -172,10 +173,10 @@ void HAL_USART_Transmit(UART_TypeDef* local, char data)
 }
 
 /*******************************************************************************
- * @brief USART write array of data
- * @param local pointer to USART structure-descriptor
- * @param buffer pointer to array of data to transmit
- * @param len buffer size
+ * @brief Функция передачи массива данных через интерфейс USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @param buffer указатель на начало массива
+ * @param len длина массива
  * @return none
  */
 void HAL_USART_Write(UART_TypeDef* local, char* buffer, uint32_t len)
@@ -184,9 +185,10 @@ void HAL_USART_Write(UART_TypeDef* local, char* buffer, uint32_t len)
 }
 
 /*******************************************************************************
- * @brief USART print a string
- * @param local pointer to USART structure-descriptor
- * @param str pointer to string to transmit
+ * @brief Функция передачи строки через интерфейс USART. Строка обязательно
+ * должна оканчиваться символом '\0'.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @param str указатель на начало строки
  * @return none
  */
 void HAL_USART_Print(UART_TypeDef* local, char* str)
@@ -200,9 +202,9 @@ void HAL_USART_Print(UART_TypeDef* local, char* str)
 }
 
 /*******************************************************************************
- * @brief Read data from USART module
- * @param local pointer to USART structure-descriptor
- * @return read data
+ * @brief Чтение принятых модулем USART данных
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return 1 байт принятых данных
  */
 char HAL_USART_ReadByte(UART_TypeDef* local)
 {
@@ -210,21 +212,22 @@ char HAL_USART_ReadByte(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART receive 1 byte of data
- * @param local pointer to USART structure-descriptor
- * @return received data
+ * @brief Функция приема 1 байта данных по интерфейсу USART. Функция включает в
+ * себя цикл ожидания приема данных и чтение полученных данных.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return 1 байт принятых данных
  */
 char HAL_USART_Receive(UART_TypeDef* local)
 {
-    while(HAL_USART_RXC_ReadFlag(local));
+    while(!HAL_USART_RXNE_ReadFlag(local));
     return HAL_USART_ReadByte(local);
 }
 
 /*******************************************************************************
- * @brief USART receive array of data
- * @param local pointer to USART structure-descriptor
- * @param buffer pointer to array of data to receive
- * @param len buffer size
+ * @brief Функция приема массива данных по интерфейсу USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @param buffer указатель на начало массива
+ * @param len длина массива
  * @return none
  */
 void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len)
@@ -233,138 +236,266 @@ void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len)
 }
 
 
-
+/*******************************************************************************
+ * @brief Чтение флага готовности приема модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true, если флаг установлен; false - если сброшен
+ */
 bool HAL_USART_Read_ReceiveEnableAck(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_REACK_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага готовности передачи модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true, если флаг установлен; false - если сброшен
+ */
 bool HAL_USART_Read_TransmitEnableAck(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_TEACK_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Чтение состояния линии CTS модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true, если линия активна (0); false - если не активна (1)
+ */
 bool HAL_USART_CTS_ReadLevel(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_CTS_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага изменения состояния линии CTS модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_CTS_ClearToggleFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_CTSIF_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага изменения состояния линии CTS модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true, если изменение уровня произошло со времени последнего сброса;
+ * false - если измения не было
+ */
 bool HAL_USART_CTS_ReadToggleFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_CTSIF_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага фиксации break-состояния на линии RX модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_RX_ClearBreakFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_LBDF_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага фиксации break-состояния на линии RX модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true, break-состояние зафиксировано; false - если не было
+ */
 bool HAL_USART_RX_ReadBreakFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_LBDF_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага TXС ("передача завершена") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_TXC_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_TC_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага TXС ("передача завершена") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
 bool HAL_USART_TXC_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_TC_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага TXE ("регистр передатчика пуст") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_TXE_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_TXE_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага TXE ("регистр передатчика пуст") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
 bool HAL_USART_TXE_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_TXE_M) == 0) return false;
     else return true;
 }
 
-void HAL_USART_RXC_ClearFlag(UART_TypeDef* local)
+/*******************************************************************************
+ * @brief Очистка флага RXNE ("регистр приемника не пуст") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+void HAL_USART_RXNE_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_RXNE_M;
 }
 
-bool HAL_USART_RXC_ReadFlag(UART_TypeDef* local)
+/*******************************************************************************
+ * @brief Чтение флага RXNE ("регистр приемника не пуст") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
+bool HAL_USART_RXNE_ReadFlag(UART_TypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_RXNE_M) == 0) return true;
-    else return false;
+    if ((local->FLAGS & UART_FLAGS_RXNE_M) == 0) return false;
+    else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага IDLE модуля USART.
+ * Флаг IDLE устанавливается при отсутствии активности на линии RX в течение 8
+ * битовых тактов при установленном флаге RXNE.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_IDLE_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_IDLE_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага IDLE модуля USART.
+ * Флаг IDLE устанавливается при отсутствии активности на линии RX в течение 8
+ * битовых тактов при установленном флаге RXNE.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
 bool HAL_USART_IDLE_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_IDLE_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага ORE модуля USART.
+ * Флаг ORE устанавливается при попытке перезаписи принятых по RX данных.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_ReceiveOverwrite_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_ORE_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага ORE модуля USART.
+ * Флаг ORE устанавливается при попытке перезаписи принятых по RX данных.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
 bool HAL_USART_ReceiveOverwrite_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_ORE_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага NF модуля USART.
+ * Флаг NF устанавливается при обнаружении ложных переключений на линии RX.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_NF_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_NF_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага NF модуля USART.
+ * Флаг NF устанавливается при обнаружении ложных переключений на линии RX.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
 bool HAL_USART_NF_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_NF_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага FE модуля USART.
+ * Флаг FE устанавливается при обнаружении ошибок в стоп-бите (битах).
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_StopBitError_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_FE_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага FE модуля USART.
+ * Флаг FE устанавливается при обнаружении ошибок в стоп-бите (битах).
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
 bool HAL_USART_StopBitError_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_FE_M) == 0) return false;
     else return true;
 }
 
+/*******************************************************************************
+ * @brief Очистка флага PE модуля USART.
+ * Флаг PE устанавливается при обнаружении ошибочного бита четности.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
 void HAL_USART_ParityError_ClearFlag(UART_TypeDef* local)
 {
     local->FLAGS |= UART_FLAGS_PE_M;
 }
 
+/*******************************************************************************
+ * @brief Чтение флага PE модуля USART.
+ * Флаг PE устанавливается при обнаружении ошибочного бита четности.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
+ */
 bool HAL_USART_ParityError_ReadFlag(UART_TypeDef* local)
 {
     if ((local->FLAGS & UART_FLAGS_PE_M) == 0) return false;
     else return true;
 }
 
+
 /*******************************************************************************
- * @brief USART clear flags (all flags without modem flags)
- * @param local pointer to USART structure-descriptor
+ * @brief Очистка всех флагов модуля USART, кроме модемных
+ * @param local указатель на структуру-дескриптор модуля USART
  * @return none
  */
 void HAL_USART_ClearFlags(UART_TypeDef* local)
@@ -373,8 +504,8 @@ void HAL_USART_ClearFlags(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief Sending a byte of data for xprintf
- * @param c symbol
+ * @brief Отправка 1 байта данных (используется в функции xprintf)
+ * @param c 1 байт отправляемых данных
  * @return none
  */
 void __attribute__((weak)) xputc(char c)
@@ -384,9 +515,8 @@ void __attribute__((weak)) xputc(char c)
 
 
 /*******************************************************************************
- * @brief USART DTR line management
- * DTR - Ready-to-receive signal. Active level 0
- * @param local pointer to USART structure-descriptor
+ * @brief Управление линией DTR ("готов к приему") модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
  * @param en Enable or Disable
  * @return none
  */
@@ -397,10 +527,9 @@ void HAL_USART_Set_DTR(UART_TypeDef* local, HAL_USART_EnableDisable_enum en)
 }
 
 /*******************************************************************************
- * @brief USART DCD line read status
- * DCD - сигнал обнаружения несущей
- * @param local pointer to USART structure-descriptor
- * @return true or false
+ * @brief Чтение состояния линии DCD ("обнаружение несущей") модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
  */
 bool HAL_USART_DCD_Status(UART_TypeDef* local)
 {
@@ -409,9 +538,9 @@ bool HAL_USART_DCD_Status(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART DCD clear toggle flag
- * DCD - сигнал обнаружения несущей
- * @param local pointer to USART structure-descriptor
+ * @brief Очистка флага изменения состояния линии DCD ("обнаружение несущей")
+ * модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
  * @return none
  */
 void HAL_USART_DCD_ClearToggleFlag(UART_TypeDef* local)
@@ -420,10 +549,10 @@ void HAL_USART_DCD_ClearToggleFlag(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART DCD line read toggle flag
- * DCD - сигнал обнаружения несущей
- * @param local pointer to USART structure-descriptor
- * @return true or false
+ * @brief Чтение флага изменения состояния линии DCD ("обнаружение несущей")
+ * модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
  */
 bool HAL_USART_DCD_ReadToggleFlag(UART_TypeDef* local)
 {
@@ -432,10 +561,9 @@ bool HAL_USART_DCD_ReadToggleFlag(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART RI line read status
- * RI - сигнал обнаружения звонка
- * @param local pointer to USART structure-descriptor
- * @return true or false
+ * @brief Чтение состояния линии RI ("звонок на телефонной линии") модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
  */
 bool HAL_USART_RI_Status(UART_TypeDef* local)
 {
@@ -444,9 +572,9 @@ bool HAL_USART_RI_Status(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART RI clear toggle flag
- * RI - сигнал обнаружения звонка
- * @param local pointer to USART structure-descriptor
+ * @brief Очистка флага изменения состояния линии RI ("звонок на телефонной
+ * линии") модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
  * @return none
  */
 void HAL_USART_RI_ClearToggleFlag(UART_TypeDef* local)
@@ -455,10 +583,10 @@ void HAL_USART_RI_ClearToggleFlag(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART RI line read toggle flag
- * RI - сигнал обнаружения звонка
- * @param local pointer to USART structure-descriptor
- * @return true or false
+ * @brief Чтение флага изменения состояния линии RI ("звонок на телефонной
+ * линии") модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
  */
 bool HAL_USART_RI_ReadToggleFlag(UART_TypeDef* local)
 {
@@ -467,10 +595,9 @@ bool HAL_USART_RI_ReadToggleFlag(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART DSR line read status
- * DSR - сигнал готовности источника данных
- * @param local pointer to USART structure-descriptor
- * @return true or false
+ * @brief Чтение состояния линии DSR ("источник данных готов") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
  */
 bool HAL_USART_DSR_Status(UART_TypeDef* local)
 {
@@ -479,9 +606,9 @@ bool HAL_USART_DSR_Status(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART DSR clear toggle flag
- * DSR - сигнал готовности источника данных
- * @param local pointer to USART structure-descriptor
+ * @brief Очистка флага изменения состояния линии DSR ("источник данных готов")
+ * модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
  * @return none
  */
 void HAL_USART_DSR_ClearToggleFlag(UART_TypeDef* local)
@@ -490,10 +617,10 @@ void HAL_USART_DSR_ClearToggleFlag(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART DSR line read toggle flag
- * DSR - сигнал готовности источника данных
- * @param local pointer to USART structure-descriptor
- * @return true or false
+ * @brief Чтение флага изменения состояния линии DSR ("источник данных готов")
+ * модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return true или false
  */
 bool HAL_USART_DSR_ReadToggleFlag(UART_TypeDef* local)
 {
@@ -502,8 +629,8 @@ bool HAL_USART_DSR_ReadToggleFlag(UART_TypeDef* local)
 }
 
 /*******************************************************************************
- * @brief USART clear modem flags (DCD, RI, DSR toggle flags)
- * @param local pointer to USART structure-descriptor
+ * @brief Очитка модемных флагов модуля USART (флаги изменения DCD, RI, DSR)
+ * @param local указатель на структуру-дескриптор модуля USART
  * @return none
  */
 void HAL_USART_ClearModemFlags(UART_TypeDef* local)
