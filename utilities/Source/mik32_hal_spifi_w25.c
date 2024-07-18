@@ -312,10 +312,10 @@ HAL_StatusTypeDef HAL_SPIFI_W25_QuadDisable(SPIFI_HandleTypeDef *spifi)
 {
     uint8_t sreg2 = HAL_SPIFI_W25_ReadSREG(spifi, W25_SREG2);
     if (sreg2 & SPIFI_W25_SREG2_QUAD_ENABLE_M) {
-        return HAL_OK;
-    } else {
         uint8_t sreg1 = HAL_SPIFI_W25_ReadSREG(spifi, W25_SREG1);
-        return HAL_SPIFI_W25_WriteSREG(spifi, sreg1, sreg2 & (~SPIFI_W25_SREG2_QUAD_ENABLE_M));        
+        return HAL_SPIFI_W25_WriteSREG(spifi, sreg1, sreg2 & (~SPIFI_W25_SREG2_QUAD_ENABLE_M));    
+    } else {
+        return HAL_OK;
     }
 }
 
