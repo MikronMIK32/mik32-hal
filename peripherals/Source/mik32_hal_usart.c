@@ -90,13 +90,11 @@ HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
     if (setting->frame & 0b10)      control1 |= UART_CONTROL1_M1_M;
     if (setting->parity_bit)        control1 |= UART_CONTROL1_PCE_M;
     if (setting->parity_bit_inversion) control1 |= UART_CONTROL1_PS_M;
-    if (setting->parity_interrupt)  control1 |= UART_CONTROL1_PEIE_M;
     if (setting->Interrupt.peie)    control1 |= UART_CONTROL1_PEIE_M;
-    if (setting->Interrupt.txeie)   control1 |= UART_CONTROL1_PEIE_M;
-    if (setting->Interrupt.tcie)    control1 |= UART_CONTROL1_PEIE_M;
-    if (setting->Interrupt.rxneie)  control1 |= UART_CONTROL1_PEIE_M;
-    if (setting->Interrupt.idleie)  control1 |= UART_CONTROL1_PEIE_M;
-    if (setting->Interrupt.peie)    control1 |= UART_CONTROL1_PEIE_M;
+    if (setting->Interrupt.txeie)   control1 |= UART_CONTROL1_TXEIE_M;
+    if (setting->Interrupt.tcie)    control1 |= UART_CONTROL1_TCIE_M;
+    if (setting->Interrupt.rxneie)  control1 |= UART_CONTROL1_RXNEIE_M;
+    if (setting->Interrupt.idleie)  control1 |= UART_CONTROL1_IDLEIE_M;
     //Save data
     setting->Instance->CONTROL1 = control1;
     /* CONTROL2 */
@@ -502,6 +500,7 @@ void HAL_USART_ClearFlags(UART_TypeDef* local)
 {
     local->FLAGS = 0xFFFFFFFF;
 }
+
 
 /*******************************************************************************
  * @brief Отправка 1 байта данных (используется в функции xprintf)
