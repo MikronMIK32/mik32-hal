@@ -14,6 +14,71 @@ inline void __HAL_USART_TX_Disable(UART_TypeDef* local) { local->CONTROL1 &= ~UA
 inline void __HAL_USART_RX_Enable(UART_TypeDef* local)  { local->CONTROL1 |= UART_CONTROL1_RE_M; }
 inline void __HAL_USART_RX_Disable(UART_TypeDef* local) { local->CONTROL1 &= ~UART_CONTROL1_RE_M; }
 
+inline void HAL_USART_PE_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 |= UART_CONTROL1_PEIE_M;
+}
+inline void HAL_USART_PE_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 &= ~UART_CONTROL1_PEIE_M;
+}
+inline void HAL_USART_TXE_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 |= UART_CONTROL1_TXEIE_M;
+}
+inline void HAL_USART_TXE_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 &= ~UART_CONTROL1_TXEIE_M;
+}
+inline void HAL_USART_TXC_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 |= UART_CONTROL1_TCIE_M;
+}
+inline void HAL_USART_TXC_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 &= ~UART_CONTROL1_TCIE_M;
+}
+inline void HAL_USART_RXNE_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 |= UART_CONTROL1_RXNEIE_M;
+}
+inline void HAL_USART_RXNE_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 &= ~UART_CONTROL1_RXNEIE_M;
+}
+inline void HAL_USART_IDLE_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 |= UART_CONTROL1_IDLEIE_M;
+}
+inline void HAL_USART_IDLE_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL1 &= ~UART_CONTROL1_IDLEIE_M;
+}
+inline void HAL_USART_RX_Break_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL2 |= UART_CONTROL2_LBDIE_M;
+}
+inline void HAL_USART_RX_Break_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL2 &= ~UART_CONTROL2_LBDIE_M;
+}
+inline void HAL_USART_CTS_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL3 |= UART_CONTROL3_CTSIE_M;
+}
+inline void HAL_USART_CTS_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL3 &= ~UART_CONTROL3_CTSIE_M;
+}
+inline void HAL_USART_RX_Error_EnableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL3 |= UART_CONTROL3_EIE_M;
+}
+inline void HAL_USART_RX_Error_DisableInterrupt(UART_TypeDef* local)
+{
+    local->CONTROL3 &= ~UART_CONTROL3_EIE_M;
+}
+
 
 typedef enum 
 {
@@ -63,15 +128,40 @@ typedef enum
 typedef struct 
 {
     //control1
+    /**
+     * @brief Прерывание при обнаружении ошибки в бите четности 
+     */
     HAL_USART_EnableDisable_enum peie;
+    /**
+     * @brief Прерывание по флагу "регистр передатчика пуст"
+     */
     HAL_USART_EnableDisable_enum txeie;
+    /**
+     * @brief Прерывание по флагу "передача окончена"
+     */
     HAL_USART_EnableDisable_enum tcie;
+    /**
+     * @brief Прерывание по флагу "регистр приемника не пуст"
+     */
     HAL_USART_EnableDisable_enum rxneie;
+    /**
+     * @brief Прерывание при отсутствии входных транзакций в течение
+     * 8 битовых тактов при установленном флаге RXNE
+     */
     HAL_USART_EnableDisable_enum idleie;
     //control2
+    /**
+     * @brief Прерывание при обнаружении break-состояния на линии RX
+     */
     HAL_USART_EnableDisable_enum lbdie;
     //control3
+    /**
+     * @brief Прерывание по изменению состояния линии CTS
+     */
     HAL_USART_EnableDisable_enum ctsie;
+    /**
+     * @brief Прерывание при обнаружении ошибок приема данных (FE, ORE, NF)
+     */
     HAL_USART_EnableDisable_enum eie;
 } HAL_USART_Interrupt_TypeDef;
 
@@ -96,7 +186,6 @@ typedef struct __SettingTypeDef
     HAL_USART_Frame_enum frame;
     HAL_USART_EnableDisable_enum parity_bit;
     HAL_USART_EnableDisable_enum parity_bit_inversion;
-    HAL_USART_EnableDisable_enum parity_interrupt;
     HAL_USART_BitDirection_enum bit_direction;
     HAL_USART_EnableDisable_enum data_inversion;
     HAL_USART_EnableDisable_enum tx_inversion;
