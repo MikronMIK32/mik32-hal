@@ -4,11 +4,52 @@ uint16_t TimeOut = 20;
 uint16_t WDT_prescale[] = {1, 2, 4, 16, 64, 256, 1024, 4096};
 
 /**
+ * @brief  Запись слова в регистр CON (конфигурация WDT)
+ * @param  hwdt указатель на структуру WDT_HandleTypeDef, которая содержит
+ *                  информацию о конфигурации для модуля WDT.
+ * @param  conValue 32-х битное слово
+ */
+static void HAL_WDT_Write_Word_To_CON(WDT_HandleTypeDef* hwdt, uint32_t conValue)
+{
+    intptr_t ptr = (intptr_t)(hwdt->Instance);
+    /**
+     *  Попытки избежать использования отдельной переменной-указателя, такие как:
+     *  "sb a0,0x9C(%a0)\n\t"
+     *  : "m" (*(hwdt->Instance))
+     *  не работают из-за бага GCC (internal compiler error <...> riscv_print_operand_address)  
+     * */ 
+    asm volatile(
+        "li a0,0x1E\n\t" //Store unlock byte somewhere
+        "sb a0,0x9C(%0)\n\t" //Write UNLOCK byte into WDT KEY register
+        "sw %1,0x84(%0)\n\t" //Write payload
+        : 
+        : "r" (ptr), "r" (conValue)
+        : "a0"
+    );
+}
+/**
+ * @brief  Запись байта в регистр KEY (пуск/остановка WDT)
+ * @param  hwdt указатель на структуру WDT_HandleTypeDef, которая содержит
+ *                  информацию о конфигурации для модуля WDT.
+ * @param  key байт для записи ( @ref WDT_KEY_START или @ref WDT_KEY_STOP )
+ */
+static void HAL_WDT_Write_Byte_To_KEY(WDT_HandleTypeDef* hwdt, uint8_t key)
+{
+    intptr_t ptr = (intptr_t)(hwdt->Instance);
+    asm volatile(
+        "li a0,0x1E\n\t" //Store unlock byte somewhere
+        "sb a0,0x9C(%0)\n\t" //Write UNLOCK byte into WDT KEY register
+        "sb %1,0x9C(%0)\n\t" //Write payload
+        : 
+        : "r" (ptr), "r" (key)
+        : "a0"
+    );
+}
+
+/**
   * @brief  Инициализация WDT MSP.
   * @param  hwdt указатель на структуру WDT_HandleTypeDef, которая содержит
  *                  информацию о конфигурации для модуля WDT.
-  * 
-  *                 информацию о конфигурации для модуля WDT.
   */
 __attribute__((weak)) void HAL_RTC_MspInit(WDT_HandleTypeDef *hwdt)
 {
@@ -100,8 +141,7 @@ HAL_StatusTypeDef HAL_WDT_Init(WDT_HandleTypeDef *hwdt, uint32_t timeout)
     }
 
     uint32_t conValue = (wdtClock.divIndex << WDT_CON_PRESCALE_S) | WDT_CON_PRELOAD(wdtClock.tick);
-    hwdt->Instance->KEY = WDT_KEY_UNLOCK;
-    hwdt->Instance->CON = conValue;
+    HAL_WDT_Write_Word_To_CON(hwdt, conValue);
 
     return HAL_OK;
 }
@@ -115,8 +155,7 @@ HAL_StatusTypeDef HAL_WDT_Init(WDT_HandleTypeDef *hwdt, uint32_t timeout)
  */
 HAL_StatusTypeDef HAL_WDT_Refresh(WDT_HandleTypeDef *hwdt, uint32_t timeout)
 {
-    hwdt->Instance->KEY = WDT_KEY_UNLOCK;
-    hwdt->Instance->KEY = WDT_KEY_START;
+    HAL_WDT_Write_Byte_To_KEY(hwdt, WDT_KEY_START);
 
     while (timeout--)
     {
@@ -139,8 +178,7 @@ HAL_StatusTypeDef HAL_WDT_Refresh(WDT_HandleTypeDef *hwdt, uint32_t timeout)
  */
 HAL_StatusTypeDef HAL_WDT_Start(WDT_HandleTypeDef *hwdt, uint32_t timeout)
 {
-    hwdt->Instance->KEY = WDT_KEY_UNLOCK;
-    hwdt->Instance->KEY = WDT_KEY_START;
+    HAL_WDT_Write_Byte_To_KEY(hwdt, WDT_KEY_START);
 
     while (timeout--)
     {
@@ -162,8 +200,7 @@ HAL_StatusTypeDef HAL_WDT_Start(WDT_HandleTypeDef *hwdt, uint32_t timeout)
  */
 HAL_StatusTypeDef HAL_WDT_Stop(WDT_HandleTypeDef *hwdt, uint32_t timeout)
 {
-    hwdt->Instance->KEY = WDT_KEY_UNLOCK;
-    hwdt->Instance->KEY = WDT_KEY_STOP;
+    HAL_WDT_Write_Byte_To_KEY(hwdt, WDT_KEY_STOP);
 
     while (timeout--)
     {
@@ -185,8 +222,7 @@ HAL_StatusTypeDef HAL_WDT_Stop(WDT_HandleTypeDef *hwdt, uint32_t timeout)
 void HAL_WDT_SetPrescale(WDT_HandleTypeDef *hwdt, HAL_WDT_Prescale prescale)
 {
     uint32_t conValue = (hwdt->Instance->CON & (~WDT_CON_PRESCALE_M)) | ((prescale << WDT_CON_PRESCALE_S) & WDT_CON_PRESCALE_M);
-    hwdt->Instance->KEY = WDT_KEY_UNLOCK;
-    hwdt->Instance->CON = conValue;
+    HAL_WDT_Write_Word_To_CON(hwdt, conValue);
 }
 
 /**
@@ -198,6 +234,5 @@ void HAL_WDT_SetPrescale(WDT_HandleTypeDef *hwdt, HAL_WDT_Prescale prescale)
 void HAL_WDT_SetPreload(WDT_HandleTypeDef *hwdt, HAL_WDT_Prescale preload)
 {
     uint32_t conValue = (hwdt->Instance->CON & (~WDT_CON_PRELOAD_M)) | WDT_CON_PRELOAD(preload);
-    hwdt->Instance->KEY = WDT_KEY_UNLOCK;
-    hwdt->Instance->CON = conValue;
+    HAL_WDT_Write_Word_To_CON(hwdt, conValue);
 }
