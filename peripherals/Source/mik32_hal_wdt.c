@@ -9,8 +9,9 @@ uint16_t WDT_prescale[] = {1, 2, 4, 16, 64, 256, 1024, 4096};
  *                  информацию о конфигурации для модуля WDT.
  * @param  conValue 32-х битное слово
  */
-static void HAL_WDT_Write_Word_To_CON(WDT_HandleTypeDef* hwdt, uint32_t conValue)
+static void __attribute__( ( noinline, section(".data") ) ) HAL_WDT_Write_Word_To_CON(WDT_HandleTypeDef* hwdt, uint32_t conValue)
 {
+    //Если позволить компилятору inlining, станет невозможно выделить функцию в отдельную секцию.
     intptr_t ptr = (intptr_t)(hwdt->Instance);
     /**
      *  Попытки избежать использования отдельной переменной-указателя, такие как:
@@ -33,7 +34,7 @@ static void HAL_WDT_Write_Word_To_CON(WDT_HandleTypeDef* hwdt, uint32_t conValue
  *                  информацию о конфигурации для модуля WDT.
  * @param  key байт для записи ( @ref WDT_KEY_START или @ref WDT_KEY_STOP )
  */
-static void HAL_WDT_Write_Byte_To_KEY(WDT_HandleTypeDef* hwdt, uint8_t key)
+static void __attribute__( ( noinline, section(".data") ) ) HAL_WDT_Write_Byte_To_KEY(WDT_HandleTypeDef* hwdt, uint8_t key)
 {
     intptr_t ptr = (intptr_t)(hwdt->Instance);
     asm volatile(
