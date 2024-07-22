@@ -7,288 +7,6 @@
 #include "gpio.h"
 
 
-inline void __HAL_USART_Enable(UART_TypeDef* local)
-{
-    local->CONTROL1 |= UART_CONTROL1_UE_M;
-}
-inline void __HAL_USART_Disable(UART_TypeDef* local)
-{
-    local->CONTROL1 &= ~UART_CONTROL1_UE_M;
-}
-
-/**
- * @brief Разрешить прерывания по признаку ошибки бита четности
- */
-inline void HAL_USART_PE_EnableInterrupt(UART_TypeDef* local)       
-{
-    local->CONTROL1 |= UART_CONTROL1_PEIE_M;
-}
-/**
- * @brief Запретить прерывания по признаку ошибки бита четности
- */
-inline void HAL_USART_PE_DisableInterrupt(UART_TypeDef* local)      
-{
-    local->CONTROL1 &= ~UART_CONTROL1_PEIE_M;
-}
-/**
- * @brief Разрешить прерывания по признаку "регистр передатчика пуст"
- */
-inline void HAL_USART_TXE_EnableInterrupt(UART_TypeDef* local)      
-{
-    local->CONTROL1 |= UART_CONTROL1_TXEIE_M;
-}
-/**
- * @brief Запретить прерывания по признаку "регистр передатчика пуст"
- */
-inline void HAL_USART_TXE_DisableInterrupt(UART_TypeDef* local)     
-{
-    local->CONTROL1 &= ~UART_CONTROL1_TXEIE_M;
-}
-/**
- * @brief Разрешить прерывания по признаку "передача завершена"
- */
-inline void HAL_USART_TXC_EnableInterrupt(UART_TypeDef* local)      
-{
-    local->CONTROL1 |= UART_CONTROL1_TCIE_M;
-}
-/* Запретить прерывания по признаку "передача завершена" */
-inline void HAL_USART_TXC_DisableInterrupt(UART_TypeDef* local)     
-{
-    local->CONTROL1 &= ~UART_CONTROL1_TCIE_M;
-}
-/* Разрешить прерывания по признаку "регистр приемника не пуст" */
-inline void HAL_USART_RXNE_EnableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL1 |= UART_CONTROL1_RXNEIE_M;
-}
-/* Запретить прерывания по признаку "регистр приемника не пуст" */
-inline void HAL_USART_RXNE_DisableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL1 &= ~UART_CONTROL1_RXNEIE_M;
-}
-/* Разрешить прерывания по признаку "активность на линии RX не обнаружена в течение 8 битовых тактов" */
-inline void HAL_USART_IDLE_EnableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL1 |= UART_CONTROL1_IDLEIE_M;
-}
-/* Запретить прерывания по признаку "активность на линии RX не обнаружена в течение 8 битовых тактов" */
-inline void HAL_USART_IDLE_DisableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL1 &= ~UART_CONTROL1_IDLEIE_M;
-}
-/* Разрешить прерывания при обнаружении break-состояния на линии RX */
-inline void HAL_USART_RX_Break_EnableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL2 |= UART_CONTROL2_LBDIE_M;
-}
-/* Запретить прерывания при обнаружении break-состояния на линии RX */
-inline void HAL_USART_RX_Break_DisableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL2 &= ~UART_CONTROL2_LBDIE_M;
-}
-/* Разрешить прерывания при изменени уровня линии CTS */
-inline void HAL_USART_CTS_EnableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL3 |= UART_CONTROL3_CTSIE_M;
-}
-/* Запретить прерывания при изменени уровня линии CTS */
-inline void HAL_USART_CTS_DisableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL3 &= ~UART_CONTROL3_CTSIE_M;
-}
-/* Разрешить прерывания при обнаружении ошибки приема данных (FE, ORE, NF) */
-inline void HAL_USART_RX_Error_EnableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL3 |= UART_CONTROL3_EIE_M;
-}
-/* Запретить прерывания при обнаружении ошибки приема данных (FE, ORE, NF) */
-inline void HAL_USART_RX_Error_DisableInterrupt(UART_TypeDef* local)
-{
-    local->CONTROL3 &= ~UART_CONTROL3_EIE_M;
-}
-
-/*******************************************************************************
- * @brief Функция отправки 1 байта данных на модуль USART для последующей
- * передачи.
- * @param local указатель на структуру-дескриптор модуля USART
- * @param data 1 байт отправляемых данных
- * @return none
- */
-inline void HAL_USART_WriteByte(UART_TypeDef* local, char data)
-{
-    local->TXDATA = data;
-}
-
-/*******************************************************************************
- * @brief Чтение принятых модулем USART данных
- * @param local указатель на структуру-дескриптор модуля USART
- * @return 1 байт принятых данных
- */
-inline char HAL_USART_ReadByte(UART_TypeDef* local)
-{
-    return local->RXDATA;
-}
-
-/*******************************************************************************
- * @brief Очистка флага изменения состояния линии CTS модуля USART
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_CTS_ClearToggleFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_CTSIF_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага фиксации break-состояния на линии RX модуля USART
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_RX_ClearBreakFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_LBDF_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага TXС ("передача завершена") модуля USART
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_TXC_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_TC_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага TXE ("регистр передатчика пуст") модуля USART
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_TXE_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_TXE_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага RXNE ("регистр приемника не пуст") модуля USART
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_RXNE_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_RXNE_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага IDLE модуля USART.
- * Флаг IDLE устанавливается при отсутствии активности на линии RX в течение 8
- * битовых тактов при установленном флаге RXNE.
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_IDLE_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_IDLE_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага ORE модуля USART.
- * Флаг ORE устанавливается при попытке перезаписи принятых по RX данных.
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_ReceiveOverwrite_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_ORE_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага NF модуля USART.
- * Флаг NF устанавливается при обнаружении ложных переключений на линии RX.
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_NF_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_NF_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага FE модуля USART.
- * Флаг FE устанавливается при обнаружении ошибок в стоп-бите (битах).
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_StopBitError_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_FE_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага PE модуля USART.
- * Флаг PE устанавливается при обнаружении ошибочного бита четности.
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_ParityError_ClearFlag(UART_TypeDef* local)
-{
-    local->FLAGS |= UART_FLAGS_PE_M;
-}
-
-
-/*******************************************************************************
- * @brief Очистка всех флагов модуля USART, кроме модемных
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_ClearFlags(UART_TypeDef* local)
-{
-    local->FLAGS = 0xFFFFFFFF;
-}
-
-/*******************************************************************************
- * @brief Очистка флага изменения состояния линии DCD ("обнаружение несущей")
- * модуля USART.
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_DCD_ClearToggleFlag(UART_TypeDef* local)
-{
-    local->MODEM |= UART_MODEM_DCDIF_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага изменения состояния линии RI ("звонок на телефонной
- * линии") модуля USART.
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_RI_ClearToggleFlag(UART_TypeDef* local)
-{
-    local->MODEM |= UART_MODEM_RIIF_M;
-}
-
-/*******************************************************************************
- * @brief Очистка флага изменения состояния линии DSR ("источник данных готов")
- * модуля USART.
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_DSR_ClearToggleFlag(UART_TypeDef* local)
-{
-    local->MODEM |= UART_MODEM_DSRIF_M;
-}
-
-/*******************************************************************************
- * @brief Очитка модемных флагов модуля USART (флаги изменения DCD, RI, DSR)
- * @param local указатель на структуру-дескриптор модуля USART
- * @return none
- */
-inline void HAL_USART_ClearModemFlags(UART_TypeDef* local)
-{
-    local->MODEM |= (UART_MODEM_DCDIF_M | UART_MODEM_RIIF_M | UART_MODEM_DSRIF_M);
-}
-
 
 typedef enum __Enable_or_Disable
 {
@@ -442,74 +160,380 @@ typedef struct
 typedef struct __SettingTypeDef
 {
     UART_TypeDef* Instance;
-    /* Settings */
+    /* Transmitting: Enable / Disable */
     HAL_USART_EnableDisable_enum transmitting;
+    /* Receiving: Enable / Disable */
     HAL_USART_EnableDisable_enum receiving;
+    /* Frame: Frame_7bit, Frame_8bit or Frame_9bit */
     HAL_USART_Frame_enum frame;
+    /* Parity bit: Enable / Disable */
     HAL_USART_EnableDisable_enum parity_bit;
+    /* Parity bit inversion: Enable / Disable */
     HAL_USART_EnableDisable_enum parity_bit_inversion;
+    /* Bit direction: LSB_First / MSB_First */
     HAL_USART_BitDirection_enum bit_direction;
+    /* Data inversion: Enable / Disable */
     HAL_USART_EnableDisable_enum data_inversion;
+    /* TXD inversion: Enable / Disable */
     HAL_USART_EnableDisable_enum tx_inversion;
+    /* RXD inversion: Enable / Disable */
     HAL_USART_EnableDisable_enum rx_inversion;
+    /* Swap RXD & TXD: Enable / Disable */
     HAL_USART_EnableDisable_enum swap;
+    /* Режим обратной внутренней петли (TX и RTS замыкаются на RX и CTS): Enable / Disable */
     HAL_USART_EnableDisable_enum lbm;
+    /* Стоп-бит: StopBit_1 / StopBit_2 */
     HAL_USART_StopBit_enum stop_bit;
+    /* USART mode: Asynchronous / Synchronous */
     HAL_USART_Mode_enum mode;
+    /* Выбор режима тактирования в синронном моде:
+     * - XCK_Mode0: лог.0 вне транзакции, фиксация по фронту CK
+     * - XCK_Mode1: лог.0 вне транзакции, фиксация по спаду CK
+     * - XCK_Mode2: лог.1 вне транзакции, фиксация по фронту CK
+     * - XCK_Mode3: лог.1 вне транзакции, фиксация по спаду CK
+     */
     HAL_USART_XCK_Mode_enum xck_mode;
+    /* Управление тактовым импульсом при передаче стоп-бита (только в синхронном режме):
+     * - Enable: тактовый импульс присутствует
+     * - Disable: тактовый импульс отстутсвует
+     */
     HAL_USART_EnableDisable_enum last_byte_clock;
+    /* Реакция на переполнение RXDATA:
+     * - overwrite Disable: данные не перезаписываются, устанавливается флаг ошибки (ORE)
+     * - overwrite Enable: данные перезаписываются, флаг ORE не устанавливается
+     */
     HAL_USART_EnableDisable_enum overwrite;
+    /* RTS mode: AlwaysEnable_mode / Modem_mode */
     HAL_USART_RTS_mode_enum rts_mode;
+    /* DMA TXC request: Enable / Disable */
     HAL_USART_EnableDisable_enum dma_tx_request;
+    /* DMA RXNE request: Enable / Disable */
     HAL_USART_EnableDisable_enum dma_rx_request;
+    /* USART channel mode: Duplex_mode / Semiduplex_mode */
     HAL_USART_ChannelMode_enum channel_mode;
+    /* Break mode on TXD: Enable / Disable */
     HAL_USART_EnableDisable_enum tx_break_mode;
-    /* Interrupts */
     HAL_USART_Interrupt_TypeDef Interrupt;
-    /* Modem signals */
     HAL_USART_Modem_TypeDef Modem;
-    /* Baudrate */
+    /* Baudrate: максимальное значение - частота APB_P / 16 */
     uint32_t baudrate;
 
-} UART_Setting_TypeDef;
+} USART_HandleTypeDef;
+
+inline void __HAL_USART_Enable(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL1 |= UART_CONTROL1_UE_M;
+}
+inline void __HAL_USART_Disable(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL1 &= ~UART_CONTROL1_UE_M;
+}
+
+/**
+ * @brief Разрешить прерывания по признаку ошибки бита четности
+ */
+inline void HAL_USART_PE_EnableInterrupt(USART_HandleTypeDef* local)       
+{
+    local->Instance->CONTROL1 |= UART_CONTROL1_PEIE_M;
+}
+/**
+ * @brief Запретить прерывания по признаку ошибки бита четности
+ */
+inline void HAL_USART_PE_DisableInterrupt(USART_HandleTypeDef* local)      
+{
+    local->Instance->CONTROL1 &= ~UART_CONTROL1_PEIE_M;
+}
+/**
+ * @brief Разрешить прерывания по признаку "регистр передатчика пуст"
+ */
+inline void HAL_USART_TXE_EnableInterrupt(USART_HandleTypeDef* local)      
+{
+    local->Instance->CONTROL1 |= UART_CONTROL1_TXEIE_M;
+}
+/**
+ * @brief Запретить прерывания по признаку "регистр передатчика пуст"
+ */
+inline void HAL_USART_TXE_DisableInterrupt(USART_HandleTypeDef* local)     
+{
+    local->Instance->CONTROL1 &= ~UART_CONTROL1_TXEIE_M;
+}
+/**
+ * @brief Разрешить прерывания по признаку "передача завершена"
+ */
+inline void HAL_USART_TXC_EnableInterrupt(USART_HandleTypeDef* local)      
+{
+    local->Instance->CONTROL1 |= UART_CONTROL1_TCIE_M;
+}
+/* Запретить прерывания по признаку "передача завершена" */
+inline void HAL_USART_TXC_DisableInterrupt(USART_HandleTypeDef* local)     
+{
+    local->Instance->CONTROL1 &= ~UART_CONTROL1_TCIE_M;
+}
+/* Разрешить прерывания по признаку "регистр приемника не пуст" */
+inline void HAL_USART_RXNE_EnableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL1 |= UART_CONTROL1_RXNEIE_M;
+}
+/* Запретить прерывания по признаку "регистр приемника не пуст" */
+inline void HAL_USART_RXNE_DisableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL1 &= ~UART_CONTROL1_RXNEIE_M;
+}
+/* Разрешить прерывания по признаку "активность на линии RX не обнаружена в течение 8 битовых тактов" */
+inline void HAL_USART_IDLE_EnableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL1 |= UART_CONTROL1_IDLEIE_M;
+}
+/* Запретить прерывания по признаку "активность на линии RX не обнаружена в течение 8 битовых тактов" */
+inline void HAL_USART_IDLE_DisableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL1 &= ~UART_CONTROL1_IDLEIE_M;
+}
+/* Разрешить прерывания при обнаружении break-состояния на линии RX */
+inline void HAL_USART_RX_Break_EnableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL2 |= UART_CONTROL2_LBDIE_M;
+}
+/* Запретить прерывания при обнаружении break-состояния на линии RX */
+inline void HAL_USART_RX_Break_DisableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL2 &= ~UART_CONTROL2_LBDIE_M;
+}
+/* Разрешить прерывания при изменени уровня линии CTS */
+inline void HAL_USART_CTS_EnableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL3 |= UART_CONTROL3_CTSIE_M;
+}
+/* Запретить прерывания при изменени уровня линии CTS */
+inline void HAL_USART_CTS_DisableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL3 &= ~UART_CONTROL3_CTSIE_M;
+}
+/* Разрешить прерывания при обнаружении ошибки приема данных (FE, ORE, NF) */
+inline void HAL_USART_RX_Error_EnableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL3 |= UART_CONTROL3_EIE_M;
+}
+/* Запретить прерывания при обнаружении ошибки приема данных (FE, ORE, NF) */
+inline void HAL_USART_RX_Error_DisableInterrupt(USART_HandleTypeDef* local)
+{
+    local->Instance->CONTROL3 &= ~UART_CONTROL3_EIE_M;
+}
+
+/*******************************************************************************
+ * @brief Функция отправки 1 байта данных на модуль USART для последующей
+ * передачи.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @param data 1 байт отправляемых данных
+ * @return none
+ */
+inline void HAL_USART_WriteByte(USART_HandleTypeDef* local, char data)
+{
+    local->Instance->TXDATA = data;
+}
+
+/*******************************************************************************
+ * @brief Чтение принятых модулем USART данных
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return 1 байт принятых данных
+ */
+inline char HAL_USART_ReadByte(USART_HandleTypeDef* local)
+{
+    return local->Instance->RXDATA;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага изменения состояния линии CTS модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_CTS_ClearToggleFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_CTSIF_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага фиксации break-состояния на линии RX модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_RX_ClearBreakFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_LBDF_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага TXС ("передача завершена") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_TXC_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_TC_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага TXE ("регистр передатчика пуст") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_TXE_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_TXE_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага RXNE ("регистр приемника не пуст") модуля USART
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_RXNE_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_RXNE_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага IDLE модуля USART.
+ * Флаг IDLE устанавливается при отсутствии активности на линии RX в течение 8
+ * битовых тактов при установленном флаге RXNE.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_IDLE_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_IDLE_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага ORE модуля USART.
+ * Флаг ORE устанавливается при попытке перезаписи принятых по RX данных.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_ReceiveOverwrite_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_ORE_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага NF модуля USART.
+ * Флаг NF устанавливается при обнаружении ложных переключений на линии RX.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_NF_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_NF_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага FE модуля USART.
+ * Флаг FE устанавливается при обнаружении ошибок в стоп-бите (битах).
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_StopBitError_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_FE_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага PE модуля USART.
+ * Флаг PE устанавливается при обнаружении ошибочного бита четности.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_ParityError_ClearFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS |= UART_FLAGS_PE_M;
+}
 
 
-/* Initialization */
-void HAL_USART_MspInit(UART_Setting_TypeDef* setting);
-HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting);
-/* Flags */
-bool HAL_USART_Read_ReceiveEnableAck(UART_TypeDef* local);
-bool HAL_USART_Read_TransmitEnableAck(UART_TypeDef* local);
-bool HAL_USART_CTS_ReadLevel(UART_TypeDef* local);
-bool HAL_USART_CTS_ReadToggleFlag(UART_TypeDef* local);
-bool HAL_USART_RX_ReadBreakFlag(UART_TypeDef* local);
-bool HAL_USART_TXC_ReadFlag(UART_TypeDef* local);
-bool HAL_USART_TXE_ReadFlag(UART_TypeDef* local);
-bool HAL_USART_RXNE_ReadFlag(UART_TypeDef* local);
-bool HAL_USART_IDLE_ReadFlag(UART_TypeDef* local);
-bool HAL_USART_ReceiveOverwrite_ReadFlag(UART_TypeDef* local);
-bool HAL_USART_NF_ReadFlag(UART_TypeDef* local);
-bool HAL_USART_StopBitError_ReadFlag(UART_TypeDef* local);
-bool HAL_USART_ParityError_ReadFlag(UART_TypeDef* local);
+/*******************************************************************************
+ * @brief Очистка всех флагов модуля USART, кроме модемных
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_ClearFlags(USART_HandleTypeDef* local)
+{
+    local->Instance->FLAGS = 0xFFFFFFFF;
+}
 
-void HAL_USART_Transmit(UART_TypeDef* local, char data);
-void HAL_USART_Write(UART_TypeDef* local, char* buffer, uint32_t len);
-void HAL_USART_Print(UART_TypeDef* local, char* str);
-char HAL_USART_Receive(UART_TypeDef* local);
-void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len);
-/* Xprintf */
+/*******************************************************************************
+ * @brief Очистка флага изменения состояния линии DCD ("обнаружение несущей")
+ * модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_DCD_ClearToggleFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->MODEM |= UART_MODEM_DCDIF_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага изменения состояния линии RI ("звонок на телефонной
+ * линии") модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_RI_ClearToggleFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->MODEM |= UART_MODEM_RIIF_M;
+}
+
+/*******************************************************************************
+ * @brief Очистка флага изменения состояния линии DSR ("источник данных готов")
+ * модуля USART.
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_DSR_ClearToggleFlag(USART_HandleTypeDef* local)
+{
+    local->Instance->MODEM |= UART_MODEM_DSRIF_M;
+}
+
+/*******************************************************************************
+ * @brief Очитка модемных флагов модуля USART (флаги изменения DCD, RI, DSR)
+ * @param local указатель на структуру-дескриптор модуля USART
+ * @return none
+ */
+inline void HAL_USART_ClearModemFlags(USART_HandleTypeDef* local)
+{
+    local->Instance->MODEM |= (UART_MODEM_DCDIF_M | UART_MODEM_RIIF_M | UART_MODEM_DSRIF_M);
+}
+
+
+void HAL_USART_MspInit(USART_HandleTypeDef* local);
+HAL_StatusTypeDef HAL_USART_Init(USART_HandleTypeDef* setting);
+bool HAL_USART_Read_ReceiveEnableAck(USART_HandleTypeDef* local);
+bool HAL_USART_Read_TransmitEnableAck(USART_HandleTypeDef* local);
+bool HAL_USART_CTS_ReadLevel(USART_HandleTypeDef* local);
+bool HAL_USART_CTS_ReadToggleFlag(USART_HandleTypeDef* local);
+bool HAL_USART_RX_ReadBreakFlag(USART_HandleTypeDef* local);
+bool HAL_USART_TXC_ReadFlag(USART_HandleTypeDef* local);
+bool HAL_USART_TXE_ReadFlag(USART_HandleTypeDef* local);
+bool HAL_USART_RXNE_ReadFlag(USART_HandleTypeDef* local);
+bool HAL_USART_IDLE_ReadFlag(USART_HandleTypeDef* local);
+bool HAL_USART_ReceiveOverwrite_ReadFlag(USART_HandleTypeDef* local);
+bool HAL_USART_NF_ReadFlag(USART_HandleTypeDef* local);
+bool HAL_USART_StopBitError_ReadFlag(USART_HandleTypeDef* local);
+bool HAL_USART_ParityError_ReadFlag(USART_HandleTypeDef* local);
+void HAL_USART_Transmit(USART_HandleTypeDef* local, char data);
+void HAL_USART_Write(USART_HandleTypeDef* local, char* buffer, uint32_t len);
+void HAL_USART_Print(USART_HandleTypeDef* local, char* str);
+char HAL_USART_Receive(USART_HandleTypeDef* local);
+void HAL_USART_Read(USART_HandleTypeDef* local, char* buffer, uint32_t len);
 void xputc(char c);
-/* Modem signals */
-void HAL_USART_Set_DTR(UART_TypeDef* local, HAL_USART_EnableDisable_enum en);
-bool HAL_USART_DCD_Status(UART_TypeDef* local);
-bool HAL_USART_DCD_ReadToggleFlag(UART_TypeDef* local);
-bool HAL_USART_RI_Status(UART_TypeDef* local);
-bool HAL_USART_RI_ReadToggleFlag(UART_TypeDef* local);
-bool HAL_USART_DSR_Status(UART_TypeDef* local);
-bool HAL_USART_DSR_ReadToggleFlag(UART_TypeDef* local);
+void HAL_USART_Set_DTR(USART_HandleTypeDef* local, HAL_USART_EnableDisable_enum en);
+bool HAL_USART_DCD_Status(USART_HandleTypeDef* local);
+bool HAL_USART_DCD_ReadToggleFlag(USART_HandleTypeDef* local);
+bool HAL_USART_RI_Status(USART_HandleTypeDef* local);
+bool HAL_USART_RI_ReadToggleFlag(USART_HandleTypeDef* local);
+bool HAL_USART_DSR_Status(USART_HandleTypeDef* local);
+bool HAL_USART_DSR_ReadToggleFlag(USART_HandleTypeDef* local);
 
 
-// void HAL_USART_Printf(UART_TypeDef* local, char* str, ...);
-// void HAL_USART_PrintBefore(UART_TypeDef* local, char* str);
-// void HAL_USART_Print_c(UART_TypeDef* local, char value);
-// void HAL_USART_Print_s(UART_TypeDef* local, char* str);
+// void HAL_USART_Printf(USART_HandleTypeDef* local, char* str, ...);
+// void HAL_USART_PrintBefore(USART_HandleTypeDef* local, char* str);
+// void HAL_USART_Print_c(USART_HandleTypeDef* local, char value);
+// void HAL_USART_Print_s(USART_HandleTypeDef* local, char* str);
