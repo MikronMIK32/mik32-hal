@@ -165,11 +165,8 @@ typedef struct
 
 
 /* Сменить канал АЦП */
-#ifdef MIK32V0
-    #define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SEL_M)) | ((channel_selection) << ADC_CONFIG_SEL_S)))
-#else // MIK32V2
-    #define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) & (~ADC_CONFIG_SEL_M)) | (((adc_instance)->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) | ((channel_selection) << ADC_CONFIG_SEL_S))
-#endif // MIK32V0
+#define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) & (~ADC_CONFIG_SEL_M)) | (((adc_instance)->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) | ((channel_selection) << ADC_CONFIG_SEL_S))
+
 
 /* Запустить однократное преобразование */
 #define HAL_ADC_SINGLE(adc_instance) ((adc_instance)->ADC_SINGLE = 1) 
