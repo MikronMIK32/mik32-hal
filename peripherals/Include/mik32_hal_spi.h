@@ -7,7 +7,7 @@
 #include "power_manager.h"
 #include "spi.h"
 #include "mik32_hal_def.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 
 /** Значение timeout по умолчанию. */
