@@ -6,7 +6,7 @@
 #include <timer32.h>
 #include <power_manager.h>
 #include "mik32_hal_def.h"
-#include <mcu32_memory_map.h>
+#include <mik32_memory_map.h>
 
 #define TIMER32_TIMEOUT 10000000
 
