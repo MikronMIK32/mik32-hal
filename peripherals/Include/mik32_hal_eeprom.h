@@ -2,7 +2,7 @@
 #define MIK32_HAL_EEPROM_H_INCLUDED
 
 #include "mik32_hal_def.h"
-#include <mcu32_memory_map.h>
+#include <mik32_memory_map.h>
 #include <eeprom.h>
 #include <power_manager.h>
 
