@@ -2,7 +2,7 @@
 #define MCU32_HAL_WDT
 
 #include "mik32_hal_pcc.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 #include "wdt.h"
 #include "wdt_bus.h"
 #include "power_manager.h"
