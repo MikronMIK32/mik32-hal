@@ -7,11 +7,7 @@ __attribute__((weak)) void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     
     if ((hadc->Init.EXTClb == ADC_EXTCLB_ADCREF) && (hadc->Init.EXTRef == ADC_EXTREF_ON))
     {
-        #ifdef MIK32V0
-        GPIO_InitStruct.Pin = GPIO_PIN_10;
-        #else // MIK32V2
         GPIO_InitStruct.Pin = GPIO_PIN_11;
-        #endif // MIK32V0
     }
     
     GPIO_InitStruct.Mode = HAL_GPIO_MODE_ANALOG;
@@ -87,24 +83,15 @@ void HAL_ADC_ICLBSet(ADC_HandleTypeDef *hadc, uint8_t i_coef)
 
 void HAL_ADC_ResetEnable(ADC_HandleTypeDef *hadc)
 {
-#ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG |= (1 << ADC_CONFIG_RESETN_S);
-#else // MIK32V2
     hadc->Instance->ADC_CONFIG = (hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) |
                                  (1 << ADC_CONFIG_RESETN_S);
-#endif // MIK32V0
 }
 
 void HAL_ADC_ResetDisable(ADC_HandleTypeDef *hadc)
 {
-
-#ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG &= ~(1 << ADC_CONFIG_RESETN_S);
-#else // MIK32V2
     hadc->Instance->ADC_CONFIG = ((hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_RESETN_M)) & (~ADC_CONFIG_SAH_TIME_M)) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M);
-#endif // MIK32V0
 }
 
 void HAL_ADC_Disable(ADC_HandleTypeDef *hadc)
@@ -115,51 +102,33 @@ void HAL_ADC_Disable(ADC_HandleTypeDef *hadc)
 
 void HAL_ADC_Enable(ADC_HandleTypeDef *hadc)
 {
-#ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG |= (1 << ADC_CONFIG_EN_S);
-#else // MIK32V2
     hadc->Instance->ADC_CONFIG = (hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) |
                                  (1 << ADC_CONFIG_EN_S);
 
-#endif // MIK32V0
     HAL_ADC_ResetEnable(hadc);
 }
 
 void HAL_ADC_ChannelSet(ADC_HandleTypeDef *hadc)
 {
-
-#ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG = (hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_SEL_M)) | (hadc->Init.Sel << ADC_CONFIG_SEL_S); /* Настройка канала АЦП */
-#else // MIK32V2
     hadc->Instance->ADC_CONFIG = ((hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) & (~ADC_CONFIG_SEL_M)) |
                                  (hadc->Init.Sel << ADC_CONFIG_SEL_S) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M);
-#endif // MIK32V0
 }
 
 void HAL_ADC_Init(ADC_HandleTypeDef *hadc)
 {
     HAL_ADC_MspInit(hadc);
-#ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG = 0;
-#else // MIK32V2
     hadc->Instance->ADC_CONFIG = 0x3C00;
-#endif // MIK32V0
 
     HAL_ADC_Enable(hadc);
 
     HAL_ADC_ChannelSet(hadc); /* Настройка канала АЦП. Перевод используемого вывода в аналоговый режим */
 
-#ifdef MIK32V0
-    hadc->Instance->ADC_CONFIG |= (hadc->Init.EXTRef << ADC_CONFIG_EXTREF_S) |   /* Настройка источника опорного напряжения */
-                                  (hadc->Init.EXTClb << ADC_CONFIG_EXTPAD_EN_S); /* Выбор внешнего источника опорного напряжения */
-#else // MIK32V2
     hadc->Instance->ADC_CONFIG = (hadc->Instance->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) |
                                  ((hadc->Instance->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) |
                                  (hadc->Init.EXTRef << ADC_CONFIG_EXTREF_S) |   /* Настройка источника опорного напряжения */
                                  (hadc->Init.EXTClb << ADC_CONFIG_EXTPAD_EN_S); /* Выбор внешнего источника опорного напряжения */
-#endif // MIK32V0
 }
 
 void HAL_ADC_Single(ADC_HandleTypeDef *hadc)
