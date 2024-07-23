@@ -66,16 +66,9 @@ typedef enum __GPIO_PinState
  */
 typedef enum __HAL_GPIO_ModeTypeDef
 {
-#ifdef MIK32V0
-	HAL_GPIO_MODE_GPIO_INPUT = 0b101,  /**< Режим вывода - GPIO. Вход. */
-	HAL_GPIO_MODE_GPIO_OUTPUT = 0b001, /**< Режим вывода - GPIO. Выход. */
-	HAL_GPIO_MODE_SERIAL = 0b00,	   /**< Режим вывода - последовательный интерфейс. */
-#else // MIK32V2
 	HAL_GPIO_MODE_GPIO_INPUT = 0b100,  /**< Режим вывода - GPIO. Вход. */
 	HAL_GPIO_MODE_GPIO_OUTPUT = 0b000, /**< Режим вывода - GPIO. Выход. */
 	HAL_GPIO_MODE_SERIAL = 0b01,	   /**< Режим вывода - последовательный интерфейс. */
-#endif // MIK32V0
-
 	HAL_GPIO_MODE_TIMER_SERIAL = 0b10, /**< Режим вывода - последовательный интерфейс или таймер. */
 	HAL_GPIO_MODE_ANALOG = 0b11		   /**< Аналоговый сигнал. */
 } HAL_GPIO_ModeTypeDef;
