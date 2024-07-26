@@ -270,13 +270,13 @@ void HAL_DMA_Start(DMA_ChannelHandleTypeDef *hdma_channel, void* SRC, void* DST,
         | (hdma_channel->ChannelInit.ReadInc << DMA_CH_CFG_READ_INCREMENT_S) 
         | (hdma_channel->ChannelInit.ReadSize << DMA_CH_CFG_READ_SIZE_S) 
         | (hdma_channel->ChannelInit.ReadBurstSize << DMA_CH_CFG_READ_BURST_SIZE_S) 
-        | (hdma_channel->ChannelInit.ReadRequest << DMA_CH_CFG_READ_REQUETS_S) 
+        | (hdma_channel->ChannelInit.ReadRequest << DMA_CH_CFG_READ_REQUEST_S) 
         | (hdma_channel->ChannelInit.ReadAck << DMA_CH_CFG_READ_ACK_EN_S) 
         | (hdma_channel->ChannelInit.WriteMode << DMA_CH_CFG_WRITE_MODE_S) 
         | (hdma_channel->ChannelInit.WriteInc << DMA_CH_CFG_WRITE_INCREMENT_S) 
         | (hdma_channel->ChannelInit.WriteSize << DMA_CH_CFG_WRITE_SIZE_S) 
         | (hdma_channel->ChannelInit.WriteBurstSize << DMA_CH_CFG_WRITE_BURST_SIZE_S) 
-        | (hdma_channel->ChannelInit.WriteRequest << DMA_CH_CFG_WRITE_REQUETS_S) 
+        | (hdma_channel->ChannelInit.WriteRequest << DMA_CH_CFG_WRITE_REQUEST_S) 
         | (hdma_channel->ChannelInit.WriteAck << DMA_CH_CFG_WRITE_ACK_EN_S);
 
     hdma_channel->dma->Instance->CHANNELS[ChannelIndex].CFG = CFGWriteBuffer[ChannelIndex];

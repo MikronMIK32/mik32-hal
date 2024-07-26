@@ -4,15 +4,14 @@
 #include "epic.h"
 #include "csr.h"
 #include "scr1_csr_encoding.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 
 /* Title: Макросы */
-#ifdef MIK32V0
+
     /*
     * Defines: Маска линии прерывания 
     *
-    * 
     * HAL_EPIC_TIMER32_0_MASK       - Маска для линии прерывания Timer32_0 
     * HAL_EPIC_UART_0_MASK          - Маска для линии прерывания USART_0 
     * HAL_EPIC_UART_1_MASK          - Маска для линии прерывания USART_1 
@@ -46,37 +45,39 @@
     * HAL_EPIC_ADC_MASK             - Маска для линии прерывания АЦП 
     *
     */
-    #define HAL_EPIC_TIMER32_0_MASK         ( 1 << EPIC_TIMER32_0_INDEX )
-    #define HAL_EPIC_UART_0_MASK            ( 1 << EPIC_UART_0_INDEX )
-    #define HAL_EPIC_UART_1_MASK            ( 1 << EPIC_UART_1_INDEX )
-    #define HAL_EPIC_SPI_0_MASK             ( 1 << EPIC_SPI_0_INDEX )
-    #define HAL_EPIC_SPI_1_MASK             ( 1 << EPIC_SPI_1_INDEX )
-    #define HAL_EPIC_GPIO_IRQ_MASK          ( 1 << EPIC_GPIO_IRQ_INDEX )
-    #define HAL_EPIC_I2C_0_MASK             ( 1 << EPIC_I2C_0_INDEX )
-    #define HAL_EPIC_I2C_1_MASK             ( 1 << EPIC_I2C_1_INDEX )
-    #define HAL_EPIC_WDT_MASK               ( 1 << EPIC_WDT_INDEX )
-    #define HAL_EPIC_TIMER16_0_MASK         ( 1 << EPIC_TIMER16_0_INDEX )
-    #define HAL_EPIC_TIMER16_1_MASK         ( 1 << EPIC_TIMER16_1_INDEX )
-    #define HAL_EPIC_TIMER16_2_MASK         ( 1 << EPIC_TIMER16_2_INDEX )
-    #define HAL_EPIC_TIMER32_1_MASK         ( 1 << EPIC_TIMER32_1_INDEX )
-    #define HAL_EPIC_TIMER32_2_MASK         ( 1 << EPIC_TIMER32_2_INDEX )
-    #define HAL_EPIC_SPIFI_MASK             ( 1 << EPIC_SPIFI_INDEX )
-    #define HAL_EPIC_RTC_MASK               ( 1 << EPIC_RTC_INDEX )
-    #define HAL_EPIC_EEPROM_MASK            ( 1 << EPIC_EEPROM_INDEX )
-    #define HAL_EPIC_WDT_DOM3_MASK          ( 1 << EPIC_WDT_DOM3_INDEX )
-    #define HAL_EPIC_WDT_SPIFI_MASK         ( 1 << EPIC_WDT_SPIFI_INDEX )
-    #define HAL_EPIC_WDT_EEPROM_MASK        ( 1 << EPIC_WDT_EEPROM_INDEX )
-    #define HAL_EPIC_DMA_GLB_ERR_MASK       ( 1 << EPIC_DMA_GLB_ERR_INDEX )
-    #define HAL_EPIC_DMA_CHANNELS_MASK      ( 1 << EPIC_DMA_CHANNELS_INDEX )
-    #define HAL_EPIC_FREQ_MON_MASK          ( 1 << EPIC_FREQ_MON_INDEX )
-    #define HAL_EPIC_PVD_AVCC_UNDER         ( 1 << EPIC_PVD_AVCC_UNDER )
-    #define HAL_EPIC_PVD_AVCC_OVER          ( 1 << EPIC_PVD_AVCC_OVER )
-    #define HAL_EPIC_PVD_VCC_UNDER          ( 1 << EPIC_PVD_VCC_UNDER )
-    #define HAL_EPIC_PVD_VCC_OVER           ( 1 << EPIC_PVD_VCC_OVER )
-    #define HAL_EPIC_BATTERY_NON_GOOD       ( 1 << EPIC_BATTERY_NON_GOOD )
-    #define HAL_EPIC_BOR_MASK               ( 1 << EPIC_BOR_INDEX )
-    #define HAL_EPIC_TSENS_MASK             ( 1 << EPIC_TSENS_INDEX )
-    #define HAL_EPIC_ADC_MASK               ( 1 << EPIC_ADC_INDEX )
+
+    #define HAL_EPIC_TIMER32_0_MASK         (1 << EPIC_TIMER32_0_INDEX)        
+    #define HAL_EPIC_UART_0_MASK            (1 << EPIC_UART_0_INDEX)           
+    #define HAL_EPIC_UART_1_MASK            (1 << EPIC_UART_1_INDEX)           
+    #define HAL_EPIC_SPI_0_MASK             (1 << EPIC_SPI_0_INDEX)            
+    #define HAL_EPIC_SPI_1_MASK             (1 << EPIC_SPI_1_INDEX)            
+    #define HAL_EPIC_GPIO_IRQ_MASK          (1 << EPIC_GPIO_IRQ_INDEX)         
+    #define HAL_EPIC_I2C_0_MASK             (1 << EPIC_I2C_0_INDEX)            
+    #define HAL_EPIC_I2C_1_MASK             (1 << EPIC_I2C_1_INDEX)            
+    #define HAL_EPIC_WDT_MASK               (1 << EPIC_WDT_INDEX)              
+    #define HAL_EPIC_TIMER16_0_MASK         (1 << EPIC_TIMER16_0_INDEX)        
+    #define HAL_EPIC_TIMER16_1_MASK         (1 << EPIC_TIMER16_1_INDEX)        
+    #define HAL_EPIC_TIMER16_2_MASK         (1 << EPIC_TIMER16_2_INDEX)        
+    #define HAL_EPIC_TIMER32_1_MASK         (1 << EPIC_TIMER32_1_INDEX)        
+    #define HAL_EPIC_TIMER32_2_MASK         (1 << EPIC_TIMER32_2_INDEX)        
+    #define HAL_EPIC_SPIFI_MASK             (1 << EPIC_SPIFI_INDEX)            
+    #define HAL_EPIC_RTC_MASK               (1 << EPIC_RTC_INDEX)              
+    #define HAL_EPIC_EEPROM_MASK            (1 << EPIC_EEPROM_INDEX)           
+    #define HAL_EPIC_WDT_DOM3_MASK          (1 << EPIC_WDT_DOM3_INDEX)         
+    #define HAL_EPIC_WDT_SPIFI_MASK         (1 << EPIC_WDT_SPIFI_INDEX)        
+    #define HAL_EPIC_WDT_EEPROM_MASK        (1 << EPIC_WDT_EEPROM_INDEX)       
+    #define HAL_EPIC_DMA_MASK               (1 << EPIC_DMA_INDEX)              
+    #define HAL_EPIC_FREQ_MON_MASK          (1 << EPIC_FREQ_MON_INDEX)         
+    #define HAL_EPIC_PVD_AVCC_MASK          (1 << EPIC_PVD_AVCC_UNDER)         
+    #define HAL_EPIC_PVD_AVCCMASK           (1 << EPIC_PVD_AVCC_OVER)          
+    #define HAL_EPIC_PVD_VCC_MASK           (1 << EPIC_PVD_VCC_UNDER)          
+    #define HAL_EPIC_PVD_VCCMASK            (1 << EPIC_PVD_VCC_OVER)           
+    #define HAL_EPIC_BATTERY_NONMASK        (1 << EPIC_BATTERY_NON_GOOD)       
+    #define HAL_EPIC_BOR_MASK               (1 << EPIC_BOR_INDEX)              
+    #define HAL_EPIC_TSENS_MASK             (1 << EPIC_TSENS_INDEX)            
+    #define HAL_EPIC_ADC_MASK               (1 << EPIC_ADC_INDEX)              
+    #define HAL_EPIC_DAC0_MASK              (1 << EPIC_DAC0_INDEX)             
+    #define HAL_EPIC_DAC1_MASK              (1 << EPIC_DAC1_INDEX)  
 
     /*
     * macros: Проверка флагов линий прерываний в EPIC
@@ -115,70 +116,6 @@
     * EPIC_CHECK_ADC                  - Проверка флага АЦП
     *
     */
-    #define EPIC_CHECK_TIMER32_0()              (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_0_INDEX))
-    #define EPIC_CHECK_UART_0()                 (EPIC->RAW_STATUS & (1 << EPIC_UART_0_INDEX))
-    #define EPIC_CHECK_UART_1()                 (EPIC->RAW_STATUS & (1 << EPIC_UART_1_INDEX))
-    #define EPIC_CHECK_SPI_0()                  (EPIC->RAW_STATUS & (1 << EPIC_SPI_0_INDEX))
-    #define EPIC_CHECK_SPI_1()                  (EPIC->RAW_STATUS & (1 << EPIC_SPI_1_INDEX))
-    #define EPIC_CHECK_GPIO_IRQ()               (EPIC->RAW_STATUS & (1 << EPIC_GPIO_IRQ_INDEX))
-    #define EPIC_CHECK_I2C_0()                  (EPIC->RAW_STATUS & (1 << EPIC_I2C_0_INDEX))
-    #define EPIC_CHECK_I2C_1()                  (EPIC->RAW_STATUS & (1 << EPIC_I2C_1_INDEX))
-    #define EPIC_CHECK_WDT()                    (EPIC->STATUS & (1 << EPIC_WDT_INDEX))
-    #define EPIC_CHECK_TIMER16_0()              (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_0_INDEX))
-    #define EPIC_CHECK_TIMER16_1()              (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_1_INDEX))
-    #define EPIC_CHECK_TIMER16_2()              (EPIC->RAW_STATUS & (1 << EPIC_TIMER16_2_INDEX))
-    #define EPIC_CHECK_TIMER32_1()              (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_1_INDEX))
-    #define EPIC_CHECK_TIMER32_2()              (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_2_INDEX))
-    #define EPIC_CHECK_SPIFI()                  (EPIC->RAW_STATUS & (1 << EPIC_SPIFI_INDEX))
-    #define EPIC_CHECK_RTC()                    (EPIC->RAW_STATUS & (1 << EPIC_RTC_INDEX))
-    #define EPIC_CHECK_EEPROM()                 (EPIC->RAW_STATUS & (1 << EPIC_EEPROM_INDEX))
-    #define EPIC_CHECK_WDT_DOM3()               (EPIC->RAW_STATUS & (1 << EPIC_WDT_DOM3_INDEX))
-    #define EPIC_CHECK_WDT_SPIFI()              (EPIC->RAW_STATUS & (1 << EPIC_WDT_SPIFI_INDEX))
-    #define EPIC_CHECK_WDT_EEPROM()             (EPIC->RAW_STATUS & (1 << EPIC_WDT_EEPROM_INDEX))
-    #define EPIC_CHECK_DMA_GLB_ERR()            (EPIC->RAW_STATUS & (1 << EPIC_DMA_GLB_ERR_INDEX))
-    #define EPIC_CHECK_DMA_CHANNELS()           (EPIC->RAW_STATUS & (1 << EPIC_DMA_CHANNELS_INDEX))
-    #define EPIC_CHECK_FREQ_MON()               (EPIC->STATUS & (1 << EPIC_FREQ_MON_INDEX))
-    #define EPIC_CHECK_PVD_AVCC_UNDER()         (EPIC->STATUS & (1 << EPIC_PVD_AVCC_UNDER))
-    #define EPIC_CHECK_PVD_AVCC_OVER()          (EPIC->STATUS & (1 << EPIC_PVD_AVCC_OVER))
-    #define EPIC_CHECK_PVD_VCC_UNDER()          (EPIC->STATUS & (1 << EPIC_PVD_VCC_UNDER))
-    #define EPIC_CHECK_PVD_VCC_OVER()           (EPIC->STATUS & (1 << EPIC_PVD_VCC_OVER))
-    #define EPIC_CHECK_BATTERY_NON_GOOD()       (EPIC->STATUS & (1 << EPIC_BATTERY_NON_GOOD))
-    #define EPIC_CHECK_BOR()                    (EPIC->STATUS & (1 << EPIC_BOR_INDEX))
-    #define EPIC_CHECK_TSENS()                  (EPIC->RAW_STATUS & (1 << EPIC_TSENS_INDEX))
-    #define EPIC_CHECK_ADC()                    (EPIC->STATUS & (1 << EPIC_ADC_INDEX))
-#else // MIK32V2
-    #define HAL_EPIC_TIMER32_0_MASK         (1 << EPIC_TIMER32_0_INDEX)        
-    #define HAL_EPIC_UART_0_MASK            (1 << EPIC_UART_0_INDEX)           
-    #define HAL_EPIC_UART_1_MASK            (1 << EPIC_UART_1_INDEX)           
-    #define HAL_EPIC_SPI_0_MASK             (1 << EPIC_SPI_0_INDEX)            
-    #define HAL_EPIC_SPI_1_MASK             (1 << EPIC_SPI_1_INDEX)            
-    #define HAL_EPIC_GPIO_IRQ_MASK          (1 << EPIC_GPIO_IRQ_INDEX)         
-    #define HAL_EPIC_I2C_0_MASK             (1 << EPIC_I2C_0_INDEX)            
-    #define HAL_EPIC_I2C_1_MASK             (1 << EPIC_I2C_1_INDEX)            
-    #define HAL_EPIC_WDT_MASK               (1 << EPIC_WDT_INDEX)              
-    #define HAL_EPIC_TIMER16_0_MASK         (1 << EPIC_TIMER16_0_INDEX)        
-    #define HAL_EPIC_TIMER16_1_MASK         (1 << EPIC_TIMER16_1_INDEX)        
-    #define HAL_EPIC_TIMER16_2_MASK         (1 << EPIC_TIMER16_2_INDEX)        
-    #define HAL_EPIC_TIMER32_1_MASK         (1 << EPIC_TIMER32_1_INDEX)        
-    #define HAL_EPIC_TIMER32_2_MASK         (1 << EPIC_TIMER32_2_INDEX)        
-    #define HAL_EPIC_SPIFI_MASK             (1 << EPIC_SPIFI_INDEX)            
-    #define HAL_EPIC_RTC_MASK               (1 << EPIC_RTC_INDEX)              
-    #define HAL_EPIC_EEPROM_MASK            (1 << EPIC_EEPROM_INDEX)           
-    #define HAL_EPIC_WDT_DOM3_MASK          (1 << EPIC_WDT_DOM3_INDEX)         
-    #define HAL_EPIC_WDT_SPIFI_MASK         (1 << EPIC_WDT_SPIFI_INDEX)        
-    #define HAL_EPIC_WDT_EEPROM_MASK        (1 << EPIC_WDT_EEPROM_INDEX)       
-    #define HAL_EPIC_DMA_MASK               (1 << EPIC_DMA_INDEX)              
-    #define HAL_EPIC_FREQ_MON_MASK          (1 << EPIC_FREQ_MON_INDEX)         
-    #define HAL_EPIC_PVD_AVCC_MASK          (1 << EPIC_PVD_AVCC_UNDER)         
-    #define HAL_EPIC_PVD_AVCCMASK           (1 << EPIC_PVD_AVCC_OVER)          
-    #define HAL_EPIC_PVD_VCC_MASK           (1 << EPIC_PVD_VCC_UNDER)          
-    #define HAL_EPIC_PVD_VCCMASK            (1 << EPIC_PVD_VCC_OVER)           
-    #define HAL_EPIC_BATTERY_NONMASK        (1 << EPIC_BATTERY_NON_GOOD)       
-    #define HAL_EPIC_BOR_MASK               (1 << EPIC_BOR_INDEX)              
-    #define HAL_EPIC_TSENS_MASK             (1 << EPIC_TSENS_INDEX)            
-    #define HAL_EPIC_ADC_MASK               (1 << EPIC_ADC_INDEX)              
-    #define HAL_EPIC_DAC0_MASK              (1 << EPIC_DAC0_INDEX)             
-    #define HAL_EPIC_DAC1_MASK              (1 << EPIC_DAC1_INDEX)  
 
     #define EPIC_CHECK_TIMER32_0()             (EPIC->RAW_STATUS & (1 << EPIC_TIMER32_0_INDEX))                     
     #define EPIC_CHECK_UART_0()                (EPIC->RAW_STATUS & (1 << EPIC_UART_0_INDEX))                
@@ -212,9 +149,6 @@
     #define EPIC_CHECK_ADC()                   (EPIC->STATUS & (1 << EPIC_ADC_INDEX))            
     #define EPIC_CHECK_DAC0()                  (EPIC->STATUS & (1 << EPIC_DAC0_INDEX))            
     #define EPIC_CHECK_DAC1()                  (EPIC->STATUS & (1 << EPIC_DAC1_INDEX))                       
-#endif // MIK32V0
-
-
 
 /*
  * Function: HAL_IRQ_EnableInterrupts
@@ -322,9 +256,4 @@ uint32_t HAL_EPIC_GetStatus();
  */
 uint32_t HAL_EPIC_GetRawStatus();
 
-
-
-
-
-
-#endif
+#endif //MIK32_HAL_IRQ

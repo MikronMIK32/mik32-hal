@@ -6,7 +6,7 @@
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 /* Title: Макросы */
 

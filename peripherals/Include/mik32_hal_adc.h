@@ -6,7 +6,7 @@
 #include "stdbool.h"
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 
 /* Title: Макросы */
@@ -165,11 +165,8 @@ typedef struct
 
 
 /* Сменить канал АЦП */
-#ifdef MIK32V0
-    #define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SEL_M)) | ((channel_selection) << ADC_CONFIG_SEL_S)))
-#else // MIK32V2
-    #define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) & (~ADC_CONFIG_SEL_M)) | (((adc_instance)->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) | ((channel_selection) << ADC_CONFIG_SEL_S))
-#endif // MIK32V0
+#define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) & (~ADC_CONFIG_SEL_M)) | (((adc_instance)->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) | ((channel_selection) << ADC_CONFIG_SEL_S))
+
 
 /* Запустить однократное преобразование */
 #define HAL_ADC_SINGLE(adc_instance) ((adc_instance)->ADC_SINGLE = 1) 
@@ -286,7 +283,7 @@ void HAL_ADC_Init(ADC_HandleTypeDef *hadc);
 void HAL_ADC_Single(ADC_HandleTypeDef *hadc);
 
 /*
- * Function: HAL_ADC_ContiniusDisabled
+ * Function: HAL_ADC_ContinuousDisabled
  * Выключить непрерывное измерение АЦП.
  *
  * Parameters:
@@ -298,7 +295,7 @@ void HAL_ADC_Single(ADC_HandleTypeDef *hadc);
 void HAL_ADC_ContinuousDisabled(ADC_HandleTypeDef *hadc);
 
 /*
- * Function: HAL_ADC_ContiniusEnable
+ * Function: HAL_ADC_ContinuousEnable
  * Выключить непрерывное измерение АЦП.
  *
  * Parameters:

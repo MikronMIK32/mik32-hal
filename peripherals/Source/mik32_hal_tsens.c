@@ -1,4 +1,3 @@
-#ifndef MIK32V0
 #include "mik32_hal_tsens.h"
 
 /**
@@ -360,5 +359,3 @@ void HAL_TSENS_Stop_IT(TSENS_HandleTypeDef *htsens)
     __HAL_TSENS_IRQ_DISABLE(htsens, TSENS_IRQ_LOW_MASK_M | TSENS_IRQ_HI_MASK_M | TSENS_IRQ_EOC_MASK_M);
     __HAL_TSENS_IRQ_CLEAR(htsens, TSENS_CLEAR_IRQ_LOW_CLEAR_M | TSENS_CLEAR_IRQ_HI_CLEAR_M | TSENS_CLEAR_IRQ_EOC_CLEAR_M);
 }
-
-#endif // MIK32V0

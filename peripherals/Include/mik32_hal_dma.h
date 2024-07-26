@@ -5,7 +5,7 @@
 #include "mik32_hal_gpio.h"
 #include "stddef.h"
 #include "dma_config.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 #include "mik32_hal_def.h"
 
 
@@ -99,14 +99,9 @@ typedef enum __HAL_DMA_ChannelRequestTypeDef
 	DMA_CHANNEL_SPIFI_REQUEST = 7,
 	DMA_CHANNEL_TIMER32_1_REQUEST = 8,
 	DMA_CHANNEL_TIMER32_2_REQUEST = 9,
-
-#ifdef MIK32V0
-	DMA_CHANNEL_TIMER32_0_REQUEST = 10
-#else // MIK32V2
 	DMA_CHANNEL_DAC_0_REQUEST = 10,
 	DMA_CHANNEL_DAC_1_REQUEST = 11,
 	DMA_CHANNEL_TIMER32_0_REQUEST = 12
-#endif // MIK32V0
 
 } HAL_DMA_ChannelRequestTypeDef;
 

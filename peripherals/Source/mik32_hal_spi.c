@@ -426,6 +426,8 @@ HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitByte
         }
     }
 
+    return error_code;
+
 error:
     __HAL_SPI_DISABLE(hspi);
     hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
@@ -544,6 +546,8 @@ HAL_StatusTypeDef HAL_SPI_ExchangeThreshold(SPI_HandleTypeDef *hspi, uint8_t Tra
             tx_counter = 0;
         }
     }
+
+    return error_code;
 
 error:
     __HAL_SPI_DISABLE(hspi);

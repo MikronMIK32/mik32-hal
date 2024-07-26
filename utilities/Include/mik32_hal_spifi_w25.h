@@ -18,6 +18,8 @@ typedef struct __SPIFI_W25_ManufacturerDeviceIDTypeDef
 
 } W25_ManufacturerDeviceIDTypeDef;
 
+#define NO_OPCODE 0x20
+
 #define SPIFI_W25_SREG1_BUSY_S 0
 #define SPIFI_W25_SREG1_BUSY_M (1 << SPIFI_W25_SREG1_BUSY_S)
 #define SPIFI_W25_SREG1_WRITE_ENABLE_S 1
@@ -51,6 +53,8 @@ typedef struct __SPIFI_W25_ManufacturerDeviceIDTypeDef
 #define SPIFI_W25_SREG2_SUSPEND_STATUS_M (1 << SPIFI_W25_SREG2_SUSPEND_STATUS_S)
 
 void HAL_SPIFI_W25_WriteEnable(SPIFI_HandleTypeDef *spifi);
+
+void HAL_SPIFI_W25_WriteDisable(SPIFI_HandleTypeDef *spifi);
 
 uint8_t HAL_SPIFI_W25_ReadSREG(SPIFI_HandleTypeDef *spifi, HAL_SPIFI_W25_SREGTypeDef SREG);
 
@@ -87,6 +91,18 @@ void HAL_SPIFI_W25_PageProgram_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address
 void HAL_SPIFI_W25_ReadData_Quad(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
 
 void HAL_SPIFI_W25_ReadData_Quad_IO(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
+
+void HAL_SPIFI_W25_QPIEnable(SPIFI_HandleTypeDef *spifi);
+
+void HAL_SPIFI_W25_ReadData_Quad_IO_QPI(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
+
+void HAL_SPIFI_W25_ReadData_Quad_IO_QPI_XIP(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
+
+void HAL_SPIFI_W25_ReadData_Quad_IO_QPI_XIP_Init(SPIFI_HandleTypeDef *spifi, uint32_t address, uint16_t dataLength, uint8_t *dataBytes);
+
+void HAL_SPIFI_W25_QPIDisable(SPIFI_HandleTypeDef *spifi);
+
+void HAL_SPIFI_W25_Reset_QPI(SPIFI_HandleTypeDef *spifi);
 
 HAL_StatusTypeDef HAL_SPIFI_W25_QuadEnable(SPIFI_HandleTypeDef *spifi);
 

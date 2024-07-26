@@ -7,7 +7,7 @@
 #include "timer16.h"
 #include "pad_config.h"
 #include "stdbool.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 
 /**
@@ -249,18 +249,18 @@ void HAL_Timer16_Init(Timer16_HandleTypeDef *htimer16);
 uint16_t HAL_Timer16_GetCounterValue(Timer16_HandleTypeDef *htimer16);
 uint8_t HAL_Timer16_CheckCMP(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_WaitCMP(Timer16_HandleTypeDef *htimer16);
-void HAL_Timer16_Counter_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period);
+void HAL_Timer16_Counter_Start(Timer16_HandleTypeDef *htimer16, uint16_t Period);
 void HAL_Timer16_StartPWM(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
 void HAL_Timer16_StartOneShot(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
 void HAL_Timer16_StartSetOnes(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
-void HAL_Timer16_Encoder_Start(Timer16_HandleTypeDef *htimer16, uint32_t Period);
+void HAL_Timer16_Encoder_Start(Timer16_HandleTypeDef *htimer16, uint16_t Period);
 void HAL_Timer16_Encoder_Stop(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_Stop(Timer16_HandleTypeDef *htimer16);
-void HAL_Timer16_Counter_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period);
+void HAL_Timer16_Counter_Start_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period);
 void HAL_Timer16_StartPWM_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
 void HAL_Timer16_StartOneShot_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
 void HAL_Timer16_StartSetOnes_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare);
-void HAL_Timer16_Encoder_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Period);
+void HAL_Timer16_Encoder_Start_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period);
 void HAL_Timer16_Encoder_Stop_IT(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_Stop_IT(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_WaitTrigger(Timer16_HandleTypeDef *htimer16);
