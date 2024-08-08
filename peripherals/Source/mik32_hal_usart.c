@@ -5,7 +5,7 @@
  * @param setting указатель на структуру настроек модуля USART
  * @return none
  */
-__attribute__((weak)) void HAL_USART_MspInit(UART_Setting_TypeDef* setting)
+__attribute__((weak)) void HAL_USART_MspInit(USART_HandleTypeDef* setting)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0}; 
 
@@ -80,9 +80,9 @@ __attribute__((weak)) void HAL_USART_MspInit(UART_Setting_TypeDef* setting)
  * @param setting указатель на структуру настроек модуля USART
  * @return HAL_OK or HAL_ERROR
  */
-HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
+HAL_StatusTypeDef HAL_USART_Init(USART_HandleTypeDef* setting)
 {
-    __HAL_USART_Disable(setting->Instance);
+    __HAL_USART_Disable(setting);
     HAL_USART_MspInit(setting);
     /* CONTROL1 */
     uint32_t control1 = 0;
@@ -136,13 +136,13 @@ HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
     /* Enable receiving & transmitting */
     if (setting->transmitting)      setting->Instance->CONTROL1 |= UART_CONTROL1_TE_M;
     if (setting->receiving)         setting->Instance->CONTROL1 |= UART_CONTROL1_RE_M;
-    __HAL_USART_Enable(setting->Instance);
+    __HAL_USART_Enable(setting);
 
     /* Wait for module is ready */
     if (setting->transmitting)
-        while(!HAL_USART_Read_TransmitEnableAck(setting->Instance));
+        while(!HAL_USART_Read_TransmitEnableAck(setting));
     if (setting->receiving)
-        while(!HAL_USART_Read_ReceiveEnableAck(setting->Instance));
+        while(!HAL_USART_Read_ReceiveEnableAck(setting));
     return HAL_OK;
 }
 
@@ -152,10 +152,34 @@ HAL_StatusTypeDef HAL_USART_Init(UART_Setting_TypeDef* setting)
  * @param data 1 байт отправляемых данных
  * @return none
  */
-void HAL_USART_Transmit(UART_TypeDef* local, char data)
+bool HAL_USART_Transmit(USART_HandleTypeDef* local, char data, uint32_t timeout)
 {
+    if (timeout == USART_TIMEOUT_DEFAULT)
+    {
+        /* DIVIDER = Freq_APB_P / Baudrate, one bit periode = 1000000 / Baudrate us */
+        //timeout = (local->Instance->DIVIDER * 1000 / (HAL_PCC_GetSysClockFreq()/(PM->DIV_AHB+1)/(PM->DIV_APB_P+1)/1000UL));
+        timeout = 1000000UL / local->baudrate;
+        uint32_t div = 2;
+        switch (local->frame)
+        {
+            case Frame_7bit: div += 7; break;
+            case Frame_8bit: div += 8; break;
+            case Frame_9bit: div += 9; break;
+        }
+        switch (local->stop_bit)
+        {
+            case StopBit_1: div += 1; break;
+            case StopBit_2: div += 2; break;
+        }
+        timeout *= div;
+    }
     HAL_USART_WriteByte(local, data);
-    while (!HAL_USART_TXC_ReadFlag(local));
+    uint32_t time_metka = HAL_Micros();
+    while (!HAL_USART_TXC_ReadFlag(local))
+    {
+        if (HAL_Micros() - time_metka > timeout) return false;
+    }
+    return true;
 }
 
 /*******************************************************************************
@@ -165,9 +189,14 @@ void HAL_USART_Transmit(UART_TypeDef* local, char data)
  * @param len длина массива
  * @return none
  */
-void HAL_USART_Write(UART_TypeDef* local, char* buffer, uint32_t len)
+bool HAL_USART_Write(USART_HandleTypeDef* local, char* buffer, uint32_t len, uint32_t timeout)
 {
-    for (uint32_t i=0; i<len; i++) HAL_USART_Transmit(local, buffer[i]);
+    bool n_error = true;
+    for (uint32_t i=0; i<len; i++)
+    {
+        n_error &= HAL_USART_Transmit(local, buffer[i], timeout);
+    }
+    return n_error;
 }
 
 /*******************************************************************************
@@ -177,14 +206,16 @@ void HAL_USART_Write(UART_TypeDef* local, char* buffer, uint32_t len)
  * @param str указатель на начало строки
  * @return none
  */
-void HAL_USART_Print(UART_TypeDef* local, char* str)
+bool HAL_USART_Print(USART_HandleTypeDef* local, char* str, uint32_t timeout)
 {
     uint32_t i = 0;
+    bool n_error = true;
     while (str[i] != '\0')
     {
-        HAL_USART_Transmit(local, str[i]);
+        n_error &= HAL_USART_Transmit(local, str[i], timeout);
         i += 1;
     }
+    return n_error;
 }
 
 /*******************************************************************************
@@ -193,10 +224,34 @@ void HAL_USART_Print(UART_TypeDef* local, char* str)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return 1 байт принятых данных
  */
-char HAL_USART_Receive(UART_TypeDef* local)
+bool HAL_USART_Receive(USART_HandleTypeDef* local, char* buf, uint32_t timeout)
 {
-    while(!HAL_USART_RXNE_ReadFlag(local));
-    return HAL_USART_ReadByte(local);
+    if (timeout == USART_TIMEOUT_DEFAULT)
+    {
+        /* DIVIDER = Freq_APB_P / Baudrate, one bit periode = 1000000 / Baudrate us */
+        //timeout = (local->Instance->DIVIDER * 1000 / (HAL_PCC_GetSysClockFreq()/(PM->DIV_AHB+1)/(PM->DIV_APB_P+1)/1000UL));
+        timeout = 1000000UL / local->baudrate;
+        uint32_t div = 2;
+        switch (local->frame)
+        {
+            case Frame_7bit: div += 7; break;
+            case Frame_8bit: div += 8; break;
+            case Frame_9bit: div += 9; break;
+        }
+        switch (local->stop_bit)
+        {
+            case StopBit_1: div += 1; break;
+            case StopBit_2: div += 2; break;
+        }
+        timeout *= div;
+    }
+    uint32_t time_metka = HAL_Micros();
+    while(!HAL_USART_RXNE_ReadFlag(local))
+    {
+        if (HAL_Micros() - time_metka > timeout) return false;
+    }
+    *buf = HAL_USART_ReadByte(local);
+    return true;
 }
 
 /*******************************************************************************
@@ -206,9 +261,14 @@ char HAL_USART_Receive(UART_TypeDef* local)
  * @param len длина массива
  * @return none
  */
-void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len)
+bool HAL_USART_Read(USART_HandleTypeDef* local, char* buffer, uint32_t len, uint32_t timeout)
 {
-    for (uint32_t i=0; i<len; i++) buffer[i] = HAL_USART_Receive(local);
+    bool n_error = true;
+    for (uint32_t i=0; i<len; i++)
+    {
+        n_error &= HAL_USART_Receive(local, buffer+i, timeout);
+    }
+    return n_error;
 }
 
 
@@ -217,9 +277,9 @@ void HAL_USART_Read(UART_TypeDef* local, char* buffer, uint32_t len)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true, если флаг установлен; false - если сброшен
  */
-bool HAL_USART_Read_ReceiveEnableAck(UART_TypeDef* local)
+bool HAL_USART_Read_ReceiveEnableAck(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_REACK_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_REACK_M) == 0) return false;
     else return true;
 }
 
@@ -228,9 +288,9 @@ bool HAL_USART_Read_ReceiveEnableAck(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true, если флаг установлен; false - если сброшен
  */
-bool HAL_USART_Read_TransmitEnableAck(UART_TypeDef* local)
+bool HAL_USART_Read_TransmitEnableAck(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_TEACK_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_TEACK_M) == 0) return false;
     else return true;
 }
 
@@ -239,9 +299,9 @@ bool HAL_USART_Read_TransmitEnableAck(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true, если линия активна (0); false - если не активна (1)
  */
-bool HAL_USART_CTS_ReadLevel(UART_TypeDef* local)
+bool HAL_USART_CTS_ReadLevel(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_CTS_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_CTS_M) == 0) return false;
     else return true;
 }
 
@@ -251,9 +311,9 @@ bool HAL_USART_CTS_ReadLevel(UART_TypeDef* local)
  * @return true, если изменение уровня произошло со времени последнего сброса;
  * false - если измения не было
  */
-bool HAL_USART_CTS_ReadToggleFlag(UART_TypeDef* local)
+bool HAL_USART_CTS_ReadToggleFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_CTSIF_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_CTSIF_M) == 0) return false;
     else return true;
 }
 
@@ -262,9 +322,9 @@ bool HAL_USART_CTS_ReadToggleFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true, break-состояние зафиксировано; false - если не было
  */
-bool HAL_USART_RX_ReadBreakFlag(UART_TypeDef* local)
+bool HAL_USART_RX_ReadBreakFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_LBDF_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_LBDF_M) == 0) return false;
     else return true;
 }
 
@@ -273,9 +333,9 @@ bool HAL_USART_RX_ReadBreakFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_TXC_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_TXC_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_TC_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_TC_M) == 0) return false;
     else return true;
 }
 
@@ -284,9 +344,9 @@ bool HAL_USART_TXC_ReadFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_TXE_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_TXE_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_TXE_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_TXE_M) == 0) return false;
     else return true;
 }
 
@@ -295,9 +355,9 @@ bool HAL_USART_TXE_ReadFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_RXNE_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_RXNE_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_RXNE_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_RXNE_M) == 0) return false;
     else return true;
 }
 
@@ -308,9 +368,9 @@ bool HAL_USART_RXNE_ReadFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_IDLE_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_IDLE_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_IDLE_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_IDLE_M) == 0) return false;
     else return true;
 }
 
@@ -320,9 +380,9 @@ bool HAL_USART_IDLE_ReadFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_ReceiveOverwrite_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_ReceiveOverwrite_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_ORE_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_ORE_M) == 0) return false;
     else return true;
 }
 
@@ -332,9 +392,9 @@ bool HAL_USART_ReceiveOverwrite_ReadFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_NF_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_NF_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_NF_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_NF_M) == 0) return false;
     else return true;
 }
 
@@ -344,9 +404,9 @@ bool HAL_USART_NF_ReadFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_StopBitError_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_StopBitError_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_FE_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_FE_M) == 0) return false;
     else return true;
 }
 
@@ -356,9 +416,9 @@ bool HAL_USART_StopBitError_ReadFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_ParityError_ReadFlag(UART_TypeDef* local)
+bool HAL_USART_ParityError_ReadFlag(USART_HandleTypeDef* local)
 {
-    if ((local->FLAGS & UART_FLAGS_PE_M) == 0) return false;
+    if ((local->Instance->FLAGS & UART_FLAGS_PE_M) == 0) return false;
     else return true;
 }
 
@@ -370,7 +430,7 @@ bool HAL_USART_ParityError_ReadFlag(UART_TypeDef* local)
  */
 void __attribute__((weak)) xputc(char c)
 {
-	HAL_USART_Transmit(UART_0, c);
+	HAL_USART_Transmit(UART_0, c, USART_TIMEOUT_DEFAULT);
 }
 
 
@@ -380,10 +440,10 @@ void __attribute__((weak)) xputc(char c)
  * @param en Enable or Disable
  * @return none
  */
-void HAL_USART_Set_DTR(UART_TypeDef* local, HAL_USART_EnableDisable_enum en)
+void HAL_USART_Set_DTR(USART_HandleTypeDef* local, HAL_USART_EnableDisable_enum en)
 {
-    if (en) local->MODEM |= UART_MODEM_DTR_M;
-    else local->MODEM &= ~UART_MODEM_DTR_M;
+    if (en) local->Instance->MODEM |= UART_MODEM_DTR_M;
+    else local->Instance->MODEM &= ~UART_MODEM_DTR_M;
 }
 
 /*******************************************************************************
@@ -391,9 +451,9 @@ void HAL_USART_Set_DTR(UART_TypeDef* local, HAL_USART_EnableDisable_enum en)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_DCD_Status(UART_TypeDef* local)
+bool HAL_USART_DCD_Status(USART_HandleTypeDef* local)
 {
-    if (local->MODEM & UART_MODEM_DCD_M) return true;
+    if (local->Instance->MODEM & UART_MODEM_DCD_M) return true;
     else return false;
 }
 
@@ -403,9 +463,9 @@ bool HAL_USART_DCD_Status(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_DCD_ReadToggleFlag(UART_TypeDef* local)
+bool HAL_USART_DCD_ReadToggleFlag(USART_HandleTypeDef* local)
 {
-    if (local->MODEM & UART_MODEM_DCDIF_M) return true;
+    if (local->Instance->MODEM & UART_MODEM_DCDIF_M) return true;
     else return false;
 }
 
@@ -414,9 +474,9 @@ bool HAL_USART_DCD_ReadToggleFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_RI_Status(UART_TypeDef* local)
+bool HAL_USART_RI_Status(USART_HandleTypeDef* local)
 {
-    if (local->MODEM & UART_MODEM_RI_M) return true;
+    if (local->Instance->MODEM & UART_MODEM_RI_M) return true;
     else return false;
 }
 
@@ -426,9 +486,9 @@ bool HAL_USART_RI_Status(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_RI_ReadToggleFlag(UART_TypeDef* local)
+bool HAL_USART_RI_ReadToggleFlag(USART_HandleTypeDef* local)
 {
-    if (local->MODEM & UART_MODEM_RIIF_M) return true;
+    if (local->Instance->MODEM & UART_MODEM_RIIF_M) return true;
     else return false;
 }
 
@@ -437,9 +497,9 @@ bool HAL_USART_RI_ReadToggleFlag(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_DSR_Status(UART_TypeDef* local)
+bool HAL_USART_DSR_Status(USART_HandleTypeDef* local)
 {
-    if (local->MODEM & UART_MODEM_DSR_M) return true;
+    if (local->Instance->MODEM & UART_MODEM_DSR_M) return true;
     else return false;
 }
 
@@ -449,8 +509,8 @@ bool HAL_USART_DSR_Status(UART_TypeDef* local)
  * @param local указатель на структуру-дескриптор модуля USART
  * @return true или false
  */
-bool HAL_USART_DSR_ReadToggleFlag(UART_TypeDef* local)
+bool HAL_USART_DSR_ReadToggleFlag(USART_HandleTypeDef* local)
 {
-    if (local->MODEM & UART_MODEM_DSRIF_M) return true;
+    if (local->Instance->MODEM & UART_MODEM_DSRIF_M) return true;
     else return false;
 }
