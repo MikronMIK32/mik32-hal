@@ -7,6 +7,7 @@
 #include "gpio.h"
 
 
+#define USART_TIMEOUT_DEFAULT   0
 
 typedef enum __Enable_or_Disable
 {
@@ -58,6 +59,7 @@ typedef enum
     AlwaysEnable_mode = 0,
     Modem_mode = 1
 } HAL_USART_RTS_mode_enum;
+
 
 typedef struct 
 {
@@ -518,11 +520,11 @@ bool HAL_USART_ReceiveOverwrite_ReadFlag(USART_HandleTypeDef* local);
 bool HAL_USART_NF_ReadFlag(USART_HandleTypeDef* local);
 bool HAL_USART_StopBitError_ReadFlag(USART_HandleTypeDef* local);
 bool HAL_USART_ParityError_ReadFlag(USART_HandleTypeDef* local);
-void HAL_USART_Transmit(USART_HandleTypeDef* local, char data);
-void HAL_USART_Write(USART_HandleTypeDef* local, char* buffer, uint32_t len);
-void HAL_USART_Print(USART_HandleTypeDef* local, char* str);
-char HAL_USART_Receive(USART_HandleTypeDef* local);
-void HAL_USART_Read(USART_HandleTypeDef* local, char* buffer, uint32_t len);
+bool HAL_USART_Transmit(USART_HandleTypeDef* local, char data, uint32_t timeout);
+bool HAL_USART_Write(USART_HandleTypeDef* local, char* buffer, uint32_t len, uint32_t timeout);
+bool HAL_USART_Print(USART_HandleTypeDef* local, char* str, uint32_t timeout);
+bool HAL_USART_Receive(USART_HandleTypeDef* local, char* buf, uint32_t timeout);
+bool HAL_USART_Read(USART_HandleTypeDef* local, char* buffer, uint32_t len, uint32_t timeout);
 void xputc(char c);
 void HAL_USART_Set_DTR(USART_HandleTypeDef* local, HAL_USART_EnableDisable_enum en);
 bool HAL_USART_DCD_Status(USART_HandleTypeDef* local);
