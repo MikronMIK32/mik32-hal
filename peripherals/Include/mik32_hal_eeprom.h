@@ -95,7 +95,12 @@ HAL_StatusTypeDef HAL_EEPROM_Write(
     HAL_EEPROM_WriteBehaviourTypeDef writedPages,
     uint32_t timeout);
 
-HAL_StatusTypeDef HAL_EEPROM_Read(HAL_EEPROM_HandleTypeDef *eeprom, uint16_t address, uint32_t *data, uint8_t length, uint32_t timeout);
+HAL_StatusTypeDef HAL_EEPROM_Read(
+    HAL_EEPROM_HandleTypeDef *eeprom,
+    uint16_t address,
+    uint32_t *data,
+    uint8_t length,
+    uint32_t timeout);
 
 void HAL_EEPROM_SetMode(HAL_EEPROM_HandleTypeDef *eeprom, HAL_EEPROM_ModeTypeDef mode);
 

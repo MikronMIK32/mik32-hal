@@ -79,28 +79,28 @@ typedef enum __HAL_PCC_CPURTCClockSourceTypeDef
 */
 
 #define __HAL_PCC_CPU_CLK_ENABLE()      (PM->CLK_AHB_SET = PM_CLOCK_AHB_CPU_M)       /**< Включить  тактирование CPU */
-#define __HAL_PCC_CPU_CLK_DISABLE()     (PM->CLK_AHB_SET = PM_CLOCK_AHB_CPU_M)       /**< Выключить тактирование CPU */
+#define __HAL_PCC_CPU_CLK_DISABLE()     (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_CPU_M)       /**< Выключить тактирование CPU */
 
 #define __HAL_PCC_EEPROM_CLK_ENABLE()   (PM->CLK_AHB_SET = PM_CLOCK_AHB_EEPROM_M)    /**< Включить  тактирование EEPROM */
-#define __HAL_PCC_EEPROM_CLK_DISABLE()  (PM->CLK_AHB_SET = PM_CLOCK_AHB_EEPROM_M)    /**< Выключить тактирование EEPROM */
+#define __HAL_PCC_EEPROM_CLK_DISABLE()  (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_EEPROM_M)    /**< Выключить тактирование EEPROM */
 
 #define __HAL_PCC_RAM_CLK_ENABLE()      (PM->CLK_AHB_SET = PM_CLOCK_AHB_RAM_M)       /**< Включить  тактирование RAM */ 
-#define __HAL_PCC_RAM_CLK_DISABLE()     (PM->CLK_AHB_SET = PM_CLOCK_AHB_RAM_M)       /**< Выключить тактирование SPIFI */
+#define __HAL_PCC_RAM_CLK_DISABLE()     (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_RAM_M)       /**< Выключить тактирование SPIFI */
 
 #define __HAL_PCC_SPIFI_CLK_ENABLE()    (PM->CLK_AHB_SET = PM_CLOCK_AHB_SPIFI_M)     /**< Включить  тактирование SPIFI */
-#define __HAL_PCC_SPIFI_CLK_DISABLE()   (PM->CLK_AHB_SET = PM_CLOCK_AHB_SPIFI_M)     /**< Выключить тактирование SPIFI */
+#define __HAL_PCC_SPIFI_CLK_DISABLE()   (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_SPIFI_M)     /**< Выключить тактирование SPIFI */
 
 #define __HAL_PCC_TCB_CLK_ENABLE()      (PM->CLK_AHB_SET = PM_CLOCK_AHB_TCB_M)       /**< Включить  тактирование блока TCB */
-#define __HAL_PCC_TCB_CLK_DISABLE()     (PM->CLK_AHB_SET = PM_CLOCK_AHB_TCB_M)       /**< Выключить тактирование блока TCB */
+#define __HAL_PCC_TCB_CLK_DISABLE()     (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_TCB_M)       /**< Выключить тактирование блока TCB */
 
 #define __HAL_PCC_DMA_CLK_ENABLE()      (PM->CLK_AHB_SET = PM_CLOCK_AHB_DMA_M)       /**< Включить  тактирование DMA */
-#define __HAL_PCC_DMA_CLK_DISABLE()     (PM->CLK_AHB_SET = PM_CLOCK_AHB_DMA_M)       /**< Выключить тактирование DMA */
+#define __HAL_PCC_DMA_CLK_DISABLE()     (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_DMA_M)       /**< Выключить тактирование DMA */
 
 #define __HAL_PCC_CRYPTO_CLK_ENABLE()   (PM->CLK_AHB_SET = PM_CLOCK_AHB_CRYPTO_M)    /**< Включить  тактирование крипто-блока */
-#define __HAL_PCC_CRYPTO_CLK_DISABLE()  (PM->CLK_AHB_SET = PM_CLOCK_AHB_CRYPTO_M)    /**< Выключить тактирование крипто-блока */
+#define __HAL_PCC_CRYPTO_CLK_DISABLE()  (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_CRYPTO_M)    /**< Выключить тактирование крипто-блока */
 
 #define __HAL_PCC_CRC32_CLK_ENABLE()    (PM->CLK_AHB_SET = PM_CLOCK_AHB_CRC32_M)      /**< Включить  тактирование CRC */
-#define __HAL_PCC_CRC32_CLK_DISABLE()   (PM->CLK_AHB_SET = PM_CLOCK_AHB_CRC32_M)      /**< Выключить тактирование CRC */
+#define __HAL_PCC_CRC32_CLK_DISABLE()   (PM->CLK_AHB_CLEAR = PM_CLOCK_AHB_CRC32_M)      /**< Выключить тактирование CRC */
 
 /** @} */ 
 
