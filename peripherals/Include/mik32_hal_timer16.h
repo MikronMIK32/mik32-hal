@@ -8,7 +8,7 @@
 #include "pad_config.h"
 #include "stdbool.h"
 #include "mik32_hal_irq.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 
 /**

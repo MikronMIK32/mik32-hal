@@ -1,7 +1,7 @@
 #ifndef MIK32_HAL_SCR1_TIMER
 #define MIK32_HAL_SCR1_TIMER
 
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 #include "power_manager.h"
 #include "inttypes.h"
 #include "mik32_hal_pcc.h"

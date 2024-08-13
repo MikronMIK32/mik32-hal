@@ -6,7 +6,7 @@
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include <spifi.h>
-#include <mcu32_memory_map.h>
+#include <mik32_memory_map.h>
 
 #define HAL_SPIFI_TIMEOUT 100000
 

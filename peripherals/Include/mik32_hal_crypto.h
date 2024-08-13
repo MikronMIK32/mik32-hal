@@ -4,7 +4,7 @@
 #include "mik32_hal_pcc.h"
 #include "crypto.h"
 #include "pad_config.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 
 /** 

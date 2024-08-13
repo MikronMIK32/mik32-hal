@@ -4,7 +4,7 @@
 #include "wakeup.h"
 #include "power_manager.h"
 #include "mik32_hal_def.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 #include "mik32_hal.h"
 
 #define CLOCKSWITCH_TIMEOUT_VALUE 500000 /**< Стандартная задержка для ожидания детектирования источника тактирования, на который происходит переключение */
