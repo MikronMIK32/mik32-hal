@@ -2,7 +2,7 @@
 #include "mik32_hal_gpio.h"
 #include <stdbool.h>
 #include <string.h>
-#include "mik32_memory_map.h"
+#include "mcu32_memory_map.h"
 #include "uart.h"
 #include "gpio.h"
 
