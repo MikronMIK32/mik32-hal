@@ -2,7 +2,7 @@
 #include "mik32_hal_gpio.h"
 #include <stdbool.h>
 #include <string.h>
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 #include "uart.h"
 #include "gpio.h"
 
@@ -505,7 +505,7 @@ inline void HAL_USART_ClearModemFlags(USART_HandleTypeDef* local)
 }
 
 
-void HAL_USART_MspInit(USART_HandleTypeDef* local);
+void HAL_USART_MspInit(USART_HandleTypeDef* setting);
 HAL_StatusTypeDef HAL_USART_Init(USART_HandleTypeDef* setting);
 bool HAL_USART_Read_ReceiveEnableAck(USART_HandleTypeDef* local);
 bool HAL_USART_Read_TransmitEnableAck(USART_HandleTypeDef* local);
