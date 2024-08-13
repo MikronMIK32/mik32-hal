@@ -11,12 +11,12 @@
  * @name Длина вектора инициализации 
  *  @{
  */
-#define IV_LENGTH_KUZNECHIK_CBC     4       /**< Количество слов вектора инициализации в режиме шифрования CBC (Кузнечик). */
-#define IV_LENGTH_MAGMA_CBC         4       /**< Количество слов вектора инициализации в режиме шифрования CBC (Магма). */
-#define IV_LENGTH_AES_CBC           2       /**< Количество слов вектора инициализации в режиме шифрования CBC (AES). */
-#define IV_LENGTH_KUZNECHIK_CTR     2       /**< Количество слов вектора инициализации в режиме шифрования CTR (Кузнечик). */
-#define IV_LENGTH_MAGMA_CTR         2       /**< Количество слов вектора инициализации в режиме шифрования CTR (Магма). */
-#define IV_LENGTH_AES_CTR           1       /**< Количество слов вектора инициализации в режиме шифрования CTR (AES). */
+#define IV_LENGTH_KUZNECHIK_CBC     CRYPTO_BLOCK_KUZNECHIK          /**< Количество слов вектора инициализации в режиме шифрования CBC (Кузнечик). */
+#define IV_LENGTH_MAGMA_CBC         CRYPTO_BLOCK_MAGMA              /**< Количество слов вектора инициализации в режиме шифрования CBC (Магма). */
+#define IV_LENGTH_AES_CBC           CRYPTO_BLOCK_AES                /**< Количество слов вектора инициализации в режиме шифрования CBC (AES). */
+#define IV_LENGTH_KUZNECHIK_CTR     (CRYPTO_BLOCK_KUZNECHIK >> 1)   /**< Количество слов вектора инициализации в режиме шифрования CTR (Кузнечик). */
+#define IV_LENGTH_MAGMA_CTR         (CRYPTO_BLOCK_MAGMA     >> 1)   /**< Количество слов вектора инициализации в режиме шифрования CTR (Магма). */
+#define IV_LENGTH_AES_CTR           (CRYPTO_BLOCK_AES       >> 1)   /**< Количество слов вектора инициализации в режиме шифрования CTR (AES). */
 /** @} */
 
 /** 
