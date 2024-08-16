@@ -161,14 +161,6 @@ static inline __attribute__((always_inline)) void HAL_SCR1_Timer_Init(HAL_SCR1_T
 }
 
 
-struct __HAL_Time_SCR1TIM_Handler
-{
-    uint32_t presc;     // AHB prescaler
-    uint32_t pt;        // Timer divider
-    uint32_t clock_freq; // Clock frequency
-} HAL_Time_SCR1TIM_Handler;
-
-
 void HAL_Time_SCR1TIM_Init();
 uint32_t HAL_Time_SCR1TIM_Micros();
 uint32_t HAL_Time_SCR1TIM_Millis();
