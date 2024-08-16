@@ -1,205 +1,127 @@
 #include <mik32_hal_spifi.h>
 
-uint32_t HAL_SPIFI_initStruct2CtrlReg(SPIFI_InitTypeDef *init)
-{
-    return (SPIFI_CONFIG_CTRL_TIMEOUT(init->timeout) |
-            SPIFI_CONFIG_CTRL_CSHIGH(init->CS_HighTime) |
-            (init->cacheEnable << SPIFI_CONFIG_CTRL_CACHE_EN_S) |
-            (init->dataCacheEnable << SPIFI_CONFIG_CTRL_D_CACHE_DIS_S) |
-            (init->interruptEnable << SPIFI_CONFIG_CTRL_INTEN_S) |
-            (init->mode3Enabled << SPIFI_CONFIG_CTRL_MODE3_S) |
-            SPIFI_CONFIG_CTRL_SCK_DIV(init->divider) |
-            (init->prefetchEnable << SPIFI_CONFIG_CTRL_PREFETCH_DIS_S) |
-            (init->dualModeEnable << SPIFI_CONFIG_CTRL_DUAL_S) |
-            (init->clockEdge << SPIFI_CONFIG_CTRL_RFCLK_S) |
-            (init->feedbackClock << SPIFI_CONFIG_CTRL_FBCLK_S) |
-            (init->DMAEnabled << SPIFI_CONFIG_CTRL_DMAEN_S));
-}
-
 __attribute__((weak)) void HAL_SPIFI_MspInit()
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
+    __HAL_PCC_SPIFI_CLK_ENABLE();
+
     GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1;
     GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
     GPIO_InitStruct.Pull = HAL_GPIO_PULL_NONE;
     HAL_GPIO_Init(GPIO_2, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5;
+    GPIO_InitStruct.Mode = HAL_GPIO_MODE_SERIAL;
     GPIO_InitStruct.Pull = HAL_GPIO_PULL_UP;
     HAL_GPIO_Init(GPIO_2, &GPIO_InitStruct);
-
-    __HAL_PCC_SPIFI_CLK_ENABLE();
 }
 
-void HAL_SPIFI_MemoryMode_Init(SPIFI_HandleTypeDef *spifi, SPIFI_InitTypeDef *init, SPIFI_MemoryCommandTypeDef *mcmd)
-{
-    HAL_SPIFI_MemoryMode_Init_LL(
-        spifi,
-        HAL_SPIFI_initStruct2CtrlReg(init),
-        init->cacheLimit,
-        ((mcmd->interimLength << SPIFI_CONFIG_MCMD_INTLEN_S) |
-         (mcmd->fieldForm << SPIFI_CONFIG_MCMD_FIELDFORM_S) |
-         (mcmd->frameForm << SPIFI_CONFIG_MCMD_FRAMEFORM_S) |
-         (mcmd->opCode << SPIFI_CONFIG_MCMD_OPCODE_S)));
-}
-
-void HAL_SPIFI_Init(SPIFI_HandleTypeDef *spifi, SPIFI_InitTypeDef *init)
-{
-    HAL_SPIFI_Init_LL(
-        spifi,
-        HAL_SPIFI_initStruct2CtrlReg(init),
-        init->cacheLimit);
-}
-
-void HAL_SPIFI_Init_LL(SPIFI_HandleTypeDef *spifi, uint32_t ctrlReg, uint32_t climitReg)
+void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi)
 {
     HAL_SPIFI_MspInit();
-    HAL_SPIFI_Reset(spifi);
-    HAL_SPIFI_WaitResetClear(spifi, HAL_SPIFI_TIMEOUT);
 
-    spifi->Instance->CTRL = ctrlReg;
-    spifi->Instance->CLIMIT = climitReg;
+    spifi->Instance->STAT |= SPIFI_CONFIG_STAT_RESET_M;
+    spifi->Instance->CLIMIT = spifi->CacheLimit; // Граница кеширования
+    if (spifi->CacheEnable)
+    {
+        spifi->Instance->CTRL |= SPIFI_CONFIG_CTRL_CACHE_EN_M;
+    }
+    else
+    {
+        spifi->Instance->CTRL &= ~SPIFI_CONFIG_CTRL_CACHE_EN_M;
+    }
+
+    // Настройка команды чтения
+    spifi->Instance->MCMD = ((spifi->Command.InterimLength << SPIFI_CONFIG_MCMD_INTLEN_S) |
+                             (spifi->Command.FieldForm << SPIFI_CONFIG_MCMD_FIELDFORM_S) |
+                             (spifi->Command.FrameForm << SPIFI_CONFIG_MCMD_FRAMEFORM_S) |
+                             (spifi->Command.OpCode << SPIFI_CONFIG_MCMD_OPCODE_S));
 }
 
-void HAL_SPIFI_SendCommand(
-    SPIFI_HandleTypeDef *spifi,
-    SPIFI_CommandTypeDef *cmd,
-    uint32_t address)
-{
-    HAL_SPIFI_SendCommand_LL(
-        spifi,
-        cmd->direction |
-            SPIFI_CONFIG_CMD_INTLEN(cmd->interimLength) |
-            SPIFI_CONFIG_CMD_FIELDFORM(cmd->fieldForm) |
-            SPIFI_CONFIG_CMD_FRAMEFORM(cmd->frameForm) |
-            SPIFI_CONFIG_CMD_OPCODE(cmd->opCode),
-        address,
-        cmd->interimData);
-}
-
-HAL_StatusTypeDef HAL_SPIFI_Transmit(
+HAL_StatusTypeDef HAL_SPIFI_SendCommand(
     SPIFI_HandleTypeDef *spifi,
     SPIFI_CommandTypeDef *cmd,
     uint32_t address,
-    uint16_t dataLength,
-    uint8_t *data)
-{
-    return HAL_SPIFI_Transmit_LL(
-        spifi,
-        cmd->direction |
-            SPIFI_CONFIG_CMD_INTLEN(cmd->interimLength) |
-            SPIFI_CONFIG_CMD_FIELDFORM(cmd->fieldForm) |
-            SPIFI_CONFIG_CMD_FRAMEFORM(cmd->frameForm) |
-            SPIFI_CONFIG_CMD_OPCODE(cmd->opCode),
-        address,
-        dataLength,
-        data,
-        cmd->interimData);
-}
-
-void HAL_SPIFI_SendCommand_LL(
-    SPIFI_HandleTypeDef *spifi,
-    uint32_t cmdRegCfg,
-    uint32_t address,
-    uint32_t interimData)
-{
-    HAL_SPIFI_ClearInterruptRequest(spifi);
-    spifi->Instance->ADDR = address;
-    spifi->Instance->IDATA = interimData;
-    spifi->Instance->CMD = cmdRegCfg;
-}
-
-HAL_StatusTypeDef HAL_SPIFI_Transmit_LL(
-    SPIFI_HandleTypeDef *spifi,
-    uint32_t cmdRegCfg,
-    uint32_t address,
-    uint16_t dataLength,
-    uint8_t *data,
-    uint32_t interimData)
-{
-    if (((cmdRegCfg & SPIFI_CONFIG_CMD_DOUT_M) == 0) || (data == 0) || (dataLength == 0))
-    {
-        return HAL_ERROR;
-    }
-
-    HAL_SPIFI_ClearInterruptRequest(spifi);
-    spifi->Instance->ADDR = address;
-    spifi->Instance->IDATA = interimData;
-    spifi->Instance->CMD = cmdRegCfg | SPIFI_CONFIG_CMD_DATALEN(dataLength);
-
-    for (int i = 0; i < dataLength; i++)
-    {
-        spifi->Instance->DATA8 = data[i];
-    }
-
-    return HAL_OK;
-}
-
-HAL_StatusTypeDef HAL_SPIFI_Receive_LL(
-    SPIFI_HandleTypeDef *spifi,
-    uint32_t cmdRegCfg,
-    uint32_t address,
-    uint16_t dataLength,
-    uint8_t *data,
-    uint32_t interimData)
-{
-    if (((cmdRegCfg & SPIFI_CONFIG_CMD_DOUT_M) != 0) || (data == 0) || (dataLength == 0))
-    {
-        return HAL_ERROR;
-    }
-
-    HAL_SPIFI_ClearInterruptRequest(spifi);
-    spifi->Instance->ADDR = address;
-    spifi->Instance->IDATA = interimData;
-    spifi->Instance->CMD = cmdRegCfg | SPIFI_CONFIG_CMD_DATALEN(dataLength);
-
-    for (int i = 0; i < dataLength; i++)
-    {
-        data[i] = (uint8_t)spifi->Instance->DATA8;
-    }
-
-    return HAL_OK;
-}
-
-HAL_StatusTypeDef HAL_SPIFI_ReceiveWords_LL(
-    SPIFI_HandleTypeDef *spifi,
-    uint32_t cmdRegCfg,
-    uint32_t address,
-    uint16_t dataLength,
-    uint32_t *data,
-    uint32_t interimData)
-{
-    if (((cmdRegCfg & SPIFI_CONFIG_CMD_DOUT_M) != 0) || (data == 0) || (dataLength == 0))
-    {
-        return HAL_ERROR;
-    }
-
-    HAL_SPIFI_ClearInterruptRequest(spifi);
-    spifi->Instance->ADDR = address;
-    spifi->Instance->IDATA = interimData;
-    spifi->Instance->CMD = cmdRegCfg | SPIFI_CONFIG_CMD_DATALEN(dataLength * 4);
-
-    for (int i = 0; i < dataLength; i++)
-    {
-        data[i] = spifi->Instance->DATA;
-    }
-
-    return HAL_OK;
-}
-
-HAL_StatusTypeDef HAL_SPIFI_WaitCommandComplete_LL(
-    SPIFI_HandleTypeDef *spifi,
-    uint32_t cmdRegCfg,
+    uint16_t bufferSize,
+    uint8_t *readBuffer,
+    uint8_t *writeBuffer,
     uint32_t timeout)
 {
-    HAL_StatusTypeDef waitStatus = HAL_SPIFI_WaitInterruptRequest(spifi, timeout);
-    if ((waitStatus == HAL_OK) && (cmdRegCfg & SPIFI_CONFIG_CMD_POLL_M))
+    return HAL_SPIFI_SendCommand_LL(
+        spifi,
+        cmd->Direction |
+            SPIFI_CONFIG_CMD_INTLEN(cmd->InterimLength) |
+            SPIFI_CONFIG_CMD_FIELDFORM(cmd->FieldForm) |
+            SPIFI_CONFIG_CMD_FRAMEFORM(cmd->FrameForm) |
+            SPIFI_CONFIG_CMD_OPCODE(cmd->OpCode),
+        address,
+        bufferSize,
+        readBuffer,
+        writeBuffer,
+        cmd->InterimData,
+        timeout);
+}
+
+HAL_StatusTypeDef HAL_SPIFI_SendCommand_LL(
+    SPIFI_HandleTypeDef *spifi,
+    uint32_t cmd,
+    uint32_t address,
+    uint16_t bufferSize,
+    uint8_t *readBuffer,
+    uint8_t *writeBuffer,
+    uint32_t interimData,
+    uint32_t timeout)
+{
+    spifi->Instance->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
+    spifi->Instance->ADDR = address;
+    spifi->Instance->IDATA = interimData;
+    spifi->Instance->CMD = cmd | SPIFI_CONFIG_CMD_DATALEN(bufferSize);
+
+    if (cmd & SPIFI_CONFIG_CMD_DOUT_M)
     {
-        if (SPIFI_CONFIG->DATA8 == (cmdRegCfg & SPIFI_CONFIG_CMD_POLL_REQUIRED_VALUE_M))
+        if ((bufferSize > 0) && (writeBuffer == 0))
+        {
+            return HAL_ERROR;
+        }
+        for (int i = 0; i < bufferSize; i++)
+        {
+            spifi->Instance->DATA8 = writeBuffer[i];
+        }
+    }
+    else
+    {
+        if ((bufferSize > 0) && (readBuffer == 0))
+        {
+            return HAL_ERROR;
+        }
+        for (int i = 0; i < bufferSize; i++)
+        {
+            readBuffer[i] = (uint8_t)spifi->Instance->DATA8;
+        }
+    }
+    HAL_StatusTypeDef waitStatus = HAL_SPIFI_WaitCommandProcessing(spifi, timeout);
+    if ((waitStatus == HAL_OK) && (cmd & SPIFI_CONFIG_CMD_POLL_M))
+    {
+        if (SPIFI_CONFIG->DATA8 == (cmd & SPIFI_CONFIG_CMD_POLL_REQUIRED_VALUE_M))
         {
             return HAL_OK;
         }
         return HAL_ERROR;
     }
     return waitStatus;
+}
+
+bool HAL_SPIFI_IsMemoryModeEnabled(SPIFI_HandleTypeDef *spifi)
+{
+    return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_MCINIT_M) != 0;
+}
+
+void HAL_SPIFI_Reset(SPIFI_HandleTypeDef *spifi)
+{
+    spifi->Instance->STAT = SPIFI_CONFIG_STAT_RESET_M;
+}
+
+bool HAL_SPIFI_IsReady(SPIFI_HandleTypeDef *spifi)
+{
+    return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_RESET_M) == 0;
 }
