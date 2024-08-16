@@ -149,6 +149,13 @@ typedef struct __SPIFI_CommandTypeDef
 
 __attribute__((weak)) void HAL_SPIFI_MspInit();
 
+static inline __attribute__((always_inline)) void HAL_SPIFI_MspInit_LL()
+{
+    PAD_CONFIG->PORT_2_CFG = (PAD_CONFIG->PORT_2_CFG & 0xF000) | 0x555;
+    PAD_CONFIG->PORT_2_PUPD = (PAD_CONFIG->PORT_2_CFG & 0xF000) | 0x550;
+    __HAL_PCC_SPIFI_CLK_ENABLE();
+}
+
 void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi);
 
 HAL_StatusTypeDef HAL_SPIFI_SendCommand(
