@@ -226,18 +226,6 @@ typedef struct __Timer16_HandleTypeDef
 #define __HAL_TIMER16_START_SINGLE(__HANDLE__)      ((__HANDLE__)->Instance->CR |=  TIMER16_CR_SNGSTRT_M)
 
 
-/* Структура, необходимая для работы функций системных часов на 16-р таймере */
-struct {
-    Timer16_HandleTypeDef tim16;
-    /* Timer prescaler */
-    uint32_t pt;
-    /* Time in ticks, updated by interrupts */
-    volatile uint32_t ticks;
-    /* Clock frequency */
-    uint32_t clock_freq;
-} HAL_Time_TIM16_Handler;
-
-
 void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16);
 void HAL_Timer16_Disable(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_Enable(Timer16_HandleTypeDef *htimer16);

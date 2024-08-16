@@ -1025,7 +1025,22 @@ void HAL_Timer16_SetInterruptCMPM(Timer16_HandleTypeDef *htimer16)
     htimer16->Instance->IER = config;
 }
 
+
 /* Функции системного времени */
+
+
+/* Структура, необходимая для работы функций системных часов на 16-р таймере */
+struct {
+    Timer16_HandleTypeDef tim16;
+    /* Timer prescaler */
+    uint32_t pt;
+    /* Time in ticks, updated by interrupts */
+    volatile uint32_t ticks;
+    /* Clock frequency */
+    uint32_t clock_freq;
+} HAL_Time_TIM16_Handler;
+
+
 void HAL_Time_TIM16_InterruptHandler()
 {
     uint32_t condition;
