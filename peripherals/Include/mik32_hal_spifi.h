@@ -218,6 +218,18 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitInt
     return HAL_TIMEOUT;
 }
 
+static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitResetClear(SPIFI_HandleTypeDef *spifi, uint32_t timeout)
+{
+    while (timeout-- != 0)
+    {
+        if ((spifi->Instance->STAT & SPIFI_CONFIG_STAT_RESET_M) == 0)
+        {
+            return HAL_OK;
+        }
+    }
+    return HAL_TIMEOUT;
+}
+
 static inline __attribute__((always_inline)) bool HAL_SPIFI_IsInterruptRequest(SPIFI_HandleTypeDef *spifi, uint32_t timeout)
 {
     return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_INTRQ_M) != 0;
