@@ -3,17 +3,17 @@
 uint32_t HAL_SPIFI_initStruct2CtrlReg(SPIFI_InitTypeDef *init)
 {
     return (SPIFI_CONFIG_CTRL_TIMEOUT(init->timeout) |
-            SPIFI_CONFIG_CTRL_CSHIGH(init->CS_Delay) |
+            SPIFI_CONFIG_CTRL_CSHIGH(init->CS_HighTime) |
             (init->cacheEnable << SPIFI_CONFIG_CTRL_CACHE_EN_S) |
             (init->dataCacheEnable << SPIFI_CONFIG_CTRL_D_CACHE_DIS_S) |
             (init->interruptEnable << SPIFI_CONFIG_CTRL_INTEN_S) |
-            (init->mode3Enable << SPIFI_CONFIG_CTRL_MODE3_S) |
+            (init->mode3Enabled << SPIFI_CONFIG_CTRL_MODE3_S) |
             SPIFI_CONFIG_CTRL_SCK_DIV(init->divider) |
             (init->prefetchEnable << SPIFI_CONFIG_CTRL_PREFETCH_DIS_S) |
             (init->dualModeEnable << SPIFI_CONFIG_CTRL_DUAL_S) |
             (init->clockEdge << SPIFI_CONFIG_CTRL_RFCLK_S) |
             (init->feedbackClock << SPIFI_CONFIG_CTRL_FBCLK_S) |
-            (init->DMAEnable << SPIFI_CONFIG_CTRL_DMAEN_S));
+            (init->DMAEnabled << SPIFI_CONFIG_CTRL_DMAEN_S));
 }
 
 __attribute__((weak)) void HAL_SPIFI_MspInit()

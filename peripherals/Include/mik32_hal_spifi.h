@@ -114,15 +114,15 @@ typedef struct __SPIFI_InitTypeDef
 {
     uint32_t divider;
     HAL_SPIFI_DualModeEnableTypeDef dualModeEnable;
-    HAL_SPIFI_Mode3EnableTypeDef mode3Enable;
+    HAL_SPIFI_Mode3EnableTypeDef mode3Enabled;
     HAL_SPIFI_ClockEdgeTypeDef clockEdge;
     HAL_SPIFI_FeedbackClockTypeDef feedbackClock;
 
     uint32_t timeout;
-    uint32_t CS_Delay;
+    uint32_t CS_HighTime;
     
     HAL_SPIFI_InterruptEnableTypeDef interruptEnable;
-    bool DMAEnable;
+    bool DMAEnabled;
 
     HAL_SPIFI_CacheEnableTypeDef cacheEnable;
     HAL_SPIFI_DataCacheEnableTypeDef dataCacheEnable;
