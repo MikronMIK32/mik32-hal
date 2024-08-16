@@ -502,6 +502,15 @@ void HAL_Timer32_Stop_IT(TIMER32_HandleTypeDef *timer, uint32_t intMask)
 }
 
 // Функции системных часов
+/* Структура, необходимая для работы системных часов на 32-р таймере */
+struct
+{
+    TIMER32_HandleTypeDef tim32;
+    /* AHB * APB_P prescaler */
+    uint32_t presc;
+    /* Timer prescaler */
+    uint32_t pt;
+} HAL_Time_TIM32_Handler;
 
 /**
  * @brief Инициализация 32-р таймера для работы в качестве системных часов.

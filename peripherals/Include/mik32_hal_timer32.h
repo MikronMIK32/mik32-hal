@@ -219,16 +219,6 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_Timer32_WaitF
     return HAL_TIMEOUT;
 }
 
-/* Структура, необходимая для работы системных часов на 32-р таймере */
-struct
-{
-    TIMER32_HandleTypeDef tim32;
-    /* AHB * APB_P prescaler */
-    uint32_t presc;
-    /* Timer prescaler */
-    uint32_t pt;
-} HAL_Time_TIM32_Handler;
-
 
 void HAL_TIMER32_MspInit(TIMER32_HandleTypeDef* htimer32);
 void HAL_TIMER32_Channel_MspInit(TIMER32_CHANNEL_HandleTypeDef* timerChannel);
