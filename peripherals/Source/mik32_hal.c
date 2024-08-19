@@ -22,14 +22,16 @@ HAL_StatusTypeDef HAL_Init()
  */
 __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
 {
-    register uint32_t del = 1777 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;
+    //register uint32_t del = 1777 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;
+    register uint32_t del = 10695 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 32000;
     asm volatile(
         "beq    %[count], x0, end_metka_%="         "\n\t"
         "cycle_main_%=:"
         //"lui    t0, 0"                              "\n\t"
         //"addi   t0, %[temp], 1777"                  "\n\t"
-        //"li     %[d], 3555/2"                           "\n\t"
-        "mv     t0, %[d]"                           "\n\t"
+        //"li     %[del], 3555/2"                     "\n\t"
+        //"li     t0,10695"                            "\n\t"
+        "mv     t0, %[del]"                         "\n\t"
         "cycle_internal_%=:"
         "addi   t0, t0, -1"                         "\n\t"
         "bne    t0, x0, cycle_internal_%="          "\n\t"
@@ -37,7 +39,7 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
         "bne    %[count], x0, cycle_main_%="        "\n\t"
         "end_metka_%=:"
         ::
-        [count] "r" (time_ms), [d] "r" (del) : "t0"
+        [count] "r" (time_ms), [del] "r" (del) : "t0"
     );
 }
 
@@ -49,12 +51,13 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
  */
 __attribute__((section(".ram_text")))void HAL_ProgramDelayUs(uint32_t time_us)
 {
-    time_us >>= 3;
-    register uint32_t del = 14 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;
+    //time_us >>= 3;
+    //register uint32_t del = 14 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;
+    register uint32_t del = 10 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 32000;
     asm volatile(
         "beq    %[count], x0, end_metka_%="         "\n\t"
         "cycle_main_%=:"
-        "mv     t0, %[d]"                              "\n\t"
+        "mv     t0, %[del]"                         "\n\t"
         "cycle_internal_%=:"
         "addi   t0, t0, -1"                         "\n\t"
         "bne    t0, x0, cycle_internal_%="          "\n\t"
@@ -62,7 +65,7 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayUs(uint32_t time_us)
         "bne    %[count], x0, cycle_main_%="        "\n\t"
         "end_metka_%=:"
         ::
-        [count] "r" (time_us), [d] "r" (del) : "t0"
+        [count] "r" (time_us), [del] "r" (del) : "t0"
     );
 }
 
