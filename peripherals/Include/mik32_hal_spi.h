@@ -247,7 +247,6 @@ void HAL_SPI_ClearError(SPI_HandleTypeDef *hspi);
 void HAL_SPI_CS_Enable(SPI_HandleTypeDef *hspi, uint32_t CS_M);
 void HAL_SPI_CS_Disable(SPI_HandleTypeDef *hspi);
 HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size, uint32_t Timeout);
-HAL_StatusTypeDef HAL_SPI_ExchangeThreshold(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t DataSize, uint32_t Timeout);
 HAL_StatusTypeDef HAL_SPI_Exchange_IT(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size);
 
 
@@ -373,16 +372,29 @@ static inline __attribute__((always_inline)) void HAL_SPI_TXFifoNotFull_IRQ(SPI_
 {
     uint32_t write_read_bytes = SPI_BUFFER_SIZE - hspi->Init.ThresholdTX + 1; /* Число байт для записи и чтения в итерации */
 
-    for (volatile uint32_t i = 0; (i < write_read_bytes) && hspi->TxCount; i++)
+    /* Первичное полное заполнение буфера TX */
+    if (hspi->State == HAL_SPI_STATE_READY)
     {
-        hspi->Instance->TXDATA = *(hspi->pTxBuffPtr);
-        hspi->pTxBuffPtr++;
-        hspi->TxCount--;
+        hspi->State = HAL_SPI_STATE_BUSY;
+
+        for (volatile uint32_t i = 0; (i < SPI_BUFFER_SIZE) && hspi->TxCount; i++)
+        {
+            hspi->Instance->TXDATA = *(hspi->pTxBuffPtr++);
+            hspi->TxCount--;
+        }
     }
+    else // Заполнение буфера TX по write_read_bytes байт
+    {
+        for (volatile uint32_t i = 0; (i < write_read_bytes) && hspi->TxCount; i++)
+        {
+            hspi->Instance->TXDATA = *(hspi->pTxBuffPtr++);
+            hspi->TxCount--;
+        }
+    }
+    
 
     if (hspi->TxCount == 0)
     {
-
         HAL_SPI_InterruptDisable(hspi, SPI_INT_STATUS_TX_FIFO_NOT_FULL_M);
 
         if (hspi->RxCount == 0)
@@ -410,10 +422,14 @@ static inline __attribute__((always_inline)) void HAL_SPI_TXFifoNotFull_IRQ(SPI_
  */
 static inline __attribute__((always_inline)) void HAL_SPI_RXFifoNotEmpty_IRQ(SPI_HandleTypeDef *hspi)
 {
-    /* Чтение одного байта */
-    *(hspi->pRxBuffPtr) = hspi->Instance->RXDATA;
-    hspi->pRxBuffPtr++;
-    hspi->RxCount--;
+    uint32_t write_read_bytes = SPI_BUFFER_SIZE - hspi->Init.ThresholdTX + 1; /* Число байт для записи и чтения в итерации */
+
+    for (volatile uint32_t i = 0; (i < write_read_bytes) && hspi->RxCount; i++)
+    {
+        while (!(hspi->Instance->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M));
+        *(hspi->pRxBuffPtr++) = hspi->Instance->RXDATA;
+        hspi->RxCount--;
+    }
 
     if (hspi->RxCount == 0)
     {

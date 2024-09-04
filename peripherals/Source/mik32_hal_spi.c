@@ -331,6 +331,7 @@ void HAL_SPI_ClearError(SPI_HandleTypeDef *hspi)
  * 
  * В автоматическом режиме управления сигналом выбора ведомого функция задает один из сигналов
  * CS0 - CS3, который будет использован во время передачи.
+ * 
  * @param hspi указатель на структуру SPI_HandleTypeDef, которая содержит
  *                  информацию о конфигурации для модуля SPI.
  * @param CS_M ведомое устройство.
@@ -342,6 +343,8 @@ void HAL_SPI_ClearError(SPI_HandleTypeDef *hspi)
  *          - @ref SPI_CS_3     - ведомое устройство 4
  *      Если используется внешний декодер (@ref SPI_InitTypeDef::Decoder "SPI_HandleTypeDef.Init.Decoder" = @ref SPI_DECODER_USE),
  *      @ref SPI_InitTypeDef::ChipSelect "SPI_HandleTypeDef.Init.ChipSelect" отображается на выводах CS0 - CS3. 
+ * 
+ * @warning В ручном режиме перед использованием этой функции следует сначала включить SPI, например, с помощью макроса __HAL_SPI_ENABLE.
  */
 void HAL_SPI_CS_Enable(SPI_HandleTypeDef *hspi, uint32_t CS_M)
 {
@@ -375,7 +378,10 @@ void HAL_SPI_CS_Disable(SPI_HandleTypeDef *hspi)
  * @param Timeout продолжительность тайм-аута.
  * @return Статус HAL.
  * 
- * @warning Во время обмена пороговое значение ThresholdTX = 1.
+ * @note Во время обмена пороговое значение ThresholdTX = 1.
+ * @warning Если Вы управляете сигналом выбора ведомого в ручном режиме или используете для этого GPIO, 
+ *          SPI следует включать до того, как уровень сигнала CS станет активным. Для включения SPI можно 
+ *          использовать макрос __HAL_SPI_ENABLE.
  */
 HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t DataSize, uint32_t Timeout)
 {
@@ -427,7 +433,12 @@ HAL_StatusTypeDef HAL_SPI_Exchange(SPI_HandleTypeDef *hspi, uint8_t TransmitByte
     }
 
 error:
-    __HAL_SPI_DISABLE(hspi);
+    if (!(hspi->Instance->CONFIG & SPI_CONFIG_MANUAL_CS_M))
+    {
+        __HAL_SPI_DISABLE(hspi);
+    }
+
+    
     hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
     volatile uint32_t unused = hspi->Instance->INT_STATUS; /* Очистка флагов ошибок чтением */
     (void) unused;
@@ -436,135 +447,6 @@ error:
     return error_code;
 }
 
-
-/**
- * @brief Запустить передачу и прием данных с учетом порогового значения @ref SPI_InitTypeDef::ThresholdTX "SPI_HandleTypeDef.Init.ThresholdTX".
- * 
- * Сначала полностью заполняется буфер TX. Затем начинается передача, состоящая из цикличного считывания 
- * и отправки @ref SPI_BUFFER_SIZE - @ref SPI_InitTypeDef::ThresholdTX "SPI_HandleTypeDef.Init.ThresholdTX" + 1 байт. Если во 
- * время ожидания байта в буфере RX опустошился буфер TX ниже порогового значения ThresholdTX, 
- * то в буфер TX записывается 1 байт. За одну итерацию цикла в буфер TX записывается и считывается из буфера RX не более 
- * @ref SPI_BUFFER_SIZE - @ref SPI_InitTypeDef::ThresholdTX "SPI_HandleTypeDef.Init.ThresholdTX" + 1 байт.
- * @param hspi указатель на структуру SPI_HandleTypeDef, которая содержит
- *                  информацию о конфигурации для модуля SPI.
- * @param TransmitBytes указатель на буфер передаваемых данных.
- * @param ReceiveBytes указатель на буфер считываемых данных.
- * @param DataSize число байт для отправки и приема.
- * @param Timeout продолжительность тайм-аута.
- * @return Статус HAL.
- */
-HAL_StatusTypeDef HAL_SPI_ExchangeThreshold(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t DataSize, uint32_t Timeout)
-{
-    uint32_t tx_offset = 0;                                                   /* Номер отправляемого байта */
-    uint32_t rx_offset = 0;                                                   /* Номер считываемого байта */
-    uint32_t tx_counter = 0;                                                  /* Количество записанных байт в буфер TX за итерацию */
-    uint32_t write_read_bytes = SPI_BUFFER_SIZE - hspi->Init.ThresholdTX + 1; /* Число байт для записи и чтения в итерации */
-    uint32_t status_tx = 0;                                                   /* Регистр состояний флагов SPI во время записи в TXDATA */
-    uint32_t timeout_counter = Timeout;
-    HAL_StatusTypeDef error_code = HAL_OK;
-
-    /* Очистка ошибок */
-    HAL_SPI_ClearError(hspi);
-
-    /* Первая запись буфера до полного заполнения */
-    while (!(hspi->Instance->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M))
-    {
-        hspi->Instance->TXDATA = TransmitBytes[tx_offset];
-        tx_offset++;
-
-        /* Количество записанных байт не должно быть больше буфера */
-        if (tx_offset >= SPI_BUFFER_SIZE)
-        {
-            return HAL_ERROR;
-        }
-    }
-
-    /* Включить SPI */
-    __HAL_SPI_ENABLE(hspi);
-
-    while ((tx_offset < DataSize) || (rx_offset < DataSize))
-    {
-        /* Чтение (8 - Threshold + 1) байт. */
-        if (rx_offset < DataSize)
-        {
-            for (uint32_t rx_counter = 0; (rx_counter < write_read_bytes) && (rx_offset < DataSize); rx_counter++)
-            {
-                timeout_counter = Timeout;
-                while (!((status_tx = hspi->Instance->INT_STATUS) & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M))
-                {
-
-                    if (!(timeout_counter--))
-                    {
-                        error_code = HAL_TIMEOUT;
-                        goto error;
-                    }
-
-                    if (status_tx & (SPI_INT_STATUS_RX_OVERFLOW_M | SPI_INT_STATUS_MODE_FAIL_M))
-                    {
-                        goto error;
-                    }
-
-                    /* Если буфер RX пуст, а буфер TX опустошился ниже порогового значения, то в буфер TX записывается байт. */
-                    if (((tx_counter != 0) || ((status_tx = hspi->Instance->INT_STATUS) & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)) && (tx_offset < DataSize) && (tx_counter < write_read_bytes))
-                    {
-                        if (status_tx & (SPI_INT_STATUS_RX_OVERFLOW_M | SPI_INT_STATUS_MODE_FAIL_M))
-                        {
-                            goto error;
-                        }
-                        hspi->Instance->TXDATA = TransmitBytes[tx_offset++];
-                        tx_counter++;
-                    }
-                }
-                ReceiveBytes[rx_offset++] = hspi->Instance->RXDATA;
-            }
-        }
-
-        if (tx_offset < DataSize)
-        {
-            timeout_counter = Timeout;
-            /* Ожидание опустошение буфера ниже  */
-            while ((tx_counter == 0) && (!((status_tx = hspi->Instance->INT_STATUS) & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)))
-            {
-                if (!(timeout_counter--))
-                {
-                    error_code = HAL_TIMEOUT;
-                    goto error;
-                }
-
-                if (status_tx & (SPI_INT_STATUS_RX_OVERFLOW_M | SPI_INT_STATUS_MODE_FAIL_M))
-                {
-                    goto error;
-                }
-            }
-
-            for (; (tx_counter < write_read_bytes) && (tx_offset < DataSize); tx_counter++)
-            {
-                hspi->Instance->TXDATA = TransmitBytes[tx_offset++];
-            }
-            tx_counter = 0;
-        }
-    }
-
-error:
-    __HAL_SPI_DISABLE(hspi);
-    hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
-    if ((status_tx & (SPI_INT_STATUS_RX_OVERFLOW_M | SPI_INT_STATUS_MODE_FAIL_M)))
-    {
-        if (status_tx & SPI_INT_STATUS_RX_OVERFLOW_M)
-        {
-            hspi->ErrorCode |= HAL_SPI_ERROR_OVR;
-        }
-        else
-        {
-            hspi->ErrorCode |= HAL_SPI_ERROR_MODF;
-        }
-
-        error_code = HAL_ERROR;
-    }
-    status_tx = hspi->Instance->INT_STATUS;
-
-    return error_code;
-}
 
 /**
  * @brief Запустить передачу и прием данных с прерываниями.
@@ -580,6 +462,10 @@ error:
  * @param ReceiveBytes указатель на буфер считываемых данных.
  * @param Size число байт для отправки и приема.
  * @return Статус HAL.
+ * 
+ * @warning Если Вы управляете сигналом выбора ведомого в ручном режиме или используете для этого GPIO, 
+ *       SPI следует включать до того, как уровень сигнала CS станет активным. Для включения SPI можно 
+ *       использовать макрос __HAL_SPI_ENABLE.
  */
 HAL_StatusTypeDef HAL_SPI_Exchange_IT(SPI_HandleTypeDef *hspi, uint8_t TransmitBytes[], uint8_t ReceiveBytes[], uint32_t Size)
 {
@@ -596,25 +482,19 @@ HAL_StatusTypeDef HAL_SPI_Exchange_IT(SPI_HandleTypeDef *hspi, uint8_t TransmitB
         return error_code;
     }
 
-    hspi->State = HAL_SPI_STATE_BUSY;
+    hspi->State = HAL_SPI_STATE_READY;
 
     hspi->pTxBuffPtr = TransmitBytes;
     hspi->TxCount = Size;
     hspi->pRxBuffPtr = ReceiveBytes;
     hspi->RxCount = Size;
 
-    /* Очистка ошибок */
-    HAL_SPI_ClearError(hspi);
-
-    /* Первая запись буфера до полного заполнения */
-    for (uint32_t i = 0; i < SPI_BUFFER_SIZE; i++)
+    if (!(hspi->Instance->CONFIG & SPI_CONFIG_MANUAL_CS_M))
     {
-        hspi->Instance->TXDATA = *(hspi->pTxBuffPtr);
-        hspi->pTxBuffPtr++;
-        hspi->TxCount--;        
+        /* Очистка ошибок */
+        HAL_SPI_ClearError(hspi);
     }
     
-
     /* Включить SPI если выключено */
     if (!(hspi->Instance->ENABLE & SPI_ENABLE_M))
     {
