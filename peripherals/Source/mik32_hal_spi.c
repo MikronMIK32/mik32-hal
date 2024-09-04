@@ -436,10 +436,9 @@ error:
     if (!(hspi->Instance->CONFIG & SPI_CONFIG_MANUAL_CS_M))
     {
         __HAL_SPI_DISABLE(hspi);
+        hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
     }
 
-    
-    hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
     volatile uint32_t unused = hspi->Instance->INT_STATUS; /* Очистка флагов ошибок чтением */
     (void) unused;
 

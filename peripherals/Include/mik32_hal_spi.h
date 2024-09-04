@@ -400,8 +400,11 @@ static inline __attribute__((always_inline)) void HAL_SPI_TXFifoNotFull_IRQ(SPI_
         if (hspi->RxCount == 0)
         {
             hspi->State = HAL_SPI_STATE_END;
-            __HAL_SPI_DISABLE(hspi);
-            hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
+            if (!(hspi->Instance->CONFIG & SPI_CONFIG_MANUAL_CS_M))
+            {
+                __HAL_SPI_DISABLE(hspi);
+                hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
+            }
             volatile uint32_t unused = hspi->Instance->INT_STATUS;                             /* Очистка флагов ошибок чтением */
             (void)unused;
             HAL_SPI_InterruptDisable(hspi, SPI_INT_STATUS_RX_OVERFLOW_M |
@@ -438,8 +441,11 @@ static inline __attribute__((always_inline)) void HAL_SPI_RXFifoNotEmpty_IRQ(SPI
         if (hspi->TxCount == 0)
         {
             hspi->State = HAL_SPI_STATE_END;
-            __HAL_SPI_DISABLE(hspi);
-            hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
+            if (!(hspi->Instance->CONFIG & SPI_CONFIG_MANUAL_CS_M))
+            {
+                __HAL_SPI_DISABLE(hspi);
+                hspi->Instance->ENABLE |= SPI_ENABLE_CLEAR_TX_FIFO_M | SPI_ENABLE_CLEAR_RX_FIFO_M; /* Очистка буферов RX и TX */
+            }
             volatile uint32_t unused = hspi->Instance->INT_STATUS;                             /* Очистка флагов ошибок чтением */
             (void)unused;
             HAL_SPI_InterruptDisable(hspi, SPI_INT_STATUS_RX_OVERFLOW_M |
