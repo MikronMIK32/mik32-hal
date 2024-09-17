@@ -263,6 +263,7 @@ void HAL_DMA_Start(DMA_ChannelHandleTypeDef *hdma_channel, void* SRC, void* DST,
     hdma_channel->dma->Instance->CHANNELS[ChannelIndex].DST = (uint32_t) DST;
     hdma_channel->dma->Instance->CHANNELS[ChannelIndex].LEN = Len;
 
+    CFGWriteBuffer[ChannelIndex] &= DMA_CH_CFG_IRQ_EN_M;
 
     CFGWriteBuffer[ChannelIndex] |= DMA_CH_CFG_ENABLE_M 
         | (hdma_channel->ChannelInit.Priority << DMA_CH_CFG_PRIOR_S) 
