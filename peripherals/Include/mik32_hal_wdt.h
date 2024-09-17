@@ -101,7 +101,7 @@ typedef struct __WDT_ClockTypeDef
 } WDT_ClockTypeDef;
 
 
-void HAL_RTC_MspInit(WDT_HandleTypeDef* hwdt);
+void HAL_WDT_MspInit(WDT_HandleTypeDef* hwdt);
 HAL_StatusTypeDef HAL_WDT_Init(WDT_HandleTypeDef *hwdt, uint32_t timeout);
 HAL_StatusTypeDef HAL_WDT_Refresh(WDT_HandleTypeDef *hwdt, uint32_t timeout);
 HAL_StatusTypeDef HAL_WDT_Start(WDT_HandleTypeDef *hwdt, uint32_t timeout);

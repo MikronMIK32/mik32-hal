@@ -10,7 +10,7 @@ uint16_t WDT_prescale[] = {1, 2, 4, 16, 64, 256, 1024, 4096};
   * 
   *                 информацию о конфигурации для модуля WDT.
   */
-__attribute__((weak)) void HAL_RTC_MspInit(WDT_HandleTypeDef *hwdt)
+__attribute__((weak)) void HAL_WDT_MspInit(WDT_HandleTypeDef *hwdt)
 {
     __HAL_PCC_WDT_CLK_ENABLE();
 }
@@ -82,7 +82,7 @@ HAL_StatusTypeDef HAL_WDT_Init(WDT_HandleTypeDef *hwdt, uint32_t timeout)
         return HAL_ERROR;
     }
 
-    HAL_RTC_MspInit(hwdt);
+    HAL_WDT_MspInit(hwdt);
 
 
     if (HAL_WDT_Stop(hwdt, timeout) != HAL_OK)
