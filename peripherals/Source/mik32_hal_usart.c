@@ -222,7 +222,11 @@ bool HAL_USART_Print(USART_HandleTypeDef* local, char* str, uint32_t timeout)
  * @brief Функция приема 1 байта данных по интерфейсу USART. Функция включает в
  * себя цикл ожидания приема данных и чтение полученных данных.
  * @param local указатель на структуру-дескриптор модуля USART
- * @return 1 байт принятых данных
+ * @param buf указатель на переменную-приемник
+ * @param timeout максимальное время транзакции (в микросекундах). Не
+ * рекомендуется использование значения USART_TIMEOUT_DEFAULT, так как оно ненамного
+ * превышает длину одной транзакции по времени 
+ * @return Если true, транзакция успешна, если false - ошибка timeout
  */
 bool HAL_USART_Receive(USART_HandleTypeDef* local, char* buf, uint32_t timeout)
 {
