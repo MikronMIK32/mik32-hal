@@ -6,7 +6,7 @@
 #include <timer32.h>
 #include <power_manager.h>
 #include "mik32_hal_def.h"
-#include <mcu32_memory_map.h>
+#include <mik32_memory_map.h>
 
 #define TIMER32_TIMEOUT 10000000
 
@@ -219,6 +219,7 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_Timer32_WaitF
     return HAL_TIMEOUT;
 }
 
+
 void HAL_TIMER32_MspInit(TIMER32_HandleTypeDef* htimer32);
 void HAL_TIMER32_Channel_MspInit(TIMER32_CHANNEL_HandleTypeDef* timerChannel);
 HAL_StatusTypeDef HAL_Timer32_Init(TIMER32_HandleTypeDef *timer);
@@ -253,5 +254,11 @@ HAL_StatusTypeDef HAL_Timer32_Capture_Start_IT(TIMER32_HandleTypeDef *timer, TIM
 void HAL_Timer32_Capture_Stop_IT(TIMER32_HandleTypeDef *timer, TIMER32_CHANNEL_HandleTypeDef *timerChannel);
 void HAL_Timer32_Start_IT(TIMER32_HandleTypeDef *timer, uint32_t intMask);
 void HAL_Timer32_Stop_IT(TIMER32_HandleTypeDef *timer, uint32_t intMask);
+
+void HAL_Time_TIM32_Init(TIMER32_TypeDef* timer);
+uint32_t HAL_Time_TIM32_Micros();
+uint32_t HAL_Time_TIM32_Millis();
+void HAL_Time_TIM32_DelayUs(uint32_t time_us);
+void HAL_Time_TIM32_DelayMs(uint32_t time_ms);
 
 #endif // MIK32_HAL_TIMER32

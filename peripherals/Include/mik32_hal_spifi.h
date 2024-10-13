@@ -6,7 +6,7 @@
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include <spifi.h>
-#include <mcu32_memory_map.h>
+#include <mik32_memory_map.h>
 
 #define HAL_SPIFI_TIMEOUT 100000
 
@@ -149,6 +149,13 @@ typedef struct __SPIFI_CommandTypeDef
 
 __attribute__((weak)) void HAL_SPIFI_MspInit();
 
+static inline __attribute__((always_inline)) void HAL_SPIFI_MspInit_LL()
+{
+    PAD_CONFIG->PORT_2_CFG = (PAD_CONFIG->PORT_2_CFG & 0xF000) | 0x555;
+    PAD_CONFIG->PORT_2_PUPD = (PAD_CONFIG->PORT_2_CFG & 0xF000) | 0x550;
+    __HAL_PCC_SPIFI_CLK_ENABLE();
+}
+
 void HAL_SPIFI_MemoryMode_Init(SPIFI_MemoryModeConfig_HandleTypeDef *spifi);
 
 HAL_StatusTypeDef HAL_SPIFI_SendCommand(
@@ -218,9 +225,31 @@ static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitInt
     return HAL_TIMEOUT;
 }
 
+static inline __attribute__((always_inline)) HAL_StatusTypeDef HAL_SPIFI_WaitResetClear(SPIFI_HandleTypeDef *spifi, uint32_t timeout)
+{
+    while (timeout-- != 0)
+    {
+        if ((spifi->Instance->STAT & SPIFI_CONFIG_STAT_RESET_M) == 0)
+        {
+            return HAL_OK;
+        }
+    }
+    return HAL_TIMEOUT;
+}
+
 static inline __attribute__((always_inline)) bool HAL_SPIFI_IsInterruptRequest(SPIFI_HandleTypeDef *spifi, uint32_t timeout)
 {
     return (spifi->Instance->STAT & SPIFI_CONFIG_STAT_INTRQ_M) != 0;
+}
+
+static inline __attribute__((always_inline)) void HAL_SPIFI_MemoryMode_Init_LL(SPIFI_HandleTypeDef *spifi, uint32_t ctrlReg, uint32_t climitReg, uint32_t mcmdReg)
+{
+    HAL_SPIFI_Reset(spifi);
+    HAL_SPIFI_WaitResetClear(spifi, HAL_SPIFI_TIMEOUT);
+
+    SPIFI_CONFIG->CLIMIT = climitReg;
+    SPIFI_CONFIG->CTRL = ctrlReg;
+    SPIFI_CONFIG->MCMD = mcmdReg;
 }
 
 #endif // MIK32_HAL_SPIFI

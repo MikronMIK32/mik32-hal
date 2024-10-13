@@ -4,7 +4,7 @@
 #include "epic.h"
 #include "csr.h"
 #include "scr1_csr_encoding.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 
 
 /* Title: Макросы */

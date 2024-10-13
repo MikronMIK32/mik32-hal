@@ -7,7 +7,8 @@
 #include "timer16.h"
 #include "pad_config.h"
 #include "stdbool.h"
-#include "mcu32_memory_map.h"
+#include "mik32_hal_irq.h"
+#include "mik32_memory_map.h"
 
 
 /**
@@ -273,6 +274,14 @@ void HAL_Timer16_SetInterruptEXTTRIG(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_SetInterruptARRM(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_SetInterruptCMPM(Timer16_HandleTypeDef *htimer16);
 void HAL_Timer16_InterruptInit(Timer16_HandleTypeDef *htimer16);
+/* Функции системного времени */
+void HAL_Time_TIM16_InterruptHandler();
+void HAL_Time_TIM16_Init(TIMER16_TypeDef* timer);
+// uint32_t HAL_Time_TIM16_GetTick();
+uint32_t HAL_Time_TIM16_Micros();
+uint32_t HAL_Time_TIM16_Millis();
+void HAL_Time_TIM16_DelayUs(uint32_t time_us);
+void HAL_Time_TIM16_DelayMs(uint32_t time_ms);
 
 /**
  * @brief Получить статус прерываний Timer16. 

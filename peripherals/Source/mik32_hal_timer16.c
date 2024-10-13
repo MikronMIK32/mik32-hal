@@ -1026,3 +1026,153 @@ void HAL_Timer16_SetInterruptCMPM(Timer16_HandleTypeDef *htimer16)
 }
 
 
+/* Функции системного времени */
+
+
+/* Структура, необходимая для работы функций системных часов на 16-р таймере */
+struct {
+    Timer16_HandleTypeDef tim16;
+    /* Timer prescaler */
+    uint32_t pt;
+    /* Time in ticks, updated by interrupts */
+    volatile uint32_t ticks;
+    /* Clock frequency */
+    uint32_t clock_freq;
+} HAL_Time_TIM16_Handler;
+
+
+void HAL_Time_TIM16_InterruptHandler()
+{
+    uint32_t condition;
+    switch ((uint32_t)HAL_Time_TIM16_Handler.tim16.Instance)
+    {
+        case (uint32_t)TIMER16_0: condition = EPIC_CHECK_TIMER16_0(); break;
+        case (uint32_t)TIMER16_1: condition = EPIC_CHECK_TIMER16_1(); break;
+        case (uint32_t)TIMER16_2: condition = EPIC_CHECK_TIMER16_2(); break;
+        default: condition = 0;
+    }
+    if (!condition) return;
+    uint32_t interrupt_status = HAL_Timer16_GetInterruptStatus(&(HAL_Time_TIM16_Handler.tim16));
+    if (interrupt_status & TIMER16_ISR_ARR_MATCH_M)
+    {
+        HAL_Time_TIM16_Handler.ticks += 0x00010000UL;
+    }
+    HAL_Timer16_ClearInterruptMask(&(HAL_Time_TIM16_Handler.tim16), 0xFFFFFFFF);
+}
+
+
+/**
+ * @brief Инициализация 16-р таймера для работы в качестве системных часов.
+ * После инициализации системного таймера не рекомендуется изменять делители тактовой частоты AHB, APB_P и APB_M
+ * Если делители такта были изменены или микроконтроллер переключился на другой источник тактирования, необходимо
+ * переинициализаровать таймер. При этом прежнее значение системного времени потеряется.
+ * 
+ * Время переполнения системных часов зависит от частоты тактирования. Минимальное время переполнения - 4295с.
+ * 
+ * @warning При работе 16-р таймера в качестве системных часов используются прерывания по переполнению. Не рекомендуется
+ * запрещать глобальные прерывания.
+ * 
+ * @param timer  TIMER16_0, TIMER16_1 или TIMER16_2
+*/
+void HAL_Time_TIM16_Init(TIMER16_TypeDef* timer)
+{
+    HAL_Time_TIM16_Handler.tim16.Instance = timer;
+    HAL_Time_TIM16_Handler.tim16.Clock.Source = TIMER16_SOURCE_INTERNAL_SYSTEM;
+    HAL_Time_TIM16_Handler.tim16.CountMode = TIMER16_COUNTMODE_INTERNAL;
+    HAL_Time_TIM16_Handler.tim16.ActiveEdge = TIMER16_ACTIVEEDGE_RISING;
+    HAL_Time_TIM16_Handler.tim16.Preload = TIMER16_PRELOAD_AFTERWRITE;
+    HAL_Time_TIM16_Handler.tim16.Trigger.Source = TIMER16_TRIGGER_TIM1_GPIO1_9; 
+    HAL_Time_TIM16_Handler.tim16.Trigger.ActiveEdge = TIMER16_TRIGGER_ACTIVEEDGE_SOFTWARE;
+    HAL_Time_TIM16_Handler.tim16.Trigger.TimeOut = TIMER16_TIMEOUT_DISABLE;
+    HAL_Time_TIM16_Handler.tim16.Filter.ExternalClock = TIMER16_FILTER_NONE;
+    HAL_Time_TIM16_Handler.tim16.Filter.Trigger = TIMER16_FILTER_NONE;
+    HAL_Time_TIM16_Handler.tim16.EncoderMode = TIMER16_ENCODER_DISABLE;
+    HAL_Time_TIM16_Handler.tim16.Waveform.Enable = TIMER16_WAVEFORM_GENERATION_DISABLE;
+    HAL_Time_TIM16_Handler.tim16.Waveform.Polarity = TIMER16_WAVEFORM_POLARITY_NONINVERTED;
+    /* Calculate prescaler values */
+    HAL_Time_TIM16_Handler.clock_freq = HAL_PCC_GetSysClockFreq();
+    if (HAL_Time_TIM16_Handler.clock_freq % 1000000UL != 0)
+    {
+        HAL_Time_TIM16_Handler.pt = 1;
+        HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_1;
+    }
+    else
+    {
+        uint32_t pt_raw = HAL_Time_TIM16_Handler.clock_freq / 1000000UL;
+        switch (pt_raw)
+        {
+            case 1: HAL_Time_TIM16_Handler.pt = 1; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_1; break;
+            case 2: HAL_Time_TIM16_Handler.pt = 2; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_2; break;
+            case 4: HAL_Time_TIM16_Handler.pt = 4; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_4; break;
+            case 8: HAL_Time_TIM16_Handler.pt = 8; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_8; break;
+            case 16: HAL_Time_TIM16_Handler.pt = 16; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_16; break;
+            case 32: HAL_Time_TIM16_Handler.pt = 32; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_32; break;
+            case 64: HAL_Time_TIM16_Handler.pt = 64; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_64; break;
+            case 128: HAL_Time_TIM16_Handler.pt = 128; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_128; break;
+            default: HAL_Time_TIM16_Handler.pt = 1; HAL_Time_TIM16_Handler.tim16.Clock.Prescaler = TIMER16_PRESCALER_1; break;
+        }
+    }
+    HAL_Timer16_Init(&(HAL_Time_TIM16_Handler.tim16));
+    /* Reset the timer */
+    HAL_Time_TIM16_Handler.tim16.Instance->CNT = 0;
+    HAL_Time_TIM16_Handler.ticks = 0;
+    /* Set interrupt mask */
+    switch ((uint32_t)timer)
+    {
+        case (uint32_t)TIMER16_0: HAL_EPIC_MaskLevelSet(HAL_EPIC_TIMER16_0_MASK); break;
+        case (uint32_t)TIMER16_1: HAL_EPIC_MaskLevelSet(HAL_EPIC_TIMER16_1_MASK); break;
+        case (uint32_t)TIMER16_2: HAL_EPIC_MaskLevelSet(HAL_EPIC_TIMER16_2_MASK); break;
+    }
+    HAL_IRQ_EnableInterrupts();
+    HAL_Timer16_Counter_Start_IT(&(HAL_Time_TIM16_Handler.tim16), 0xFFFF);
+}
+
+// uint32_t HAL_Time_TIM16_GetTick()
+// {
+//     return HAL_Time_TIM16_Handler.ticks + time_timer16.Instance->CNT;
+// }
+
+/**
+ * @brief Системное время в микросекундах, используется 16-р таймер в качестве системных часов
+*/
+uint32_t HAL_Time_TIM16_Micros()
+{
+    //HAL_IRQ_DisableInterrupts();
+    uint64_t time_raw = HAL_Time_TIM16_Handler.ticks + HAL_Time_TIM16_Handler.tim16.Instance->CNT;
+    return (uint32_t)(time_raw * (1000000UL * HAL_Time_TIM16_Handler.pt) /
+        HAL_Time_TIM16_Handler.clock_freq);
+}
+
+/**
+ * @brief Системное время в миллисекундах, используется 16-р таймер в качестве системных часов
+*/
+uint32_t HAL_Time_TIM16_Millis()
+{
+    uint64_t time_raw = HAL_Time_TIM16_Handler.ticks + HAL_Time_TIM16_Handler.tim16.Instance->CNT;
+    return (uint32_t)(time_raw * (1000UL * HAL_Time_TIM16_Handler.pt) /
+        HAL_Time_TIM16_Handler.clock_freq);
+}
+
+/**
+ * @brief Функция задержки в микросекундах, используется 16-р таймер в качестве системных часов
+ * @warning При работе 16-р таймера в качестве системных часов используются прерывания по
+ * переполнению. Если запретить глобальные прерывания, данная функция может вызвать зависание
+ * микроконтроллера.
+*/
+void HAL_Time_TIM16_DelayUs(uint32_t time_us)
+{
+    uint32_t time_metka = HAL_Time_TIM16_Micros();
+    while ((HAL_Time_TIM16_Micros() - time_metka) < time_us);
+}
+
+/**
+ * @brief Функция задержки в миллисекундах, используется 16-р таймер в качестве системных часов
+ * @warning При работе 16-р таймера в качестве системных часов используются прерывания по
+ * переполнению. Если запретить глобальные прерывания, данная функция может вызвать зависание
+ * микроконтроллера.
+*/
+void HAL_Time_TIM16_DelayMs(uint32_t time_ms)
+{
+    uint32_t time_metka = HAL_Time_TIM16_Millis();
+    while ((HAL_Time_TIM16_Millis() - time_metka) < time_ms);
+}

@@ -5,7 +5,7 @@
 #include "pad_config.h"
 #include "gpio.h"
 #include "gpio_irq.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 #include "mik32_hal_pcc.h"
 
 #define GPIO_MODE_BIT_LEVEL_S 0	  /**< Позиция бита для режима LEVEL_SET (тип прерывания по уровню низкий/высокий или по событию фронт/спад) в перечислении @ref HAL_GPIO_InterruptMode. */

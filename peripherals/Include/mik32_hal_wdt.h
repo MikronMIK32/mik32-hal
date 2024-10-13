@@ -1,8 +1,8 @@
-#ifndef MCU32_HAL_WDT
-#define MCU32_HAL_WDT
+#ifndef MIK32_HAL_WDT
+#define MIK32_HAL_WDT
 
 #include "mik32_hal_pcc.h"
-#include "mcu32_memory_map.h"
+#include "mik32_memory_map.h"
 #include "wdt.h"
 #include "wdt_bus.h"
 #include "power_manager.h"
@@ -101,7 +101,7 @@ typedef struct __WDT_ClockTypeDef
 } WDT_ClockTypeDef;
 
 
-void HAL_RTC_MspInit(WDT_HandleTypeDef* hwdt);
+void HAL_WDT_MspInit(WDT_HandleTypeDef* hwdt);
 HAL_StatusTypeDef HAL_WDT_Init(WDT_HandleTypeDef *hwdt, uint32_t timeout);
 HAL_StatusTypeDef HAL_WDT_Refresh(WDT_HandleTypeDef *hwdt, uint32_t timeout);
 HAL_StatusTypeDef HAL_WDT_Start(WDT_HandleTypeDef *hwdt, uint32_t timeout);
@@ -109,4 +109,4 @@ HAL_StatusTypeDef HAL_WDT_Stop(WDT_HandleTypeDef *hwdt, uint32_t timeout);
 void HAL_WDT_SetPrescale(WDT_HandleTypeDef *hwdt, HAL_WDT_Prescale prescale);
 void HAL_WDT_SetPreload(WDT_HandleTypeDef *hwdt, HAL_WDT_Prescale preload);
 
-#endif // MCU32_HAL_WDT
+#endif // MIK_HAL_WDT

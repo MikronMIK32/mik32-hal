@@ -1,117 +1,72 @@
 #include "mik32_hal_scr1_timer.h"
-#include "mik32_hal.h"
 
-void HAL_SCR1_Timer_Enable(SCR1_TIMER_HandleTypeDef *hscr1_timer)
+struct __HAL_Time_SCR1TIM_Handler
 {
-    hscr1_timer->Instance->TIMER_CTRL |= SCR1_TIMER_CTRL_ENABLE_M;
-}
+    uint32_t presc;     // AHB prescaler
+    uint32_t pt;        // Timer divider
+    uint32_t clock_freq; // Clock frequency
+} HAL_Time_SCR1TIM_Handler;
 
-void HAL_SCR1_Timer_Disable(SCR1_TIMER_HandleTypeDef *hscr1_timer)
+/**
+ * @brief Инициализация таймера SCR1 для работы в качестве системных часов.
+ * После инициализации системного таймера не рекомендуется изменять делитель тактовой частоты AHB.
+ * Если делитель такта был изменен или микроконтроллер переключился на другой источник тактирования, необходимо
+ * переинициализаровать таймер. При этом прежнее значение системного времени потеряется
+ * 
+ * Время переполнения системных часов зависит от частоты тактирования. Минимальное время переполнения - 4295c.
+*/
+void HAL_Time_SCR1TIM_Init()
 {
-    hscr1_timer->Instance->TIMER_CTRL &= ~SCR1_TIMER_CTRL_ENABLE_M;
-
-    hscr1_timer->Instance->MTIME = 0;
-    hscr1_timer->Instance->MTIMEH = 0;
-}
-
-void HAL_SCR1_Timer_SetClockSource(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint8_t ClockSource)
-{
-    hscr1_timer->ClockSource = ClockSource;
-
-    switch (ClockSource)
-    {
-    case SCR1_TIMER_CLKSRC_INTERNAL:
-        hscr1_timer->Instance->TIMER_CTRL &= SCR1_TIMER_CTRL_CLKSRC_INTERNAL_M;
-        break;
-    
-    case SCR1_TIMER_CLKSRC_EXTERNAL_RTC:
-        hscr1_timer->Instance->TIMER_CTRL |= SCR1_TIMER_CTRL_CLKSRC_RTC_M;
-        break;
-    }
-}
-
-void HAL_SCR1_Timer_SetDivider(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint16_t Divider)
-{
-    /* Divider 10-битное число */
-    if(Divider > 1023)
-    {
-        Divider = 1023;
-    }
-    hscr1_timer->Divider = Divider;
-    hscr1_timer->Instance->TIMER_DIV = Divider;
-}
-
-void HAL_SCR1_Timer_Init(SCR1_TIMER_HandleTypeDef *hscr1_timer)
-{
-    hscr1_timer->Instance->TIMER_CTRL = 0;
-
-    /* Настройка источника тактирования */
-    HAL_SCR1_Timer_SetClockSource(hscr1_timer, hscr1_timer->ClockSource);
-
-    /* Настройка делителя */
-    HAL_SCR1_Timer_SetDivider(hscr1_timer, hscr1_timer->Divider);
-
-}
-
-void HAL_SCR1_Timer_Start(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds)
-{
-    uint8_t AHBMDivider = PM->DIV_AHB;          /* Делитель частоты */
-    uint32_t Milliseconds_max_32bit = 134217;   /* 134217 - максимальное число миллисекунд для того чтобы при расчете количества тактов не превысить 32 бита */
-
-    if (Milliseconds > Milliseconds_max_32bit)
-    {
-        Milliseconds = Milliseconds_max_32bit;  /* Задержка равна предельному значению 134217, мс */
-    }
-
-    uint32_t Ticks = Milliseconds * (MIK32_FREQ/1000);  /* Количество тактов системного таймера для достижения значения Milliseconds */
-    Ticks = Ticks / (AHBMDivider + 1);
-    Ticks = Ticks / (hscr1_timer->Divider + 1);
-
-    #ifdef MIK32_SCR1_TIMER_DEBUG
-    xprintf("Milliseconds = %u\n", Milliseconds);
-    xprintf("Ticks = %u\n", Ticks);
-    #endif
-    
-
-    hscr1_timer->Instance->MTIME = 0;
-    hscr1_timer->Instance->MTIMEH = 0;
-
-    hscr1_timer->Instance->MTIMECMP = Ticks;      
-    hscr1_timer->Instance->MTIMECMPH = 0;
-
-    HAL_SCR1_Timer_Enable(hscr1_timer);
-}
-
-
-int HAL_SCR1_Timer_GetFlagCMP(SCR1_TIMER_HandleTypeDef *hscr1_timer)
-{
-    uint32_t MTIME = hscr1_timer->Instance->MTIME;
-    uint32_t MTIMEH = hscr1_timer->Instance->MTIMEH;
-    uint32_t MTIMECMP = hscr1_timer->Instance->MTIMECMP;
-    uint32_t MTIMECMPH = hscr1_timer->Instance->MTIMECMPH;
-
-    if( ((MTIMEH == MTIMECMPH) && (MTIME > MTIMECMP)) || (MTIMEH > MTIMECMPH) )
-    {
-        HAL_SCR1_Timer_Disable(hscr1_timer);
-        return 1;
-    }
+    /* Setting dividers */
+    HAL_Time_SCR1TIM_Handler.presc = (PM->DIV_AHB+1);
+    HAL_Time_SCR1TIM_Handler.clock_freq = HAL_PCC_GetSysClockFreq();
+    if (HAL_Time_SCR1TIM_Handler.clock_freq % (HAL_Time_SCR1TIM_Handler.presc * 1000000UL) != 0)
+        HAL_Time_SCR1TIM_Handler.pt = 1;
     else
     {
-        return 0;
+        uint32_t pt_raw = HAL_Time_SCR1TIM_Handler.clock_freq / (HAL_Time_SCR1TIM_Handler.presc * 1000000UL);
+        if (pt_raw < 2) HAL_Time_SCR1TIM_Handler.pt = 1;
+        else HAL_Time_SCR1TIM_Handler.pt = pt_raw;
     }
+    __HAL_SCR1_TIMER_SET_DIVIDER(HAL_Time_SCR1TIM_Handler.pt-1);
+    /* Timer enable */
+    __HAL_SCR1_TIMER_ENABLE();
+    /* Clear the timer */
+    __HAL_SCR1_TIMER_SET_TIME(0);
 }
 
-
-void HAL_DelayMs(SCR1_TIMER_HandleTypeDef *hscr1_timer, uint32_t Milliseconds)
+/**
+ * @brief Системное время в микросекундах, используется таймер SCR1 в качестве системных часов
+*/
+uint32_t HAL_Time_SCR1TIM_Micros()
 {
-
-    HAL_SCR1_Timer_Start(hscr1_timer, Milliseconds);
-
-    while (HAL_SCR1_Timer_GetFlagCMP(hscr1_timer) == 0);
-
-    HAL_SCR1_Timer_Disable(hscr1_timer);
-    
+    return (uint32_t)(__HAL_SCR1_TIMER_GET_TIME() * (1000000UL * HAL_Time_SCR1TIM_Handler.presc *
+        HAL_Time_SCR1TIM_Handler.pt) / HAL_Time_SCR1TIM_Handler.clock_freq);
 }
 
+/**
+ * @brief Системное время в миллисекундах, используется таймер SCR1 в качестве системных часов
+*/
+uint32_t HAL_Time_SCR1TIM_Millis()
+{
+    return (uint32_t)(__HAL_SCR1_TIMER_GET_TIME() * (1000UL * HAL_Time_SCR1TIM_Handler.presc *
+        HAL_Time_SCR1TIM_Handler.pt) / HAL_Time_SCR1TIM_Handler.clock_freq);
+}
 
+/**
+ * @brief Функция задержки в микросекундах, используется таймер SCR1 в качестве системных часов
+*/
+void HAL_Time_SCR1TIM_DelayUs(uint32_t time_us)
+{
+    uint32_t time_metka = HAL_Time_SCR1TIM_Micros();
+    while (HAL_Time_SCR1TIM_Micros() - time_metka < time_us);
+}
 
+/**
+ * @brief Функция задержки в миллисекундах, используется таймер SCR1 в качестве системных часов
+*/
+void HAL_Time_SCR1TIM_DelayMs(uint32_t time_ms)
+{
+    uint32_t time_metka = HAL_Time_SCR1TIM_Millis();
+    while (HAL_Time_SCR1TIM_Millis() - time_metka < time_ms);
+}
