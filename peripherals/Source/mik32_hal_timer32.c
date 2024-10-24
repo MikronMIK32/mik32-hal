@@ -39,12 +39,12 @@ __attribute__((weak)) void HAL_TIMER32_Channel_MspInit(TIMER32_CHANNEL_HandleTyp
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    switch ((uint32_t)timerChannel)
+    switch (timerChannel->ChannelIndex)
     {
-        case (uint32_t)TIMER32_CHANNEL_0: GPIO_InitStruct.Pin = GPIO_PIN_0; break;
-        case (uint32_t)TIMER32_CHANNEL_1: GPIO_InitStruct.Pin = GPIO_PIN_1; break;
-        case (uint32_t)TIMER32_CHANNEL_2: GPIO_InitStruct.Pin = GPIO_PIN_2; break;
-        case (uint32_t)TIMER32_CHANNEL_3: GPIO_InitStruct.Pin = GPIO_PIN_3; break;
+        case TIMER32_CHANNEL_0: GPIO_InitStruct.Pin = GPIO_PIN_0; break;
+        case TIMER32_CHANNEL_1: GPIO_InitStruct.Pin = GPIO_PIN_1; break;
+        case TIMER32_CHANNEL_2: GPIO_InitStruct.Pin = GPIO_PIN_2; break;
+        case TIMER32_CHANNEL_3: GPIO_InitStruct.Pin = GPIO_PIN_3; break;
         default: GPIO_InitStruct.Pin = 0;
     }
     
