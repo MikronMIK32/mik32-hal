@@ -17,7 +17,6 @@
  */
 typedef enum __HAL_PCC_OscillatorTypeTypeDef
 {
-    PCC_OSCILLATORTYPE_NONE     = 0b0000,       /**< Автоматический выбор источника тактирования RTC */
     PCC_OSCILLATORTYPE_HSI32M   = 0b0001,       /**< Внутренний источник тактирования 32МГц */ 
     PCC_OSCILLATORTYPE_OSC32M   = 0b0010,       /**< Внешний источник тактирования 32МГц */    
     PCC_OSCILLATORTYPE_LSI32K   = 0b0100,       /**< Внутренний источник тактирования 32КГц */ 
@@ -247,7 +246,7 @@ typedef struct __PCC_InitTypeDef
     
     uint8_t HSI32MCalibrationValue;                         /**< Поправочный коэффициент HSI32M. Этот параметр должен быть числом между Min = 0 и Max = 255 */
 
-    uint8_t LSI32KCalibrationValue;                         /**< Поправочный коэффициент LSI32K. Этот параметр должен быть числом между Min = 0 и Max = 255 */
+    uint8_t LSI32KCalibrationValue;                         /**< Поправочный коэффициент LSI32K. Этот параметр должен быть числом между Min = 0 и Max = 15 */
 
     HAL_PCC_RTCClockSourceTypeDef RTCClockSelection;        /**<  Источник тактирования RTC. Может принимать одно из значений HAL_PCC_RTCClockSourceTypeDef. */
 

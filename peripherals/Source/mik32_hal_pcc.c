@@ -207,10 +207,13 @@ HAL_StatusTypeDef HAL_PCC_RTCClock(HAL_PCC_RTCClockSourceTypeDef Oscillator)
 
     /* Выбор источника тактирования RTC */
     WU->CLOCKS_BU = (WU->CLOCKS_BU & ~WU_CLOCKS_BU_RTC_CLK_MUX_M) | rtc_clk_m;
-    WU->RTC_CONRTOL = WU_RTC_CONTROL_RESET_CLEAR_M;
 
+    WU->RTC_CONRTOL = WU_RTC_CONTROL_RESET_SET_M;
+    WU->RTC_CONRTOL = WU_RTC_CONTROL_RESET_CLEAR_M;
+    
     for (volatile int i = 0; i < 100; i++)
         ;
+
 
     return HAL_OK;
 }
@@ -317,8 +320,8 @@ PCC_ConfigErrorsTypeDef HAL_PCC_Config(PCC_InitTypeDef *PCC_Init)
     WU->CLOCKS_SYS &= ~(0b11 << WU_CLOCKS_SYS_OSC32M_EN_S); // Включить OSC32M и HSI32M
     WU->CLOCKS_BU &= ~(0b11 << WU_CLOCKS_BU_OSC32K_EN_S);   // Включить OSC32K и LSI32K
 
-    WU->CLOCKS_SYS = WU_CLOCKS_SYS_ADJ_HSI32M(PCC_Init->HSI32MCalibrationValue); // Поправочный коэффициент HSI32M
-    WU->CLOCKS_BU = WU_CLOCKS_BU_ADJ_LSI32K(PCC_Init->LSI32KCalibrationValue);   // Поправочный коэффициент LSI32K
+    WU->CLOCKS_SYS = (WU->CLOCKS_SYS & (~WU_CLOCKS_SYS_ADJ_HSI32M_M)) | WU_CLOCKS_SYS_ADJ_HSI32M(PCC_Init->HSI32MCalibrationValue); // Поправочный коэффициент HSI32M
+    WU->CLOCKS_BU = (WU->CLOCKS_BU & (~WU_CLOCKS_BU_ADJ_LSI32K_M)) | WU_CLOCKS_BU_ADJ_LSI32K(PCC_Init->LSI32KCalibrationValue); // Поправочный коэффициент LSI32K
 
     /* Опорный источник для монитора частоты */
     errors.FreqMonRef = HAL_PCC_FreqMonRefSet(PCC_Init->FreqMon.Force32KClk);

@@ -7,6 +7,11 @@
 #include "mik32_memory_map.h"
 
 /* Title: Макросы */
+/* Сброс RTC */
+#define __HAL_RTC_RESET() {\
+                            WU->RTC_CONRTOL = WU_RTC_CONTROL_RESET_SET_M;\
+                            WU->RTC_CONRTOL = WU_RTC_CONTROL_RESET_CLEAR_M;\
+                          }
 
 /*
  * Defines: Месяц 
