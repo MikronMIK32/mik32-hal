@@ -608,11 +608,8 @@ void HAL_Timer16_StartPWM(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint
     htimer16->Instance->CFGR &= ~TIMER16_CFGR_WAVE_M;
     HAL_Timer16_Enable(htimer16);
     
-    if(Period > Compare)
-    {
-        HAL_Timer16_SetCMP(htimer16, Compare);
-        HAL_Timer16_SetARR(htimer16, Period);
-    }
+    HAL_Timer16_SetCMP(htimer16, Compare);
+    HAL_Timer16_SetARR(htimer16, Period);
 
     __HAL_TIMER16_START_CONTINUOUS(htimer16);
 
@@ -743,8 +740,6 @@ void HAL_Timer16_Counter_Start_IT(Timer16_HandleTypeDef *htimer16, uint32_t Peri
  */
 void HAL_Timer16_StartPWM_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint16_t Compare)
 {
-
-
     HAL_Timer16_Disable(htimer16);
     htimer16->Instance->CFGR &= ~TIMER16_CFGR_WAVE_M;
     HAL_Timer16_Enable(htimer16);
@@ -752,13 +747,8 @@ void HAL_Timer16_StartPWM_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, u
     htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_CMPOKCF_M | TIMER16_ICR_ARRMCF_M 
                             | TIMER16_ICR_CMPMCF_M | TIMER16_ICR_EXTTRIGCF_M;
     
-
-    
-    if(Period > Compare)
-    {
-        HAL_Timer16_SetCMP(htimer16, Compare);
-        HAL_Timer16_SetARR(htimer16, Period);
-    }
+    HAL_Timer16_SetCMP(htimer16, Compare);
+    HAL_Timer16_SetARR(htimer16, Period);
 
     htimer16->Instance->IER |= TIMER16_IER_ARROKIE_M | TIMER16_IER_CMPOKIE_M 
                             | TIMER16_IER_ARRMIE_M | TIMER16_IER_CMPMIE_M;
@@ -769,7 +759,6 @@ void HAL_Timer16_StartPWM_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, u
     }
 
     __HAL_TIMER16_START_CONTINUOUS(htimer16);
-
 }
 
 /**
