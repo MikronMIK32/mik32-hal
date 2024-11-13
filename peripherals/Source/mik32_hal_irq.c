@@ -25,12 +25,12 @@ void HAL_EPIC_MaskEdgeClear(uint32_t InterruptMask)
 
 void HAL_EPIC_MaskLevelSet(uint32_t InterruptMask)
 {
-    EPIC->MASK_LEVEL_SET |= InterruptMask;
+    EPIC->MASK_LEVEL_SET = InterruptMask;
 }
 
 void HAL_EPIC_MaskLevelClear(uint32_t InterruptMask)
 {
-    EPIC->MASK_LEVEL_CLEAR |= InterruptMask;
+    EPIC->MASK_LEVEL_CLEAR = InterruptMask;
 }
 
 uint32_t HAL_EPIC_GetStatus()

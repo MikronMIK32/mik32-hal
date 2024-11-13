@@ -608,7 +608,7 @@ void HAL_Timer16_StartPWM(Timer16_HandleTypeDef *htimer16, uint16_t Period, uint
     htimer16->Instance->CFGR &= ~TIMER16_CFGR_WAVE_M;
     HAL_Timer16_Enable(htimer16);
     
-    if(Period > Compare)
+    if(Period >= Compare)
     {
         HAL_Timer16_SetCMP(htimer16, Compare);
         HAL_Timer16_SetARR(htimer16, Period);
@@ -635,7 +635,7 @@ void HAL_Timer16_StartOneShot(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
     htimer16->Instance->CFGR &= ~TIMER16_CFGR_WAVE_M;
     HAL_Timer16_Enable(htimer16);
     
-    if(Period > Compare)
+    if(Period >= Compare)
     {
         HAL_Timer16_SetCMP(htimer16, Compare);
         HAL_Timer16_SetARR(htimer16, Period);
@@ -660,7 +660,7 @@ void HAL_Timer16_StartSetOnes(Timer16_HandleTypeDef *htimer16, uint16_t Period, 
     htimer16->Instance->CFGR |= TIMER16_CFGR_WAVE_M;
     HAL_Timer16_Enable(htimer16);
     
-    if(Period > Compare)
+    if(Period >= Compare)
     {
         HAL_Timer16_SetCMP(htimer16, Compare);
         HAL_Timer16_SetARR(htimer16, Period);
@@ -754,7 +754,7 @@ void HAL_Timer16_StartPWM_IT(Timer16_HandleTypeDef *htimer16, uint16_t Period, u
     
 
     
-    if(Period > Compare)
+    if(Period >= Compare)
     {
         HAL_Timer16_SetCMP(htimer16, Compare);
         HAL_Timer16_SetARR(htimer16, Period);
@@ -796,7 +796,7 @@ void HAL_Timer16_StartOneShot_IT(Timer16_HandleTypeDef *htimer16, uint16_t Perio
     htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_CMPOKCF_M | TIMER16_ICR_ARRMCF_M 
                             | TIMER16_ICR_CMPMCF_M | TIMER16_ICR_EXTTRIGCF_M;
     
-    if(Period > Compare)
+    if(Period >= Compare)
     {
         HAL_Timer16_SetCMP(htimer16, Compare);
         HAL_Timer16_SetARR(htimer16, Period);
@@ -837,7 +837,7 @@ void HAL_Timer16_StartSetOnes_IT(Timer16_HandleTypeDef *htimer16, uint16_t Perio
     htimer16->Instance->ICR = TIMER16_ICR_ARROKCF_M | TIMER16_ICR_CMPOKCF_M | TIMER16_ICR_ARRMCF_M 
                             | TIMER16_ICR_CMPMCF_M | TIMER16_ICR_EXTTRIGCF_M;
     
-    if(Period > Compare)
+    if(Period >= Compare)
     {
         HAL_Timer16_SetCMP(htimer16, Compare);
         HAL_Timer16_SetARR(htimer16, Period);
