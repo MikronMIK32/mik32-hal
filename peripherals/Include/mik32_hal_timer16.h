@@ -141,8 +141,8 @@ typedef enum __HAL_Timer16_EncoderTypeDef
  */
 typedef enum __HAL_Timer16_WaveformGenTypeDef
 {
-	TIMER16_WAVEFORM_GENERATION_ENABLE = 1,    /**< Выключить генерацию волновой формы. */
-	TIMER16_WAVEFORM_GENERATION_DISABLE = 0    /**< Включить генерацию волновой формы. */ 
+	TIMER16_WAVEFORM_GENERATION_DISABLE = 0,    /**< Выключить генерацию волновой формы. */ 
+	TIMER16_WAVEFORM_GENERATION_ENABLE = 1    /**< Включить генерацию волновой формы. */
 } HAL_Timer16_WaveformGenTypeDef;
 
 /**
