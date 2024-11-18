@@ -273,8 +273,8 @@ void HAL_Timer16_SetPreload(Timer16_HandleTypeDef *htimer16, uint8_t Preload)
  */
 void HAL_Timer16_WaitARROK(Timer16_HandleTypeDef *htimer16)
 {
-    while (!(htimer16->Instance->ISR & TIMER16_ISR_ARR_OK_M));
-    HAL_Timer16_ClearInterruptFlag(htimer16, TIMER16_ICR_ARROKCF_S);
+    while (!(htimer16->Instance->ISR & TIMER16_ISR_ARROK_M));
+    __HAL_TIMER16_CLEAR_FLAG(htimer16, TIMER16_FLAG_ARROK);
 }
 
 /**
@@ -285,8 +285,8 @@ void HAL_Timer16_WaitARROK(Timer16_HandleTypeDef *htimer16)
  */
 void HAL_Timer16_WaitCMPOK(Timer16_HandleTypeDef *htimer16)
 {
-    while (!(htimer16->Instance->ISR & TIMER16_ISR_CMP_OK_M));
-    HAL_Timer16_ClearInterruptFlag(htimer16, TIMER16_ICR_CMPOKCF_S);
+    while (!(htimer16->Instance->ISR & TIMER16_ISR_CMPOK_M));
+    __HAL_TIMER16_CLEAR_FLAG(htimer16, TIMER16_FLAG_CMPOK);
 }
 
 /**
@@ -560,7 +560,7 @@ uint16_t HAL_Timer16_GetCounterValue(Timer16_HandleTypeDef *htimer16)
  */
 uint8_t HAL_Timer16_CheckCMP(Timer16_HandleTypeDef *htimer16)
 {
-    if ((htimer16->Instance->ISR & TIMER16_ISR_CMP_MATCH_M) == 0)
+    if ((htimer16->Instance->ISR & TIMER16_ISR_CMPM_M) == 0)
     {
         return 0;
     }
@@ -576,7 +576,7 @@ uint8_t HAL_Timer16_CheckCMP(Timer16_HandleTypeDef *htimer16)
  */
 void HAL_Timer16_WaitCMP(Timer16_HandleTypeDef *htimer16)
 {
-    while (!(htimer16->Instance->ISR & TIMER16_ISR_CMP_MATCH_M));
+    while (!(htimer16->Instance->ISR & TIMER16_ISR_CMPM_M));
 }
 
 /**
@@ -912,8 +912,8 @@ void HAL_Timer16_Stop_IT(Timer16_HandleTypeDef *htimer16)
  */
 void HAL_Timer16_WaitTrigger(Timer16_HandleTypeDef *htimer16)
 {
-    while (!(htimer16->Instance->ISR & TIMER16_ISR_EXT_TRIG_M));
-    HAL_Timer16_ClearInterruptFlag(htimer16, TIMER16_ICR_EXTTRIGCF_S);
+    while (!(htimer16->Instance->ISR & TIMER16_ISR_EXTTRIG_M));
+    __HAL_TIMER16_CLEAR_FLAG(htimer16, TIMER16_FLAG_EXTTRIG);
 }
 
 /**
@@ -1052,12 +1052,11 @@ void HAL_Time_TIM16_InterruptHandler()
         default: condition = 0;
     }
     if (!condition) return;
-    uint32_t interrupt_status = HAL_Timer16_GetInterruptStatus(&(HAL_Time_TIM16_Handler.tim16));
-    if (interrupt_status & TIMER16_ISR_ARR_MATCH_M)
+    if(__HAL_TIMER16_GET_FLAG_IT(&(HAL_Time_TIM16_Handler.tim16), TIMER16_FLAG_ARRM))
     {
         HAL_Time_TIM16_Handler.ticks += 0x00010000UL;
     }
-    HAL_Timer16_ClearInterruptMask(&(HAL_Time_TIM16_Handler.tim16), 0xFFFFFFFF);
+    __HAL_TIMER16_CLEAR_FLAG(&(HAL_Time_TIM16_Handler.tim16), 0xFFFFFFFF);
 }
 
 

@@ -11,6 +11,15 @@
 #include "mik32_memory_map.h"
 
 
+#define TIMER16_FLAG_DOWN       TIMER16_ISR_DOWN_M      /**< Флаг изменения направления счетчика с вверх на вниз. */
+#define TIMER16_FLAG_UP         TIMER16_ISR_UP_M        /**< Флаг изменения направления счетчика с вниз на вверх. */
+#define TIMER16_FLAG_ARROK      TIMER16_ISR_ARROK_M     /**< Флаг обновления регистра автозагрузки. */
+#define TIMER16_FLAG_CMPOK      TIMER16_ISR_CMPOK_M     /**< Флаг обновления регистра сравнения. */
+#define TIMER16_FLAG_EXTTRIG    TIMER16_ISR_EXTTRIG_M   /**< Флаг события фронта внешнего триггера. */
+#define TIMER16_FLAG_ARRM       TIMER16_ISR_ARRM_M      /**< Флаг соответствия значения счетчика со значением автозагрузки. */
+#define TIMER16_FLAG_CMPM       TIMER16_ISR_CMPM_M      /**< Флаг совпадения значения счетчика со значением сравнения. */
+
+   
 /**
  * @brief Источник тактирования.
  */
@@ -225,6 +234,52 @@ typedef struct __Timer16_HandleTypeDef
  */
 #define __HAL_TIMER16_START_SINGLE(__HANDLE__)      ((__HANDLE__)->Instance->CR |=  TIMER16_CR_SNGSTRT_M)
 
+/**
+  * @brief  Проверка установлен ли флаг Timer16.
+  * @param  __HANDLE__ Указатель на структуру с настройками Timer16.
+  * @param  __FLAG__ Флаг для проверки.
+  *             Этот параметр может принимать одно из значений:
+  *             @arg TIMER16_FLAG_DOWN    : Флаг изменения направления счетчика с вверх на вниз. 
+  *             @arg TIMER16_FLAG_UP      : Флаг изменения направления счетчика с вниз на вверх.
+  *             @arg TIMER16_FLAG_ARROK   : Флаг обновления регистра автозагрузки.
+  *             @arg TIMER16_FLAG_CMPOK   : Флаг обновления регистра сравнения.
+  *             @arg TIMER16_FLAG_EXTTRIG : Флаг события фронта внешнего триггера.
+  *             @arg TIMER16_FLAG_ARRM    : Флаг соответствия значения счетчика со значением автозагрузки.
+  *             @arg TIMER16_FLAG_CMPM    : Флаг совпадения значения счетчика со значением сравнения.
+  * @retval Состояние указанного флага (установлен или сброшен).
+  */
+#define __HAL_TIMER16_GET_FLAG(__HANDLE__, __FLAG__)          (((__HANDLE__)->Instance->ISR &(__FLAG__)) == (__FLAG__))
+
+/**
+  * @brief  Проверка установлен ли флаг Timer16.
+  * @param  __HANDLE__ Указатель на структуру с настройками Timer16.
+  * @param  __FLAG__ Флаг для проверки с учетом маски разрешенных прерываний.
+  *             Этот параметр может принимать одно из значений:
+  *             @arg TIMER16_FLAG_DOWN    : Флаг изменения направления счетчика с вверх на вниз. 
+  *             @arg TIMER16_FLAG_UP      : Флаг изменения направления счетчика с вниз на вверх.
+  *             @arg TIMER16_FLAG_ARROK   : Флаг обновления регистра автозагрузки.
+  *             @arg TIMER16_FLAG_CMPOK   : Флаг обновления регистра сравнения.
+  *             @arg TIMER16_FLAG_EXTTRIG : Флаг события фронта внешнего триггера.
+  *             @arg TIMER16_FLAG_ARRM    : Флаг соответствия значения счетчика со значением автозагрузки.
+  *             @arg TIMER16_FLAG_CMPM    : Флаг совпадения значения счетчика со значением сравнения.
+  * @retval Состояние указанного флага (установлен или сброшен).
+  */
+#define __HAL_TIMER16_GET_FLAG_IT(__HANDLE__, __FLAG__)          (( ((__HANDLE__)->Instance->ISR) & ((__HANDLE__)->Instance->IER) & (__FLAG__) ) == (__FLAG__))
+
+/**
+  * @brief  Сбросить флаг Timer16.
+  * @param  __HANDLE__ Указатель на структуру с настройками Timer16.
+  * @param  __FLAG__ Флаг для очистки.
+  *             Этот параметр может принимать одно из значений:
+  *             @arg TIMER16_FLAG_DOWN    : Флаг изменения направления счетчика с вверх на вниз. 
+  *             @arg TIMER16_FLAG_UP      : Флаг изменения направления счетчика с вниз на вверх.
+  *             @arg TIMER16_FLAG_ARROK   : Флаг обновления регистра автозагрузки.
+  *             @arg TIMER16_FLAG_CMPOK   : Флаг обновления регистра сравнения.
+  *             @arg TIMER16_FLAG_EXTTRIG : Флаг события фронта внешнего триггера.
+  *             @arg TIMER16_FLAG_ARRM    : Флаг соответствия значения счетчика со значением автозагрузки.
+  *             @arg TIMER16_FLAG_CMPM    : Флаг совпадения значения счетчика со значением сравнения.
+  */
+#define __HAL_TIMER16_CLEAR_FLAG(__HANDLE__, __FLAG__)        ((__HANDLE__)->Instance->ICR  = (__FLAG__))
 
 void HAL_TIMER16_MspInit(Timer16_HandleTypeDef* htimer16);
 void HAL_Timer16_Disable(Timer16_HandleTypeDef *htimer16);
@@ -283,36 +338,4 @@ uint32_t HAL_Time_TIM16_Millis();
 void HAL_Time_TIM16_DelayUs(uint32_t time_us);
 void HAL_Time_TIM16_DelayMs(uint32_t time_ms);
 
-/**
- * @brief Получить статус прерываний Timer16. 
- * Функция возвращает статус прерываний в соответствии с маской разрешенный прерываний.
- * @param htimer16 Указатель на структуру с настройками Timer16.
- * @return Статус прерываний.
- */
-static inline __attribute__((always_inline)) uint32_t HAL_Timer16_GetInterruptStatus(Timer16_HandleTypeDef *htimer16)
-{
-    uint32_t interrupt_status = htimer16->Instance->ISR & htimer16->Instance->IER;
-
-    return interrupt_status;
-}
-
-/**
- * @brief Очистить флаг прерывания.
- * @param htimer16 Указатель на структуру с настройками Timer16.
- * @param Interrupt Номер прерывания Timer16 в регистре ICR.
- */
-static inline __attribute__((always_inline)) void HAL_Timer16_ClearInterruptFlag(Timer16_HandleTypeDef *htimer16, uint32_t Interrupt)
-{
-    htimer16->Instance->ICR = 1 << Interrupt;
-}
-
-/**
- * @brief Очистить флаги прерываний по маске.
- * @param htimer16 Указатель на структуру с настройками Timer16.
- * @param InterruptMask Маска очищаемых флагов прерываний.
- */
-static inline __attribute__((always_inline)) void HAL_Timer16_ClearInterruptMask(Timer16_HandleTypeDef *htimer16, uint32_t InterruptMask)
-{
-    htimer16->Instance->ICR = InterruptMask;
-}
 #endif
