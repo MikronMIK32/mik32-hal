@@ -91,28 +91,10 @@ void HAL_DAC_Init(DAC_HandleTypeDef *hdac)
 
     HAL_DAC_Enable(hdac);
 
-    /* Перевод вывода DAC_REF в аналоговый режим */
-    if((hdac->Init.EXTRef == DAC_EXTREF_ON) || (hdac->Init.EXTClb == DAC_EXTCLB_DACREF))
-    {
-        PAD_CONFIG->PORT_1_CFG |= (DAC_PORT_AS_FUNC3 << 2 * DAC_REF_PORT_1_11);
-    }
-
-    /* Перевод вывода ЦАП в аналоговый режим */
-    if(hdac->Instance_dac == HAL_DAC0)
-    {
-        PAD_CONFIG->PORT_1_CFG |= (DAC_PORT_AS_FUNC3 << 2 * DAC0_PORT_1_12);
-    }
-    if(hdac->Instance_dac == HAL_DAC1)
-    {
-        PAD_CONFIG->PORT_1_CFG |= (DAC_PORT_AS_FUNC3 << 2 * DAC1_PORT_1_13);
-    }
-
     HAL_DAC_SetDiv(hdac, hdac->Init.DIV); /* Задание делителя */
 
     hdac->Instance_dac->CFG |= (hdac->Init.EXTRef << DAC_CFG_EXTEN_S) |    /* Настройка источника опорного напряжения */
                                (hdac->Init.EXTClb << DAC_EXTPAD_S);     /* Выбор внешнего источника опорного напряжения */
-
-
 }
 
 void HAL_DAC_SetValue(DAC_HandleTypeDef *hdac, uint16_t DAC_Value)
