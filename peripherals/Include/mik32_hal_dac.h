@@ -13,12 +13,12 @@
 /*
  * Defines: Каналы ЦАП
  * 
- * HAL_DAC1 - Канал ЦАП1 (PORT_1_12)
- * HAL_DAC2 - Канал ЦАП2 (PORT_1_13) 
+ * HAL_DAC0 - Канал ЦАП0 (PORT_1_12)
+ * HAL_DAC1 - Канал ЦАП1 (PORT_1_13) 
  *
  */
-#define HAL_DAC1      &(ANALOG_REG->DAC0)       /* Канал DAC1 - PORT_1_12 */
-#define HAL_DAC2      &(ANALOG_REG->DAC1)       /* Канал DAC2 - PORT_1_13 */
+#define HAL_DAC0      &(ANALOG_REG->DAC0)       /* Канал DAC0 - PORT_1_12 */
+#define HAL_DAC1      &(ANALOG_REG->DAC1)       /* Канал DAC1 - PORT_1_13 */
 
 /*
  * Defines: Выбор ИОН
@@ -51,14 +51,14 @@
  * Номера выводов каналов ЦАП и DAC_REF
  *
  * DAC_PORT_AS_FUNC3 - Четвертая функция вывода (аналоговый сигнал)
- * DAC1_PORT_1_12  - ЦАП1 - PORT_1_12 
- * DAC2_PORT_1_13  - ЦАП2 - PORT_1_13
+ * DAC0_PORT_1_12  - ЦАП0 - PORT_1_12 
+ * DAC1_PORT_1_13  - ЦАП1 - PORT_1_13
  * DAC_REF_PORT_1_11  - Внешний опорный сигнал DAC_REF - PORT_1_11
  *
  */
 #define DAC_PORT_AS_FUNC3       0b11    /* Четвертая функция вывода (аналоговый сигнал) */ 
-#define DAC1_PORT_1_12          12      /* DAC1 - PORT_1_12 */
-#define DAC2_PORT_1_13          13      /* DAC2 - PORT_1_13 */
+#define DAC0_PORT_1_12          12      /* DAC1 - PORT_1_12 */
+#define DAC1_PORT_1_13          13      /* DAC2 - PORT_1_13 */
 #define DAC_REF_PORT_1_11       11      /* Внешний опорный сигнал - PORT_1_11 */
 
 /* Title: Структуры */

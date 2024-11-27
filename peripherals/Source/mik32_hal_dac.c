@@ -50,17 +50,14 @@ void HAL_DAC_ICLBSet(DAC_HandleTypeDef *hdac, uint8_t i_coef)
 
 void HAL_DAC_SetDiv(DAC_HandleTypeDef *hdac, uint8_t div)
 {
-    //div &= ~(1<<7); // div должно быть 7-битным
-
     hdac->Init.DIV = div;
 
     uint32_t DAC_CFG = hdac->Instance_dac->CFG;
 
     DAC_CFG &= ~DAC_CFG_DIV_M;
-    DAC_CFG |= DAC_CFG_DIV_M;
+    DAC_CFG |= div << DAC_CFG_DIV_S;
 
     hdac->Instance_dac->CFG = DAC_CFG;
-
 }
 
 void HAL_DAC_ResetEnable(DAC_HandleTypeDef *hdac)
@@ -101,13 +98,13 @@ void HAL_DAC_Init(DAC_HandleTypeDef *hdac)
     }
 
     /* Перевод вывода ЦАП в аналоговый режим */
+    if(hdac->Instance_dac == HAL_DAC0)
+    {
+        PAD_CONFIG->PORT_1_CFG |= (DAC_PORT_AS_FUNC3 << 2 * DAC0_PORT_1_12);
+    }
     if(hdac->Instance_dac == HAL_DAC1)
     {
-        PAD_CONFIG->PORT_1_CFG |= (DAC_PORT_AS_FUNC3 << 2 * DAC1_PORT_1_12);
-    }
-    if(hdac->Instance_dac == HAL_DAC2)
-    {
-        PAD_CONFIG->PORT_1_CFG |= (DAC_PORT_AS_FUNC3 << 2 * DAC2_PORT_1_13);
+        PAD_CONFIG->PORT_1_CFG |= (DAC_PORT_AS_FUNC3 << 2 * DAC1_PORT_1_13);
     }
 
     HAL_DAC_SetDiv(hdac, hdac->Init.DIV); /* Задание делителя */
