@@ -427,7 +427,7 @@ static inline __attribute__((always_inline)) void HAL_I2C_ADDR_IRQ(I2C_HandleTyp
 {
     if (hi2c->Instance->CR1 & I2C_CR1_SBC_M)
     {
-        hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
+		hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
         hi2c->Instance->CR2 |= I2C_CR2_NBYTES(0x1);
     }
     
@@ -468,13 +468,22 @@ static inline __attribute__((always_inline)) void HAL_I2C_STOP_IRQ(I2C_HandleTyp
 
 static inline __attribute__((always_inline)) void HAL_I2C_TXIS_IRQ(I2C_HandleTypeDef *hi2c)
 {
-    hi2c->Instance->TXDR = *((uint8_t *)hi2c->pBuffPtr);
-    hi2c->pBuffPtr++;
-    hi2c->TransferCount++;
-    if (hi2c->TransferCount == hi2c->TransferSize)
+	hi2c->TransferCount++;
+	if ((hi2c->TransferCount > hi2c->TransferSize) && (hi2c->Init.Mode == HAL_I2C_MODE_SLAVE))
     {
-        hi2c->State = HAL_I2C_STATE_END;
+		hi2c->Instance->CR1 &= ~I2C_CR1_PE_M;
+		hi2c->Instance->CR1 |= I2C_CR1_PE_M;
+		hi2c->State = HAL_I2C_STATE_END;
     }
+	else
+	{
+		hi2c->Instance->TXDR = *((uint8_t *)hi2c->pBuffPtr);
+		hi2c->pBuffPtr++;
+		if (hi2c->TransferCount == hi2c->TransferSize)
+		{
+			hi2c->State = HAL_I2C_STATE_END;
+		}
+	}
     
     
 }
@@ -509,9 +518,25 @@ static inline __attribute__((always_inline)) void HAL_I2C_RXNE_IRQ(I2C_HandleTyp
 
 static inline __attribute__((always_inline)) void HAL_I2C_TCR_IRQ(I2C_HandleTypeDef *hi2c)
 {
-    if (hi2c->Instance->CR1 & I2C_CR1_SBC_M)
+
+	if (hi2c->Instance->CR1 & I2C_CR1_SBC_M)
     {
-        if (hi2c->TransferCount < hi2c->TransferSize)
+		*((uint8_t *)hi2c->pBuffPtr) = (uint8_t)hi2c->Instance->RXDR;
+		hi2c->pBuffPtr++;
+		hi2c->TransferCount++;
+
+		if (HAL_I2C_Slave_SBC(hi2c, hi2c->pBuffPtr - hi2c->TransferCount, hi2c->TransferSize, hi2c->TransferCount) != HAL_OK)
+        {
+            hi2c->State = HAL_I2C_STATE_END;
+            /* Выключить все прерывания I2C */
+			hi2c->Instance->CR1 &= ~I2C_INTMASK;
+			/* Сброс I2C */
+			hi2c->ErrorCode = I2C_ERROR_NONE;
+			hi2c->Instance->CR1 &= ~I2C_CR1_PE_M;
+			hi2c->Instance->CR1 |= I2C_CR1_PE_M;
+        }
+		
+		if (hi2c->TransferCount < hi2c->TransferSize)
         {
             hi2c->Instance->CR2 &= ~I2C_CR2_NBYTES_M;
             hi2c->Instance->CR2 |= I2C_CR2_NBYTES(0x1);
@@ -519,6 +544,7 @@ static inline __attribute__((always_inline)) void HAL_I2C_TCR_IRQ(I2C_HandleType
         else
         {
             hi2c->State = HAL_I2C_STATE_END;
+			HAL_I2C_InterruptDisable(hi2c, I2C_CR1_TXIE_M);
         }
     }
     else
@@ -556,7 +582,7 @@ static inline __attribute__((always_inline)) void HAL_I2C_IRQHandler(I2C_HandleT
 
     if ((interrupt_status & I2C_ISR_ADDR_M) && (int_mask & I2C_CR1_ADDRIE_M))
     {
-        // xprintf("ADDR\n");
+        // xprintf("ADDR\n"); 
 		HAL_I2C_ADDR_IRQ(hi2c);
     }
 

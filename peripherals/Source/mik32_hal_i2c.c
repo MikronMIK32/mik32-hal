@@ -1333,7 +1333,7 @@ HAL_StatusTypeDef HAL_I2C_Slave_ReceiveSBC_IT(I2C_HandleTypeDef *hi2c, uint8_t *
     HAL_I2C_InterruptEnable(hi2c,     I2C_CR1_ERRIE_M
                                     | I2C_CR1_STOPIE_M
                                     | I2C_CR1_ADDRIE_M
-                                    | I2C_CR1_RXIE_M
+                                    | I2C_CR1_TCIE_M
                                     );
 
 
