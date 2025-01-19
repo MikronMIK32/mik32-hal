@@ -101,7 +101,7 @@ typedef enum __HAL_TSENS_ClockTypeDef
 /**
  * @brief Определение структуры TSENS Handle.
  */
-typedef struct __SPI_HandleTypeDef
+typedef struct __TSENS_HandleTypeDef
 {
 
     ANALOG_REG_TypeDef *Instance;   /**< Адрес регистров блока управления аналоговой подсистемой. */
@@ -115,7 +115,7 @@ typedef struct __SPI_HandleTypeDef
 /**
  * @brief Возвращаемая структура для функции @ref HAL_TSENS_SingleStart.
  */
-typedef struct __WDT_ClockTypeDef
+typedef struct __TSENS_ValueTypeDef
 {
     HAL_StatusTypeDef statusHAL;  /**< Статус HAL. */
 
