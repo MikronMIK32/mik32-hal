@@ -174,6 +174,12 @@ typedef struct
 /* Запустить однократное преобразование */
 #define HAL_ADC_SINGLE(adc_instance) ((adc_instance)->ADC_SINGLE = 1) 
 
+/* Запустить непрерывное преобразование */
+#define HAL_ADC_CONTINUOUS_ENABLE(adc_instance) ((adc_instance)->ADC_CONTINUOUS = 1) 
+
+/* Остановить непрерывное преобразование */
+#define HAL_ADC_CONTINUOUS_DISABLE(adc_instance) ((adc_instance)->ADC_CONTINUOUS = 0) 
+
 #define HAL_ADC_SINGLE_AND_SET_CH(adc_instance, adc_channel)    ({(adc_instance)->ADC_SINGLE = 1; ADC_SEL_CHANNEL((adc_instance), (adc_channel));}) /* Запустить однократное преобразование */
 
 
@@ -197,9 +203,24 @@ void HAL_ADC_CLBDisable(ADC_HandleTypeDef *hadc);
 void HAL_ADC_VCLBSet(ADC_HandleTypeDef *hadc, uint8_t v_coef);
 
 /*
- * Задать коэфициент настройки опорного источника тока
+ * Задать время выборки (в тактах АЦП)
  */
-void HAL_ADC_ICLBSet(ADC_HandleTypeDef *hadc, uint8_t i_coef);
+void HAL_ADC_SAH_TIMESet(ADC_HandleTypeDef *hadc, uint8_t sah_time);
+
+/*
+ * Прочитать из регистра время выборки (в тактах АЦП)
+ */
+uint8_t HAL_ADC_SAH_TIMEGet(ADC_HandleTypeDef *hadc);
+
+/*
+ * Рассчитать время выборки по заданной частоте АЦП
+ */
+uint8_t HAL_ADC_CalculateSAH_TIME(uint32_t frequency);
+
+/*
+ * Задать время выборки АЦП SAH_TIME 
+ */
+void HAL_ADC_SAH_TIMESet(ADC_HandleTypeDef *hadc, uint8_t sah_time);
 
 /*
  * Function: HAL_ADC_ResetEnable
@@ -295,7 +316,7 @@ void HAL_ADC_Single(ADC_HandleTypeDef *hadc);
  * Returns:
  * void
  */
-void HAL_ADC_ContinuousDisabled(ADC_HandleTypeDef *hadc);
+void HAL_ADC_ContinuousDisable(ADC_HandleTypeDef *hadc);
 
 /*
  * Function: HAL_ADC_ContiniusEnable
