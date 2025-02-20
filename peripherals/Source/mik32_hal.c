@@ -20,7 +20,8 @@ HAL_StatusTypeDef HAL_Init()
  * @p time_ms - время в миллисекундах. Максимальное значение - 0xFFFFFFFF
  * 
  */
-__attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
+// __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
+void RAM_ATTR HAL_ProgramDelayMs(uint32_t time_ms)
 {
     //register uint32_t del = 1777 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;
     register uint32_t del = 10695 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 32000;
@@ -49,7 +50,7 @@ __attribute__((section(".ram_text")))void HAL_ProgramDelayMs(uint32_t time_ms)
  * 
  * Чем меньше частота AHB, тем больше будет погрешность задержки
  */
-__attribute__((section(".ram_text")))void HAL_ProgramDelayUs(uint32_t time_us)
+void RAM_ATTR HAL_ProgramDelayUs(uint32_t time_us)
 {
     //time_us >>= 3;
     //register uint32_t del = 14 * (HAL_PCC_GetSysClockFreq() / (PM->DIV_AHB+1) / 1000UL) / 16000;

@@ -4,6 +4,8 @@
 #include "mik32_hal_def.h"
 #include "mik32_hal_pcc.h"
 
+#define RAM_ATTR __attribute__((section(".ram_text")))
+
 #ifndef OSC_SYSTEM_VALUE
     #define OSC_SYSTEM_VALUE ((uint32_t)32000000U) // Значение частоты основного внешнего источника по умолчанию.
 #endif
