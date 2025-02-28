@@ -8,12 +8,11 @@
 #include "mik32_hal_gpio.h"
 #include "mik32_memory_map.h"
 
-
 /* Title: Макросы */
 
 /*
  * Defines: Каналы АЦП
- * 
+ *
  * ADC_CHANNEL0 - Канал АЦП0 (PORT_1_5)
  * ADC_CHANNEL1 - Канал АЦП1 (PORT_1_7)
  * ADC_CHANNEL2 - Канал АЦП2 (PORT_0_2)
@@ -21,17 +20,17 @@
  * ADC_CHANNEL4 - Канал АЦП4 (PORT_0_7)
  * ADC_CHANNEL5 - Канал АЦП5 (PORT_0_9)
  * ADC_CHANNEL6 - Канал АЦП6 (PORT_0_11)
- * ADC_CHANNEL7 - Канал АЦП7 (PORT_0_13)    
+ * ADC_CHANNEL7 - Канал АЦП7 (PORT_0_13)
  *
  */
-#define ADC_CHANNEL0        0       /* Канал АЦП0 - PORT_1_5 */
-#define ADC_CHANNEL1        1       /* Канал АЦП1 - PORT_1_7 */
-#define ADC_CHANNEL2        2       /* Канал АЦП2 - PORT_0_2 */
-#define ADC_CHANNEL3        3       /* Канал АЦП3 - PORT_0_4 */
-#define ADC_CHANNEL4        4       /* Канал АЦП4 - PORT_0_7 */
-#define ADC_CHANNEL5        5       /* Канал АЦП5 - PORT_0_9 */
-#define ADC_CHANNEL6        6       /* Канал АЦП6 - PORT_0_11 */
-#define ADC_CHANNEL7        7       /* Канал АЦП7 - PORT_0_13 */
+#define ADC_CHANNEL0 0 /* Канал АЦП0 - PORT_1_5 */
+#define ADC_CHANNEL1 1 /* Канал АЦП1 - PORT_1_7 */
+#define ADC_CHANNEL2 2 /* Канал АЦП2 - PORT_0_2 */
+#define ADC_CHANNEL3 3 /* Канал АЦП3 - PORT_0_4 */
+#define ADC_CHANNEL4 4 /* Канал АЦП4 - PORT_0_7 */
+#define ADC_CHANNEL5 5 /* Канал АЦП5 - PORT_0_9 */
+#define ADC_CHANNEL6 6 /* Канал АЦП6 - PORT_0_11 */
+#define ADC_CHANNEL7 7 /* Канал АЦП7 - PORT_0_13 */
 
 /*
  * Defines: Выбор ИОН
@@ -42,8 +41,8 @@
  * ADC_EXTREF_ON - Внешний источник опорного напряжения
  *
  */
-#define ADC_EXTREF_OFF      0       /* Встроенный источник опорного напряжения 1,2 В */
-#define ADC_EXTREF_ON       1       /* Внешний источник опорного напряжения */
+#define ADC_EXTREF_OFF 0 /* Встроенный источник опорного напряжения 1,2 В */
+#define ADC_EXTREF_ON 1  /* Внешний источник опорного напряжения */
 
 /*
  * Defines: Выбор внешнего ИОН
@@ -54,8 +53,8 @@
  * ADC_EXTCLB_ADCREF - Внешний вывод
  *
  */
-#define ADC_EXTCLB_CLBREF      0       /* Настраиваемый ОИН */
-#define ADC_EXTCLB_ADCREF      1       /* Внешний вывод */
+#define ADC_EXTCLB_CLBREF 0 /* Настраиваемый ОИН */
+#define ADC_EXTCLB_ADCREF 1 /* Внешний вывод */
 
 /*
  * Defines: Входы АЦП
@@ -63,79 +62,78 @@
  * Номера выводов каналов АЦП и ADC_REF
  *
  * ADC_PORT_AS_FUNC3 - Четвертая функция вывода (аналоговый сигнал)
- * ADC_CHANNEL0_PORT_1_5  - Канал АЦП0 - PORT_1_5 
- * ADC_CHANNEL1_PORT_1_7  - Канал АЦП1 - PORT_1_7 
- * ADC_CHANNEL2_PORT_0_2  - Канал АЦП2 - PORT_0_2 
- * ADC_CHANNEL3_PORT_0_4  - Канал АЦП3 - PORT_0_4 
- * ADC_CHANNEL4_PORT_0_7  - Канал АЦП4 - PORT_0_7 
- * ADC_CHANNEL5_PORT_0_9  - Канал АЦП5 - PORT_0_9 
+ * ADC_CHANNEL0_PORT_1_5  - Канал АЦП0 - PORT_1_5
+ * ADC_CHANNEL1_PORT_1_7  - Канал АЦП1 - PORT_1_7
+ * ADC_CHANNEL2_PORT_0_2  - Канал АЦП2 - PORT_0_2
+ * ADC_CHANNEL3_PORT_0_4  - Канал АЦП3 - PORT_0_4
+ * ADC_CHANNEL4_PORT_0_7  - Канал АЦП4 - PORT_0_7
+ * ADC_CHANNEL5_PORT_0_9  - Канал АЦП5 - PORT_0_9
  * ADC_CHANNEL6_PORT_0_11 - Канал АЦП6 - PORT_0_11
  * ADC_CHANNEL7_PORT_0_13 - Канал АЦП7 - PORT_0_13
  * ADC_REF_PORT_1_10      - Внешний опорный сигнал - PORT_1_10
  *
  */
-#define ADC_PORT_AS_FUNC3             0b11    /* Четвертая функция вывода (аналоговый сигнал) */ 
-#define ADC_CHANNEL0_PORT_1_5         5       /* Канал АЦП0 - PORT_1_5 */
-#define ADC_CHANNEL1_PORT_1_7         7       /* Канал АЦП1 - PORT_1_7 */
-#define ADC_CHANNEL2_PORT_0_2         2       /* Канал АЦП2 - PORT_0_2 */
-#define ADC_CHANNEL3_PORT_0_4         4       /* Канал АЦП3 - PORT_0_4 */
-#define ADC_CHANNEL4_PORT_0_7         7       /* Канал АЦП4 - PORT_0_7 */
-#define ADC_CHANNEL5_PORT_0_9         9       /* Канал АЦП5 - PORT_0_9 */
-#define ADC_CHANNEL6_PORT_0_11        11      /* Канал АЦП6 - PORT_0_11 */
-#define ADC_CHANNEL7_PORT_0_13        13      /* Канал АЦП7 - PORT_0_13 */
-#define ADC_REF_PORT_1_10             10      /* Внешний опорный сигнал - PORT_1_10 */
-
+#define ADC_PORT_AS_FUNC3 0b11    /* Четвертая функция вывода (аналоговый сигнал) */
+#define ADC_CHANNEL0_PORT_1_5 5   /* Канал АЦП0 - PORT_1_5 */
+#define ADC_CHANNEL1_PORT_1_7 7   /* Канал АЦП1 - PORT_1_7 */
+#define ADC_CHANNEL2_PORT_0_2 2   /* Канал АЦП2 - PORT_0_2 */
+#define ADC_CHANNEL3_PORT_0_4 4   /* Канал АЦП3 - PORT_0_4 */
+#define ADC_CHANNEL4_PORT_0_7 7   /* Канал АЦП4 - PORT_0_7 */
+#define ADC_CHANNEL5_PORT_0_9 9   /* Канал АЦП5 - PORT_0_9 */
+#define ADC_CHANNEL6_PORT_0_11 11 /* Канал АЦП6 - PORT_0_11 */
+#define ADC_CHANNEL7_PORT_0_13 13 /* Канал АЦП7 - PORT_0_13 */
+#define ADC_REF_PORT_1_10 10      /* Внешний опорный сигнал - PORT_1_10 */
 
 /* Title: Структуры */
 
 /*
  * Struct: ADC_InitTypeDef
- * 
+ *
  * Настройки АЦП при инициализации
- * 
+ *
  */
 typedef struct
 {
     /*
-    * Variable: Sel
-    * Выбор канала АЦП
-    * 
-    * Этот параметр должен быть одним из значений:
-    * 
-    * - <ADC_CHANNEL0>;
-    * - <ADC_CHANNEL1>;
-    * - <ADC_CHANNEL2>;
-    * - <ADC_CHANNEL3>;
-    * - <ADC_CHANNEL4>;
-    * - <ADC_CHANNEL5>;
-    * - <ADC_CHANNEL6>;
-    * - <ADC_CHANNEL7>.
-    *
-    */
+     * Variable: Sel
+     * Выбор канала АЦП
+     *
+     * Этот параметр должен быть одним из значений:
+     *
+     * - <ADC_CHANNEL0>;
+     * - <ADC_CHANNEL1>;
+     * - <ADC_CHANNEL2>;
+     * - <ADC_CHANNEL3>;
+     * - <ADC_CHANNEL4>;
+     * - <ADC_CHANNEL5>;
+     * - <ADC_CHANNEL6>;
+     * - <ADC_CHANNEL7>.
+     *
+     */
     uint8_t Sel;
 
     /*
-    * Variable: EXTRef
-    * Выбор источника опорного напряжения
-    * 
-    * Этот параметр должен быть одним из значений:
-    * 
-    * - <ADC_EXTREF_OFF>;
-    * - <ADC_EXTREF_ON>.
-    *
-    */
+     * Variable: EXTRef
+     * Выбор источника опорного напряжения
+     *
+     * Этот параметр должен быть одним из значений:
+     *
+     * - <ADC_EXTREF_OFF>;
+     * - <ADC_EXTREF_ON>.
+     *
+     */
     uint8_t EXTRef;
 
     /*
-    * Variable: EXTClb
-    * Выбор внешнего источника опорного напряжения
-    * 
-    * Этот параметр должен быть одним из значений:
-    * 
-    * - <ADC_EXTCLB_CLBREF>;
-    * - <ADC_EXTCLB_ADCREF>.
-    *
-    */
+     * Variable: EXTClb
+     * Выбор внешнего источника опорного напряжения
+     *
+     * Этот параметр должен быть одним из значений:
+     *
+     * - <ADC_EXTCLB_CLBREF>;
+     * - <ADC_EXTCLB_ADCREF>.
+     *
+     */
     uint8_t EXTClb;
 
 } ADC_InitTypeDef;
@@ -143,49 +141,52 @@ typedef struct
 /*
  * Struct: ADC_HandleTypeDef
  * Настройки АЦП
- * 
+ *
  */
 typedef struct
 {
     /*
-    * Variable: Instance
-    * Базоый адрес регистров ADC.
-    *
-    */
+     * Variable: Instance
+     * Базоый адрес регистров ADC.
+     *
+     */
     ANALOG_REG_TypeDef *Instance;
 
     /*
-    * Variable: Init
-    * Настройки АЦП при инициализации
-    *
-    */
+     * Variable: Init
+     * Настройки АЦП при инициализации
+     *
+     */
     ADC_InitTypeDef Init;
-    
-} ADC_HandleTypeDef;
 
+} ADC_HandleTypeDef;
 
 /* Сменить канал АЦП */
 #ifdef MIK32V0
-    #define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SEL_M)) | ((channel_selection) << ADC_CONFIG_SEL_S)))
+#define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SEL_M)) | ((channel_selection) << ADC_CONFIG_SEL_S)))
 #else // MIK32V2
-    #define ADC_SEL_CHANNEL(adc_instance, channel_selection) ((adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_M)) & (~ADC_CONFIG_SEL_M)) | (((adc_instance)->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_M) | ((channel_selection) << ADC_CONFIG_SEL_S))
+#define ADC_SEL_CHANNEL(adc_instance, channel_selection) ({                                                             \
+    (adc_instance)->ADC_CONFIG = (((adc_instance)->ADC_CONFIG & (~ADC_CONFIG_SAH_TIME_READ_M)) & (~ADC_CONFIG_SEL_M)) | \
+                                 (((adc_instance)->ADC_CONFIG >> 1) & ADC_CONFIG_SAH_TIME_WRITE_M) |                    \
+                                 ((channel_selection) << ADC_CONFIG_SEL_S);                                             \
+})
 #endif // MIK32V0
 
 /* Запустить однократное преобразование */
-#define HAL_ADC_SINGLE(adc_instance) ((adc_instance)->ADC_SINGLE = 1) 
+#define HAL_ADC_SINGLE(adc_instance) ((adc_instance)->ADC_SINGLE = 1)
 
 /* Запустить непрерывное преобразование */
-#define HAL_ADC_CONTINUOUS_ENABLE(adc_instance) ((adc_instance)->ADC_CONTINUOUS = 1) 
+#define HAL_ADC_CONTINUOUS_ENABLE(adc_instance) ((adc_instance)->ADC_CONTINUOUS = 1)
 
 /* Остановить непрерывное преобразование */
-#define HAL_ADC_CONTINUOUS_DISABLE(adc_instance) ((adc_instance)->ADC_CONTINUOUS = 0) 
+#define HAL_ADC_CONTINUOUS_DISABLE(adc_instance) ((adc_instance)->ADC_CONTINUOUS = 0)
 
-#define HAL_ADC_SINGLE_AND_SET_CH(adc_instance, adc_channel)    ({(adc_instance)->ADC_SINGLE = 1; ADC_SEL_CHANNEL((adc_instance), (adc_channel));}) /* Запустить однократное преобразование */
-
+/* Запустить однократное преобразование на текущем канале и выбрать новый канал */
+#define HAL_ADC_SINGLE_AND_SET_CH(adc_instance, adc_channel)    ({ADC_SEL_CHANNEL((adc_instance), (adc_channel)); (adc_instance)->ADC_SINGLE = 1;})
 
 /* Title: Функции */
 
-void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc);
+void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc);
 
 /*
  * Включить калибруемый ИОН
@@ -218,7 +219,7 @@ uint8_t HAL_ADC_SAH_TIMEGet(ADC_HandleTypeDef *hadc);
 uint8_t HAL_ADC_CalculateSAH_TIME(uint32_t frequency);
 
 /*
- * Задать время выборки АЦП SAH_TIME 
+ * Задать время выборки АЦП SAH_TIME
  */
 void HAL_ADC_SAH_TIMESet(ADC_HandleTypeDef *hadc, uint8_t sah_time);
 
@@ -333,7 +334,7 @@ void HAL_ADC_ContinuousEnable(ADC_HandleTypeDef *hadc);
 /*
  * Function: HAL_ADC_WaitValid
  * Ожидать установку флага актуальных данных.
- * 
+ *
  * Флаг VALID - Признак наличия актуальных данных.
  *
  * Parameters:

@@ -174,6 +174,10 @@ void HAL_ADC_Init(ADC_HandleTypeDef *hadc)
                                  (hadc->Init.EXTRef << ADC_CONFIG_EXTEN_S) |    /* Настройка источника опорного напряжения */
                                  (hadc->Init.EXTClb << ADC_CONFIG_EXTPAD_EN_S); /* Выбор внешнего источника опорного напряжения */
 #endif                                                                           // MIK32V0
+
+    /* Запуск одиночного измерения для переключения на выбранный канал */
+    hadc->Instance->ADC_SINGLE = 1;
+    HAL_ADC_WaitValid(hadc);
 }
 
 void HAL_ADC_Single(ADC_HandleTypeDef *hadc)
