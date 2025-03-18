@@ -85,8 +85,8 @@ typedef enum
 /* I2C_autoend_mode - Режим автоматического окончания */
 typedef enum
 {
-	I2C_AUTOEND_DISABLE = 0,   /* Режим автоматического окончания отключен */
-	I2C_AUTOEND_ENABLE = 1     /* Режим автоматического окончания включен */
+	I2C_AUTOEND_DISABLE = 1,   /* Режим автоматического окончания отключен */
+	I2C_AUTOEND_ENABLE = 0     /* Режим автоматического окончания включен */
 } HAL_I2C_AutoEndModeTypeDef;
 
 /* I2C_transfer_direction - Направление передачи */
@@ -121,8 +121,8 @@ typedef enum
 /* I2C_analog_filter - Цифровой фильтр */
 typedef enum
 {
-	I2C_ANALOGFILTER_ENABLE = 0,
-	I2C_ANALOGFILTER_DISABLE = 1
+	I2C_ANALOGFILTER_ENABLE = 1,
+	I2C_ANALOGFILTER_DISABLE = 0
 } HAL_I2C_AnalogFilterTypeDef;
 
 typedef enum 
