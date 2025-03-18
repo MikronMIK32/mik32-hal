@@ -253,6 +253,16 @@ typedef struct
 
 	HAL_I2C_AnalogFilterTypeDef AnalogFilter;
 
+	/*
+	* Frequency - частота SCL
+	*/
+	uint32_t frequency;
+	
+	/*
+	* Duty factor - скважность SCL
+	*/
+	uint32_t duty_factor;
+
 } I2C_InitTypeDef;
 
 /*
