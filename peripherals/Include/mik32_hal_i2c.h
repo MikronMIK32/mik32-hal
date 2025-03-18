@@ -15,6 +15,13 @@
  *
  */
 #define I2C_TIMEOUT_DEFAULT 	1000000		/* Количество циклов ожидания установки флага TXIS или RXNE */
+
+/*
+ * Define: TSYNC_SIGMA_FACTOR
+ * Суммарное количество тактов i2cclk, уходящих на ожидание установки лог.1 на SCL
+ */
+#define TSYNC_SIGMA_FACTOR		8
+
 /*
  * Define: I2C_NBYTE_MAX
  * Максимальлное количество байт в посылке (NBYTES)
