@@ -15,6 +15,13 @@
  *
  */
 #define I2C_TIMEOUT_DEFAULT 	1000000		/* Количество циклов ожидания установки флага TXIS или RXNE */
+
+/*
+ * Define: TSYNC_SIGMA_FACTOR
+ * Суммарное количество тактов i2cclk, уходящих на ожидание установки лог.1 на SCL
+ */
+#define TSYNC_SIGMA_FACTOR		8
+
 /*
  * Define: I2C_NBYTE_MAX
  * Максимальлное количество байт в посылке (NBYTES)
@@ -85,8 +92,8 @@ typedef enum
 /* I2C_autoend_mode - Режим автоматического окончания */
 typedef enum
 {
-	I2C_AUTOEND_DISABLE = 0,   /* Режим автоматического окончания отключен */
-	I2C_AUTOEND_ENABLE = 1     /* Режим автоматического окончания включен */
+	I2C_AUTOEND_DISABLE = 1,   /* Режим автоматического окончания отключен */
+	I2C_AUTOEND_ENABLE = 0     /* Режим автоматического окончания включен */
 } HAL_I2C_AutoEndModeTypeDef;
 
 /* I2C_transfer_direction - Направление передачи */
@@ -121,8 +128,8 @@ typedef enum
 /* I2C_analog_filter - Цифровой фильтр */
 typedef enum
 {
-	I2C_ANALOGFILTER_ENABLE = 0,
-	I2C_ANALOGFILTER_DISABLE = 1
+	I2C_ANALOGFILTER_ENABLE = 1,
+	I2C_ANALOGFILTER_DISABLE = 0
 } HAL_I2C_AnalogFilterTypeDef;
 
 typedef enum 
@@ -252,6 +259,16 @@ typedef struct
 	HAL_I2C_DigitalFilterTypeDef DigitalFilter;
 
 	HAL_I2C_AnalogFilterTypeDef AnalogFilter;
+
+	/*
+	* Frequency - частота SCL
+	*/
+	uint32_t frequency;
+	
+	/*
+	* Duty factor - скважность SCL
+	*/
+	uint32_t duty_factor;
 
 } I2C_InitTypeDef;
 
