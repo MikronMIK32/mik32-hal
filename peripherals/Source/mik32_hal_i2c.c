@@ -202,10 +202,10 @@ void HAL_I2C_calcFreqCoef(I2C_HandleTypeDef *hi2c)
     uint32_t i2c_cycles;
     uint32_t presc_del;
 
-    i2cclk_freq = HAL_PCC_GetSysClockFreq() / (PM->DIV_APBP+1);
-    i2c_cycles = i2cclk_freq / hi2c->Init.frequency;
+    i2cclk_freq = HAL_PCC_GetSysClockFreq() / (PM->DIV_APB_P+1);
+    i2c_cycles = i2cclk_freq / hi2c->Init.frequency - TSYNC_SIGMA_FACTOR;
     //so SCLL & SCLH are 7-bit, their summ is 8-bit, d256 max
-    presc_del = (i2c_cycles - TSYNC_SIGMA_FACTOR) / 256;
+    presc_del = i2c_cycles / 256;
     i2c_cycles = i2c_cycles / (presc_del + 1);
     hi2c->Clock.PRESC = presc_del;
     hi2c->Clock.SCLDEL = 0;

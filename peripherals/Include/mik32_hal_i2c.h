@@ -20,7 +20,7 @@
  * Define: TSYNC_SIGMA_FACTOR
  * Суммарное количество тактов i2cclk, уходящих на ожидание установки лог.1 на SCL
  */
-#define TSYNC_SIGMA_FACTOR		8
+#define TSYNC_SIGMA_FACTOR		10
 
 /*
  * Define: I2C_NBYTE_MAX
@@ -404,6 +404,7 @@ void HAL_I2C_OwnAddress1(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_OwnAddress2(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_GeneralCall(I2C_HandleTypeDef *hi2c, HAL_I2C_GeneralCallTypeDef GeneralCall);
 void HAL_I2C_SBCMode(I2C_HandleTypeDef *hi2c, HAL_I2C_SBCModeTypeDef SBCMode);
+void HAL_I2C_calcFreqCoef(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_SlaveInit(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_MasterInit(I2C_HandleTypeDef *hi2c);
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c);
