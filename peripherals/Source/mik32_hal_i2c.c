@@ -219,6 +219,12 @@ void HAL_I2C_calcFreqCoef(I2C_HandleTypeDef *hi2c)
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c)
 {
     HAL_I2C_MspInit(hi2c);
+
+    /* Set frequency by calculation if frequency field is not equal to 0 */
+    if (hi2c->Init.frequency != 0)
+    {
+        HAL_I2C_calcFreqCoef(hi2c);
+    }
     
     /* Clear PE in I2C_CR1 */
     HAL_I2C_Disable(hi2c);
