@@ -25,6 +25,8 @@ HAL_StatusTypeDef HAL_EEPROM_Erase(
     HAL_EEPROM_WriteBehaviourTypeDef erasedPages,
     uint32_t timeout)
 {
+    HAL_StatusTypeDef status = HAL_OK;
+
     eeprom->Instance->EECON |= EEPROM_EECON_BWE_M | (erasedPages << EEPROM_EECON_WRBEH_S);
 
     if (eeprom->Mode == HAL_EEPROM_MODE_TWO_STAGE)
@@ -37,7 +39,6 @@ HAL_StatusTypeDef HAL_EEPROM_Erase(
     }
     else
     {
-        HAL_StatusTypeDef status = HAL_OK;
         for (int i = 0; i < erasedWordsCount; i++)
         {
             eeprom->Instance->EEA = address + i * 4;
@@ -49,7 +50,11 @@ HAL_StatusTypeDef HAL_EEPROM_Erase(
 
     eeprom->Instance->EECON |= EEPROM_EECON_OP(EEPROM_EECON_OP_ER) | EEPROM_EECON_EX_M;
 
-    return HAL_EEPROM_WaitBusy(eeprom, timeout);
+    status = HAL_EEPROM_WaitBusy(eeprom, timeout);
+
+    EEPROM_AHB_READ_FIX();
+
+    return status;
 }
 
 HAL_StatusTypeDef HAL_EEPROM_Write(
@@ -60,6 +65,8 @@ HAL_StatusTypeDef HAL_EEPROM_Write(
     HAL_EEPROM_WriteBehaviourTypeDef writedPages,
     uint32_t timeout)
 {
+    HAL_StatusTypeDef status = HAL_OK;
+
     eeprom->Instance->EECON |= EEPROM_EECON_BWE_M | (writedPages << EEPROM_EECON_WRBEH_S);
 
     if (eeprom->Mode == HAL_EEPROM_MODE_TWO_STAGE)
@@ -72,7 +79,6 @@ HAL_StatusTypeDef HAL_EEPROM_Write(
     }
     else
     {
-        HAL_StatusTypeDef status = HAL_OK;
         for (int i = 0; i < length; i++)
         {
             eeprom->Instance->EEA = address + i * 4;
@@ -84,7 +90,11 @@ HAL_StatusTypeDef HAL_EEPROM_Write(
 
     eeprom->Instance->EECON |= EEPROM_EECON_OP(EEPROM_EECON_OP_PR) | EEPROM_EECON_EX_M;
 
-    return HAL_EEPROM_WaitBusy(eeprom, timeout);
+    status = HAL_EEPROM_WaitBusy(eeprom, timeout);
+
+    EEPROM_AHB_READ_FIX();
+
+    return status;
 }
 
 HAL_StatusTypeDef HAL_EEPROM_Read(HAL_EEPROM_HandleTypeDef *eeprom, uint16_t address, uint32_t *data, uint8_t length, uint32_t timeout)
@@ -101,7 +111,6 @@ HAL_StatusTypeDef HAL_EEPROM_Read(HAL_EEPROM_HandleTypeDef *eeprom, uint16_t add
     }
     else
     {
-        
         for (uint32_t i = 0; i < length; i++)
         {
             eeprom->Instance->EEA = address + i * 4;
@@ -110,6 +119,8 @@ HAL_StatusTypeDef HAL_EEPROM_Read(HAL_EEPROM_HandleTypeDef *eeprom, uint16_t add
             data[i] = eeprom->Instance->EEDAT;
         }
     }
+
+    EEPROM_AHB_READ_FIX();
 
     return status;
 }
@@ -188,7 +199,7 @@ HAL_StatusTypeDef HAL_EEPROM_GetECC(HAL_EEPROM_HandleTypeDef *eeprom, uint16_t a
     eeprom->Instance->EEA = address;
     if (eeprom->Mode == HAL_EEPROM_MODE_THREE_STAGE)
     {
-        
+
         if ((status = HAL_EEPROM_WaitBusy(eeprom, timeout)) != HAL_OK)
             return status;
     }
