@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL
 #define MIK32_HAL
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_def.h"
 #include "mik32_hal_pcc.h"
 
@@ -33,5 +37,9 @@ uint32_t HAL_Micros();
 uint32_t HAL_Millis();
 void HAL_DelayMs(uint32_t time_ms);
 void HAL_DelayUs(uint32_t time_us);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

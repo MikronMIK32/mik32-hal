@@ -1,6 +1,10 @@
 #ifndef MIK32_USART
 #define MIK32_USART
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include <stdbool.h>
@@ -542,5 +546,9 @@ bool HAL_USART_DSR_ReadToggleFlag(USART_HandleTypeDef* local);
 // void HAL_USART_PrintBefore(USART_HandleTypeDef* local, char* str);
 // void HAL_USART_Print_c(USART_HandleTypeDef* local, char value);
 // void HAL_USART_Print_s(USART_HandleTypeDef* local, char* str);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* MIK32_USART */

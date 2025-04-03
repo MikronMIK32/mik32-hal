@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_I2C
 #define MIK32_HAL_I2C
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include "mik32_hal_def.h"
@@ -647,4 +651,9 @@ static inline __attribute__((always_inline)) void HAL_I2C_IRQHandler(I2C_HandleT
     }
 
 }
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

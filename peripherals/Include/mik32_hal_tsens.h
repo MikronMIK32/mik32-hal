@@ -1,6 +1,10 @@
 #ifndef MIK32_TSENS
 #define MIK32_TSENS
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef MIK32V0
 
 #include "analog_reg.h"
@@ -146,4 +150,9 @@ void HAL_TSENS_Stop_IT(TSENS_HandleTypeDef *htsens);
 
 
 #endif // MIK32V0
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // MIK32_TSENS

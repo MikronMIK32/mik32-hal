@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_RTC
 #define MIK32_HAL_RTC
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include "rtc.h"
@@ -478,5 +482,9 @@ void HAL_RTC_InterruptInit(RTC_HandleTypeDef *hrtc);
  *
  */
 int HAL_RTC_GetINTE(RTC_HandleTypeDef *hrtc);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

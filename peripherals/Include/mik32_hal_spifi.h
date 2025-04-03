@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_SPIFI
 #define MIK32_HAL_SPIFI
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 #include "mik32_hal_def.h"
 #include "mik32_hal_pcc.h"
@@ -251,5 +255,9 @@ static inline __attribute__((always_inline)) void HAL_SPIFI_MemoryMode_Init_LL(S
     SPIFI_CONFIG->CTRL = ctrlReg;
     SPIFI_CONFIG->MCMD = mcmdReg;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MIK32_HAL_SPIFI

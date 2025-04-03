@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_PCC
 #define MIK32_HAL_PCC
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "wakeup.h"
 #include "power_manager.h"
 #include "mik32_hal_def.h"
@@ -268,5 +272,8 @@ void HAL_PCC_DividerAPB_P(uint32_t DividerAPB_P);
 PCC_ConfigErrorsTypeDef HAL_PCC_Config(PCC_InitTypeDef *PCC_Init);
 uint32_t HAL_PCC_GetSysClockFreq();
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

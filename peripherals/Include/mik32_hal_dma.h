@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_DMA
 #define MIK32_HAL_DMA
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include "stddef.h"
@@ -198,5 +202,8 @@ void HAL_DMA_ChannelDisable(DMA_ChannelHandleTypeDef *hdma_channel);
 void HAL_DMA_ChannelEnable(DMA_ChannelHandleTypeDef *hdma_channel);
 void HAL_DMA_Start(DMA_ChannelHandleTypeDef *hdma_channel, void* Source, void* Destination, uint32_t Len);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_SCR1_TIMER
 #define MIK32_HAL_SCR1_TIMER
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_memory_map.h"
 #include "power_manager.h"
 #include "inttypes.h"
@@ -167,6 +171,9 @@ uint32_t HAL_Time_SCR1TIM_Millis();
 void HAL_Time_SCR1TIM_DelayUs(uint32_t time_us);
 void HAL_Time_SCR1TIM_DelayMs(uint32_t time_ms);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MIK32_HAL_SCR1_TIMER
 

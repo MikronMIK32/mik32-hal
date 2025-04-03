@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_OTP
 #define MIK32_HAL_OTP
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include "power_manager.h"
@@ -59,5 +63,8 @@ uint32_t HAL_OTP_ReadTestRow(OTP_HandleTypeDef *hotp);
 uint32_t HAL_OTP_ReadTestBit(OTP_HandleTypeDef *hotp);
 void HAL_OTP_Read(OTP_HandleTypeDef *hotp, uint8_t Address, uint32_t DataRead[], uint32_t DataLength);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

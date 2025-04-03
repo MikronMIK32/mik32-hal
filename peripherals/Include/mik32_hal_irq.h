@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_IRQ
 #define MIK32_HAL_IRQ
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "epic.h"
 #include "csr.h"
 #include "scr1_csr_encoding.h"
@@ -322,9 +326,8 @@ uint32_t HAL_EPIC_GetStatus();
  */
 uint32_t HAL_EPIC_GetRawStatus();
 
-
-
-
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif

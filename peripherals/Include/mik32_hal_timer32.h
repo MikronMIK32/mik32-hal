@@ -1,12 +1,17 @@
 #ifndef MIK32_HAL_TIMER32
 #define MIK32_HAL_TIMER32
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include <timer32.h>
 #include <power_manager.h>
 #include "mik32_hal_def.h"
 #include <mik32_memory_map.h>
+
 
 #define TIMER32_TIMEOUT 10000000
 
@@ -260,5 +265,9 @@ uint32_t HAL_Time_TIM32_Micros();
 uint32_t HAL_Time_TIM32_Millis();
 void HAL_Time_TIM32_DelayUs(uint32_t time_us);
 void HAL_Time_TIM32_DelayMs(uint32_t time_ms);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MIK32_HAL_TIMER32

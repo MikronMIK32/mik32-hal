@@ -19,6 +19,10 @@
 #ifndef MIK32_HAL_SPIFI_PSRAM
 #define MIK32_HAL_SPIFI_PSRAM
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_def.h"
 #include "mik32_hal_spifi.h"
 
@@ -63,5 +67,9 @@ void HAL_SPIFI_PSRAM_Reset_QPI(SPIFI_HandleTypeDef *spifi);
 void HAL_SPIFI_PSRAM_Wrap_Boundary_Toggle_SPI(SPIFI_HandleTypeDef *spifi);
 
 void HAL_SPIFI_PSRAM_Wrap_Boundary_Toggle_QPI(SPIFI_HandleTypeDef *spifi);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MIK32_HAL_SPIFI_PSRAM

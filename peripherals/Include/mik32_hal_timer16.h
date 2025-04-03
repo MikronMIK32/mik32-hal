@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_TIMER16
 #define MIK32_HAL_TIMER16
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include "power_manager.h"
@@ -337,5 +341,9 @@ uint32_t HAL_Time_TIM16_Micros();
 uint32_t HAL_Time_TIM16_Millis();
 void HAL_Time_TIM16_DelayUs(uint32_t time_us);
 void HAL_Time_TIM16_DelayMs(uint32_t time_ms);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

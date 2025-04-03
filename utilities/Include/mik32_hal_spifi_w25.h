@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_SPIFI_W25
 #define MIK32_HAL_SPIFI_W25
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_def.h"
 #include "mik32_hal_spifi.h"
 
@@ -91,5 +95,9 @@ void HAL_SPIFI_W25_ReadData_Quad_IO(SPIFI_HandleTypeDef *spifi, uint32_t address
 HAL_StatusTypeDef HAL_SPIFI_W25_QuadEnable(SPIFI_HandleTypeDef *spifi);
 
 HAL_StatusTypeDef HAL_SPIFI_W25_QuadDisable(SPIFI_HandleTypeDef *spifi);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MIK32_HAL_W25

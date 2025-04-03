@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_DAC
 #define MIK32_HAL_DAC
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
 #include "analog_reg.h"
@@ -239,5 +243,9 @@ void HAL_DAC_Init(DAC_HandleTypeDef *hdac);
  * 
  */
 void HAL_DAC_SetValue(DAC_HandleTypeDef *hdac, uint16_t DAC_Value);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

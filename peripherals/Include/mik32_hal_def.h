@@ -5,6 +5,10 @@
 #define HAL_PIN_MASK 	0xFFFF
 #define HAL_PORT_S 		16
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum HAL_StatusTypeDef
 {
 	HAL_OK       = 0x00U,
@@ -13,4 +17,8 @@ typedef enum HAL_StatusTypeDef
 	HAL_TIMEOUT  = 0x03U
 } HAL_StatusTypeDef;
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif // MIK32_HAL_DEF

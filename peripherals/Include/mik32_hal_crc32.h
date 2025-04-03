@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_CRC32
 #define MIK32_HAL_CRC32
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "crc.h"
 #include "mik32_memory_map.h"
@@ -269,6 +273,10 @@ void HAL_CRC_WriteData32(CRC_HandleTypeDef *hcrc, uint32_t message[], uint32_t m
  *
  */
 uint32_t HAL_CRC_ReadCRC(CRC_HandleTypeDef *hcrc);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

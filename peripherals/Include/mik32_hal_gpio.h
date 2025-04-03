@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_GPIO_NEW
 #define MIK32_HAL_GPIO_NEW
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_def.h"
 #include "pad_config.h"
 #include "gpio.h"
@@ -379,5 +383,9 @@ HAL_StatusTypeDef HAL_GPIO_DeInitInterruptLine(HAL_GPIO_Line irqLine);
 uint32_t HAL_GPIO_LineInterruptState(HAL_GPIO_Line irqLine);
 GPIO_PinState HAL_GPIO_LinePinState(HAL_GPIO_Line irqLine);
 void HAL_GPIO_ClearInterrupts();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MIK32_HAL_GPIO

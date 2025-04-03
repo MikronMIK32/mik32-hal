@@ -34,6 +34,10 @@
 #define SYMBOL_COLON            58
 #define SYMBOL_SMILE            13
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include "mik32_hal_i2c.h"
 
@@ -47,5 +51,9 @@ HAL_StatusTypeDef HAL_SSD1306_Init(I2C_HandleTypeDef *hi2c, uint8_t brightness);
 HAL_StatusTypeDef HAL_SSD1306_SetBorder(I2C_HandleTypeDef *hi2c, uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
 HAL_StatusTypeDef HAL_SSD1306_CLR_SCR(I2C_HandleTypeDef *hi2c);
 HAL_StatusTypeDef HAL_SSD1306_Write(I2C_HandleTypeDef *hi2c, uint8_t symbol);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

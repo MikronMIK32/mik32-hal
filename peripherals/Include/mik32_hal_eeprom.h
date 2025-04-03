@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_EEPROM_H_INCLUDED
 #define MIK32_HAL_EEPROM_H_INCLUDED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_def.h"
 #include <mik32_memory_map.h>
 #include <eeprom.h>
@@ -8,7 +12,7 @@
 
 #ifndef HAL_EEPROM_TIMEOUT
 #define HAL_EEPROM_TIMEOUT 10000
-#endif
+#endif // HAL_EEPROM_TIMEOUT
 
 typedef enum
 {
@@ -106,5 +110,9 @@ void HAL_EEPROM_SetInterrupt(HAL_EEPROM_HandleTypeDef *eeprom, HAL_EEPROM_Enable
 void HAL_EEPROM_CalculateTimings(HAL_EEPROM_HandleTypeDef *eeprom, int32_t frequency);
 
 HAL_StatusTypeDef HAL_EEPROM_GetECC(HAL_EEPROM_HandleTypeDef *eeprom, uint16_t address, uint8_t *buf_value_ecc, uint32_t timeout);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // MIK32_HAL_EEPROM_H_INCLUDED

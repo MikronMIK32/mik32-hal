@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_ADC
 #define MIK32_HAL_ADC
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "analog_reg.h"
 #include "pad_config.h"
 #include "stdbool.h"
@@ -370,5 +374,9 @@ uint16_t HAL_ADC_GetValue(ADC_HandleTypeDef *hadc);
  *
  */
 uint16_t HAL_ADC_WaitAndGetValue(ADC_HandleTypeDef *hadc);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

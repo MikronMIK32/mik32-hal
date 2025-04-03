@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_CRYPTO
 #define MIK32_HAL_CRYPTO
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mik32_hal_pcc.h"
 #include "crypto.h"
 #include "pad_config.h"
@@ -108,5 +112,9 @@ void HAL_Crypto_SetKey(Crypto_HandleTypeDef *hcrypto, uint32_t crypto_key[]);
 void HAL_Crypto_Init(Crypto_HandleTypeDef *hcrypto);
 void HAL_Crypto_Encode(Crypto_HandleTypeDef *hcrypto, uint32_t plain_text[], uint32_t cipher_text[], uint32_t text_length);
 void HAL_Crypto_Decode(Crypto_HandleTypeDef *hcrypto, uint32_t cipher_text[], uint32_t plain_text[], uint32_t text_length);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

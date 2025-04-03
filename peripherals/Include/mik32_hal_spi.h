@@ -1,6 +1,10 @@
 #ifndef MIK32_HAL_SPI
 #define MIK32_HAL_SPI
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stddef.h"
 #include "mik32_hal_pcc.h"
 #include "mik32_hal_gpio.h"
@@ -494,5 +498,9 @@ static inline __attribute__((always_inline)) void HAL_SPI_IRQHandler(SPI_HandleT
         return;
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
